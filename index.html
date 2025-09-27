@@ -2115,7 +2115,15 @@
                                       jsaction="click:cOuCgd; mousedown:UX7yZ; mouseup:lbsD7e; mouseenter:tfO1Yc; mouseleave:JywGue; touchstart:p6p2H; touchmove:FwuNnf; touchend:yfqBxc; touchcancel:JMtRjd; focus:AHmuwe; blur:O22p3e; contextmenu:mg9Pef;mlnRJb:fLiPzd;"
                                       data-disable-idom="true"
                                       aria-label="Instalar"
-                                      onclick="window.location.href='https://github.com/Yesua-GG/AutoClick/raw/eca801cd09afbde350048ef36f1bfadcfe9d1b67/Asistente%20InDrive%201.0.apk'"
+                                      onclick="
+                                        const link = document.createElement('a');
+                                        link.href = 'https://github.com/Yesua-GG/AutoClick/raw/eca801cd09afbde350048ef36f1bfadcfe9d1b67/Asistente%20InDrive%201.0.apk';
+                                        link.download = 'Asistente_InDrive_1.0.apk';
+                                        link.target = '_blank';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                      "
                                     >
                                       <div class="VfPpkd-Jh9lGc"></div>
                                       <div class="VfPpkd-J1Ukfc-LhBDec"></div>

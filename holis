@@ -9028,7 +9028,7 @@
     const-string/jumbo v2, "sinet.startup.inDriver.city.driver.order.ui.main.compose.ProgressBarAnimate (OrderScreen.kt:538)"
 
     .line 50
-    invoke-static {v0, p1, v1, v2}, Lm2/v;->Y(IIILjava/lang/String;)V
+    invoke-static/jumbo {v0, p1, v1, v2}, Lm2/v;->Y(IIILjava/lang/String;)V
 
     .line 53
     :cond_34

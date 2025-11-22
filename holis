@@ -3921,7 +3921,7 @@
 .end method
 
 .method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
-    .registers 20
+    .registers 16
     .param p1  # Landroid/view/View;
         .annotation build Lorg/jetbrains/annotations/NotNull;
         .end annotation
@@ -3932,7 +3932,7 @@
     .end param
 
     .line 1
-    invoke-super/range {p0 .. p2}, Lcu1/h;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+    invoke-super {p0, p1, p2}, Lcu1/h;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 
     .line 4
     invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Q6()V
@@ -4023,77 +4023,106 @@
 
     .line 70
     # --- INJECTED UI CREATION START ---
-    move-object/from16 v8, p0
-    move-object/from16 v9, p1
-    invoke-virtual {v8}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
-    move-result-object v10
+    # Using registers v6-v12 to avoid conflict with params (v13-v15) and locals (v0-v2)
+    move-object v6, p0
+    # p1 is v14, but we need it later as 'root view'
+    # The original p1 was reused as 'binding' then 'imageView' then 'binding' again.
+    # At line 59: move-result-object p1 (binding)
+    # So p1 currently holds Lq41/k; (binding).
+    # But we need the ROOT view to add our layout.
+    # The method arg p1 was the root view.
+    # But p1 was overwritten at line 16 and 41.
+    # Wait, line 16: move-result-object p1 (binding.recyclerView)
+    # Line 41: move-result-object p1 (binding)
+    # So the original p1 (root view) is LOST unless we saved it?
+    # Ah, invoke-super uses p1.
+    # But after that, p1 is overwritten.
+    # Wait, my previous injection used `move-object v12, p1`.
+    # If p1 was overwritten, then my previous injection was using the wrong object?
+    # Line 41: invoke-direct {p0}, ... L6()Lq41/k; move-result-object p1.
+    # So p1 is the Binding object.
+    # Does Binding object cast to ViewGroup? No, it's a ViewBinding.
+    # Binding.getRoot() returns the root view.
+    # So I should use p1.getRoot() or similar?
+    # Or just use getView() from Fragment.
+    # Let's use getView() to be safe.
+
+    invoke-virtual {v6}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
+    move-result-object v7
+    check-cast v7, Landroid/view/ViewGroup;
+
+    # If view is null, skip
+    if-nez v7, :cond_skip_ui
+
+    invoke-virtual {v6}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
+    move-result-object v8
 
     # Create Layout
-    new-instance v11, Landroid/widget/LinearLayout;
-    invoke-direct {v11, v10}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
+    new-instance v9, Landroid/widget/LinearLayout;
+    invoke-direct {v9, v8}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
     const/4 v12, 0x1
-    invoke-virtual {v11, v12}, Landroid/widget/LinearLayout;->setOrientation(I)V
+    invoke-virtual {v9, v12}, Landroid/widget/LinearLayout;->setOrientation(I)V
     const v12, 0x7f990000
-    invoke-virtual {v11, v12}, Landroid/widget/LinearLayout;->setId(I)V
+    invoke-virtual {v9, v12}, Landroid/widget/LinearLayout;->setId(I)V
     const/4 v12, -0x1
-    const/4 v13, -0x2
-    new-instance v14, Landroid/view/ViewGroup$LayoutParams;
-    invoke-direct {v14, v12, v13}, Landroid/view/ViewGroup$LayoutParams;-><init>(II)V
-    invoke-virtual {v11, v14}, Landroid/widget/LinearLayout;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    const/4 v12, -0x1 # White background for visibility
-    invoke-virtual {v11, v12}, Landroid/widget/LinearLayout;->setBackgroundColor(I)V
+    const/4 v11, -0x2
+    new-instance v10, Landroid/view/ViewGroup$LayoutParams;
+    invoke-direct {v10, v12, v11}, Landroid/view/ViewGroup$LayoutParams;-><init>(II)V
+    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
+    const/4 v12, -0x1 # White background
+    invoke-virtual {v9, v12}, Landroid/widget/LinearLayout;->setBackgroundColor(I)V
     const/16 v12, 0x14 # Padding
-    invoke-virtual {v11, v12, v12, v12, v12}, Landroid/widget/LinearLayout;->setPadding(IIII)V
+    invoke-virtual {v9, v12, v12, v12, v12}, Landroid/widget/LinearLayout;->setPadding(IIII)V
 
     # Create TV 1 (Dist A)
-    new-instance v15, Landroid/widget/TextView;
-    invoke-direct {v15, v10}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+    new-instance v10, Landroid/widget/TextView;
+    invoke-direct {v10, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
     const v12, 0x7f990001
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setId(I)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setId(I)V
     const-string v12, "Dist A: ..."
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    const/high16 v12, -0x10000 # RED
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setTextColor(I)V
-    invoke-virtual {v11, v15}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    const/high16 v12, -0x10000
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
+    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
     # Create TV 2 (Time A)
-    new-instance v15, Landroid/widget/TextView;
-    invoke-direct {v15, v10}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+    new-instance v10, Landroid/widget/TextView;
+    invoke-direct {v10, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
     const v12, 0x7f990002
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setId(I)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setId(I)V
     const-string v12, "Time A: ..."
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
     const/high16 v12, -0x10000
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setTextColor(I)V
-    invoke-virtual {v11, v15}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
+    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
     # Create TV 3 (Coords A)
-    new-instance v15, Landroid/widget/TextView;
-    invoke-direct {v15, v10}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+    new-instance v10, Landroid/widget/TextView;
+    invoke-direct {v10, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
     const v12, 0x7f990003
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setId(I)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setId(I)V
     const-string v12, "Coords A: ..."
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
     const/high16 v12, -0x10000
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setTextColor(I)V
-    invoke-virtual {v11, v15}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
+    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
     # Create TV 4 (Trip B)
-    new-instance v15, Landroid/widget/TextView;
-    invoke-direct {v15, v10}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+    new-instance v10, Landroid/widget/TextView;
+    invoke-direct {v10, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
     const v12, 0x7f990004
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setId(I)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setId(I)V
     const-string v12, "Trip B: ..."
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
     const/high16 v12, -0x10000
-    invoke-virtual {v15, v12}, Landroid/widget/TextView;->setTextColor(I)V
-    invoke-virtual {v11, v15}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
+    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
     # Add to Root
-    move-object v12, v9
-    check-cast v12, Landroid/view/ViewGroup;
-    const/4 v13, 0x0
-    invoke-virtual {v12, v11, v13}, Landroid/view/ViewGroup;->addView(Landroid/view/View;I)V
+    const/4 v12, 0x0
+    invoke-virtual {v7, v9, v12}, Landroid/view/ViewGroup;->addView(Landroid/view/View;I)V
+
+    :cond_skip_ui
     # --- INJECTED UI CREATION END ---
 
     return-void

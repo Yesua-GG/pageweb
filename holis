@@ -1583,9 +1583,6 @@
     # v21 holds the description string. We will append tech data to it.
     # Using registers v30+ for temporary storage.
 
-    # Try to build technical data, but if anything fails, just use original description
-    :try_start_tech_data
-    
     new-instance v30, Ljava/lang/StringBuilder;
     invoke-direct/range {v30 .. v30}, Ljava/lang/StringBuilder;-><init>()V
     move-object/from16 v31, v21
@@ -1593,13 +1590,6 @@
     const-string v31, " || TECH_DATA || "
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    # Check if WayPoint A exists
-    invoke-virtual/range {p1 .. p1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
-    move-result-object v31
-    if-nez v31, :waypoint_a_exists
-    goto :skip_tech_data
-    
-    :waypoint_a_exists
     # Dist A
     const-string v31, "DistA:"
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -1618,18 +1608,6 @@
     move-result v31
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    # Check if Points list exists and has elements
-    invoke-virtual/range {p1 .. p1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
-    move-result-object v31
-    invoke-virtual/range {v31 .. v31}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getPoints()Ljava/util/List;
-    move-result-object v31
-    if-eqz v31, :skip_coords_a
-    invoke-interface/range {v31 .. v31}, Ljava/util/List;->isEmpty()Z
-    move-result v32
-    if-eqz v32, :coords_a_exist
-    goto :skip_coords_a
-    
-    :coords_a_exist
     # Coords A (Lat)
     const-string v31, "|LatA:"
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -1662,14 +1640,6 @@
     move-object/from16 v31, v30
     invoke-virtual/range {v31 .. v34}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
-    :skip_coords_a
-    # Check if WayPoint B exists
-    invoke-virtual/range {p1 .. p1}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
-    move-result-object v31
-    if-nez v31, :waypoint_b_exists
-    goto :finalize_tech_data
-    
-    :waypoint_b_exists
     # Dist B
     const-string v31, "|DistB:"
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -1688,18 +1658,6 @@
     move-result v31
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    # Check if Points list exists for B
-    invoke-virtual/range {p1 .. p1}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
-    move-result-object v31
-    invoke-virtual/range {v31 .. v31}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getPoints()Ljava/util/List;
-    move-result-object v31
-    if-eqz v31, :finalize_tech_data
-    invoke-interface/range {v31 .. v31}, Ljava/util/List;->isEmpty()Z
-    move-result v32
-    if-eqz v32, :coords_b_exist
-    goto :finalize_tech_data
-    
-    :coords_b_exist
     # Coords B (Lat)
     const-string v31, "|LatB:"
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -1732,29 +1690,8 @@
     move-object/from16 v31, v30
     invoke-virtual/range {v31 .. v34}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
-    :finalize_tech_data
     invoke-virtual/range {v30 .. v30}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v21
-    
-    # --- COPY TECH DATA TO v16 (distance field) ---
-    move-object/from16 v16, v21
-    # --- END COPY ---
-    
-    goto :end_tech_data
-    
-    :skip_tech_data
-    # If any error, just keep original v21 and v16
-    :end_tech_data
-    :try_end_tech_data
-    
-    .catch Ljava/lang/Exception; {:try_start_tech_data .. :try_end_tech_data} :catch_tech_data
-    goto :after_tech_data
-    
-    :catch_tech_data
-    # If any exception, silently continue with original values
-    nop
-    
-    :after_tech_data
     # --- INJECTED CODE END ---
 
     move-object/from16 v10, v21

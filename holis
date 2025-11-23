@@ -8929,7 +8929,7 @@
 .end method
 
 .method private static final n0(Lm2/y1;Lm2/l;I)V
-    .registers 15
+    .registers 20
 
     .line 1
     const v0, 0x34e1d849
@@ -9026,9 +9026,11 @@
 
     .line 48
     const-string/jumbo v2, "sinet.startup.inDriver.city.driver.order.ui.main.compose.ProgressBarAnimate (OrderScreen.kt:538)"
-
-    .line 50
-    invoke-static/jumbo {v0, p1, v1, v2}, Lm2/v;->Y(IIILjava/lang/String;)V
+    move v10, v0
+    move v11, p1
+    move v12, v1
+    move-object v13, v2
+    invoke-static/jumbo {v10 .. v13}, Lm2/v;->Y(IIILjava/lang/String;)V
 
     .line 53
     :cond_34

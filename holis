@@ -922,51 +922,15 @@
     invoke-direct {p0, p1}, Lb72/b;->B(Landroid/view/View;)V
 
     # ============================================
-    # INJECTED: Update tech_data_textview (SIMPLIFIED)
+    # INJECTED: Update tech_data_textview by finding it recursively
     # ============================================
     
     :try_start_inject
-    # Try to find TextView by common IDs
-    # First, try a range of possible IDs
-    const v0, 0x7f0a0001
-    :loop_find_tv
-    invoke-virtual {p1, v0}, Landroid/view/View;->findViewById(I)Landroid/view/View;
-    move-result-object v1
-    
-    if-eqz v1, :try_next_id
-    
-    # Check if it's a TextView
-    instance-of v2, v1, Landroid/widget/TextView;
-    if-eqz v2, :try_next_id
-    
-    # Get the TextView
-    check-cast v1, Landroid/widget/TextView;
-    
-    # Check if it has our placeholder text
-    invoke-virtual {v1}, Landroid/widget/TextView;->getText()Ljava/lang/CharSequence;
-    move-result-object v2
-    if-eqz v2, :try_next_id
-    
-    invoke-interface {v2}, Ljava/lang/CharSequence;->toString()Ljava/lang/String;
-    move-result-object v2
-    const-string v3, "Cargando datos"
-    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v2
-    
-    if-eqz v2, :try_next_id
-    
-    # Found it! Update the text
-    const-string v2, "\ud83d\udcca DATOS T\u00c9CNICOS\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udccd Dist: 2.5 km | Tiempo: 8 min\n\ud83d\udccd A: 4.7110, -74.0721\n\ud83d\udccd B: 4.6097, -74.0817"
-    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    goto :skip_tech_data
-    
-    :try_next_id
-    add-int/lit8 v0, v0, 0x1
-    const v2, 0x7f0a0fff
-    if-ge v0, v2, :skip_tech_data
-    goto :loop_find_tv
+    # Call helper method to find and update TextView
+    invoke-static {p1}, Lb72/b;->updateTechDataTextView(Landroid/view/View;)V
     :try_end_inject
     .catch Ljava/lang/Exception; {:try_start_inject .. :try_end_inject} :catch_inject
+    goto :skip_tech_data
     
     :catch_inject
     # Silently ignore errors
@@ -978,6 +942,65 @@
 
     return-void
 .end method
+
+# ============================================
+# INJECTED HELPER METHOD
+# ============================================
+.method private static updateTechDataTextView(Landroid/view/View;)V
+    .registers 5
+
+    # Check if this view is a TextView with our placeholder
+    instance-of v0, p0, Landroid/widget/TextView;
+    if-eqz v0, :check_children
+    
+    move-object v0, p0
+    check-cast v0, Landroid/widget/TextView;
+    invoke-virtual {v0}, Landroid/widget/TextView;->getText()Ljava/lang/CharSequence;
+    move-result-object v1
+    
+    if-eqz v1, :check_children
+    invoke-interface {v1}, Ljava/lang/CharSequence;->toString()Ljava/lang/String;
+    move-result-object v1
+    const-string v2, "Cargando datos"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v1
+    
+    if-eqz v1, :check_children
+    
+    # Found it! Update the text
+    const-string v1, "\ud83d\udcca DATOS T\u00c9CNICOS\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udccd Dist: 2.5 km | Tiempo: 8 min\n\ud83d\udccd A: 4.7110, -74.0721\n\ud83d\udccd B: 4.6097, -74.0817"
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    return-void
+    
+    :check_children
+    # If it's a ViewGroup, recursively check children
+    instance-of v0, p0, Landroid/view/ViewGroup;
+    if-nez v0, :is_viewgroup
+    return-void
+    
+    :is_viewgroup
+    move-object v0, p0
+    check-cast v0, Landroid/view/ViewGroup;
+    invoke-virtual {v0}, Landroid/view/ViewGroup;->getChildCount()I
+    move-result v1
+    
+    const/4 v2, 0x0
+    :loop_children
+    if-ge v2, v1, :done
+    
+    invoke-virtual {v0, v2}, Landroid/view/ViewGroup;->getChildAt(I)Landroid/view/View;
+    move-result-object v3
+    invoke-static {v3}, Lb72/b;->updateTechDataTextView(Landroid/view/View;)V
+    
+    add-int/lit8 v2, v2, 0x1
+    goto :loop_children
+    
+    :done
+    return-void
+.end method
+# ============================================
+# END INJECTED HELPER METHOD
+# ============================================
 
 .method public setContentView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
     .registers 3

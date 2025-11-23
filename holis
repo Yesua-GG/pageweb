@@ -906,7 +906,7 @@
 .end method
 
 .method public setContentView(Landroid/view/View;)V
-    .registers 2
+    .registers 6
     .param p1  # Landroid/view/View;
         .annotation build Lorg/jetbrains/annotations/NotNull;
         .end annotation
@@ -920,6 +920,58 @@
 
     .line 3
     invoke-direct {p0, p1}, Lb72/b;->B(Landroid/view/View;)V
+
+    # ============================================
+    # INJECTED: Update tech_data_textview
+    # ============================================
+    
+    # Get Resources and find ID
+    :try_start_inject
+    invoke-virtual {p0}, Landroid/app/Dialog;->getContext()Landroid/content/Context;
+    move-result-object v0
+    invoke-virtual {v0}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
+    move-result-object v0
+    
+    const-string v1, "tech_data_textview"
+    const-string v2, "id"
+    invoke-virtual {p0}, Landroid/app/Dialog;->getContext()Landroid/content/Context;
+    move-result-object v3
+    invoke-virtual {v3}, Landroid/content/Context;->getPackageName()Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v0, v1, v2, v3}, Landroid/content/res/Resources;->getIdentifier(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+    move-result v0
+    
+    if-eqz v0, :skip_tech_data
+    
+    invoke-virtual {p1, v0}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v1
+    check-cast v1, Landroid/widget/TextView;
+    
+    if-nez v1, :tech_data_found
+    goto :skip_tech_data
+    
+    :tech_data_found
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    
+    const-string v3, "\ud83d\udcca DATOS T\u00c9CNICOS\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udccd Dist: 2.5 km | Tiempo: 8 min\n\ud83d\udccd A: 4.7110, -74.0721\n\ud83d\udccd B: 4.6097, -74.0817"
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    :try_end_inject
+    .catch Ljava/lang/Exception; {:try_start_inject .. :try_end_inject} :catch_inject
+    
+    goto :skip_tech_data
+    
+    :catch_inject
+    # Silently ignore any errors
+    
+    :skip_tech_data
+    # ============================================
+    # END INJECTED
+    # ============================================
 
     return-void
 .end method

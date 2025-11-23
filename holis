@@ -4023,114 +4023,36 @@
 
     .line 70
     # --- INJECTED UI CREATION START ---
-    # Using registers v6-v12 to avoid conflict with params (v13-v15) and locals (v0-v2)
-    move-object v6, p0
-    # p1 is v14, but we need it later as 'root view'
-    # The original p1 was reused as 'binding' then 'imageView' then 'binding' again.
-    # At line 59: move-result-object p1 (binding)
-    # So p1 currently holds Lq41/k; (binding).
-    # But we need the ROOT view to add our layout.
-    # The method arg p1 was the root view.
-    # But p1 was overwritten at line 16 and 41.
-    # Wait, line 16: move-result-object p1 (binding.recyclerView)
-    # Line 41: move-result-object p1 (binding)
-    # So the original p1 (root view) is LOST unless we saved it?
-    # Ah, invoke-super uses p1.
-    # But after that, p1 is overwritten.
-    # Wait, my previous injection used `move-object v12, p1`.
-    # If p1 was overwritten, then my previous injection was using the wrong object?
-    # Line 41: invoke-direct {p0}, ... L6()Lq41/k; move-result-object p1.
-    # So p1 is the Binding object.
-    # Does Binding object cast to ViewGroup? No, it's a ViewBinding.
-    # Binding.getRoot() returns the root view.
-    # So I should use p1.getRoot() or similar?
-    # Or just use getView() from Fragment.
-    # Let's use getView() to be safe.
-
-    invoke-virtual {v6}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
+    # Save p1 (root view) IMMEDIATELY before it gets overwritten
+    move-object v6, p1
+    
+    # Create a simple test TextView with static text
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
     move-result-object v7
-    check-cast v7, Landroid/view/ViewGroup;
-
-    # If view is null, skip
-    if-eqz v7, :cond_skip_ui
-
-    invoke-virtual {v6}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
-    move-result-object v8
-
-    # Create Layout
-    new-instance v9, Landroid/widget/LinearLayout;
-    invoke-direct {v9, v8}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
-    const/4 v12, 0x1
-    invoke-virtual {v9, v12}, Landroid/widget/LinearLayout;->setOrientation(I)V
-    const v12, 0x7f990000
-    invoke-virtual {v9, v12}, Landroid/widget/LinearLayout;->setId(I)V
-    const/4 v12, -0x1
-    const/4 v11, -0x2
-    new-instance v10, Landroid/view/ViewGroup$LayoutParams;
-    invoke-direct {v10, v12, v11}, Landroid/view/ViewGroup$LayoutParams;-><init>(II)V
-    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    const/high16 v12, -0x1000000 # Black background
-    invoke-virtual {v9, v12}, Landroid/widget/LinearLayout;->setBackgroundColor(I)V
-    const/16 v12, 0x14 # Padding
-    invoke-virtual {v9, v12, v12, v12, v12}, Landroid/widget/LinearLayout;->setPadding(IIII)V
-
-    # Create TV 1 (Dist A)
-    new-instance v10, Landroid/widget/TextView;
-    invoke-direct {v10, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
-    const v12, 0x7f990001
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setId(I)V
-    const-string v12, "Dist A: ..."
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    const/high16 v12, 0x41a00000 # 20.0f (text size in sp)
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextSize(F)V
-    const/high16 v12, -0x10000
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
-    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    # Create TV 2 (Time A)
-    new-instance v10, Landroid/widget/TextView;
-    invoke-direct {v10, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
-    const v12, 0x7f990002
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setId(I)V
-    const-string v12, "Time A: ..."
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    const/high16 v12, 0x41a00000 # 20.0f
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextSize(F)V
-    const/high16 v12, -0x10000
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
-    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    # Create TV 3 (Coords A)
-    new-instance v10, Landroid/widget/TextView;
-    invoke-direct {v10, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
-    const v12, 0x7f990003
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setId(I)V
-    const-string v12, "Coords A: ..."
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    const/high16 v12, 0x41a00000 # 20.0f
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextSize(F)V
-    const/high16 v12, -0x10000
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
-    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    # Create TV 4 (Trip B)
-    new-instance v10, Landroid/widget/TextView;
-    invoke-direct {v10, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
-    const v12, 0x7f990004
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setId(I)V
-    const-string v12, "Trip B: ..."
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    const/high16 v12, 0x41a00000 # 20.0f
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextSize(F)V
-    const/high16 v12, -0x10000
-    invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
-    invoke-virtual {v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    # Add to Root
-    const/4 v12, 0x0
-    invoke-virtual {v7, v9, v12}, Landroid/view/ViewGroup;->addView(Landroid/view/View;I)V
-
-    :cond_skip_ui
+    
+    new-instance v8, Landroid/widget/TextView;
+    invoke-direct {v8, v7}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+    
+    const-string v9, "*** TECH DATA TEST ***"
+    invoke-virtual {v8, v9}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    
+    const/high16 v9, 0x42200000 # 40.0f (large text)
+    invoke-virtual {v8, v9}, Landroid/widget/TextView;->setTextSize(F)V
+    
+    const/high16 v9, -0x10000 # Red
+    invoke-virtual {v8, v9}, Landroid/widget/TextView;->setTextColor(I)V
+    
+    const/high16 v9, -0x1000000 # Black background
+    invoke-virtual {v8, v9}, Landroid/widget/TextView;->setBackgroundColor(I)V
+    
+    const/16 v9, 0x32 # 50dp padding
+    invoke-virtual {v8, v9, v9, v9, v9}, Landroid/widget/TextView;->setPadding(IIII)V
+    
+    # Add to root view (saved p1)
+    move-object v9, v6
+    check-cast v9, Landroid/view/ViewGroup;
+    const/4 v10, 0x0
+    invoke-virtual {v9, v8, v10}, Landroid/view/ViewGroup;->addView(Landroid/view/View;I)V
     # --- INJECTED UI CREATION END ---
 
     return-void

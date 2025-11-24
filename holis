@@ -1583,22 +1583,12 @@
     # v21 holds the description string. We will append tech data to it.
     # Using registers v30+ for temporary storage.
 
-    # LOG: Start of injection
-    const-string v30, "TechDataInjection"
-    const-string v31, "START: Building technical data"
-    invoke-static/range {v30 .. v31}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
     new-instance v30, Ljava/lang/StringBuilder;
     invoke-direct/range {v30 .. v30}, Ljava/lang/StringBuilder;-><init>()V
     move-object/from16 v31, v21
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     const-string v31, " || TECH_DATA || "
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    # LOG: About to get WayPoint A
-    const-string v31, "TechDataInjection"
-    const-string v32, "Getting WayPoint A"
-    invoke-static/range {v31 .. v32}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     # Dist A
     const-string v31, "DistA:"
@@ -1609,11 +1599,6 @@
     move-result v31
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    # LOG: Got distance A
-    const-string v31, "TechDataInjection"
-    const-string v32, "Got Distance A"
-    invoke-static/range {v31 .. v32}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
     # Time A
     const-string v31, "|TimeA:"
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -1622,11 +1607,6 @@
     invoke-virtual/range {v31 .. v31}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDuration()I
     move-result v31
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    # LOG: About to get coordinates A
-    const-string v31, "TechDataInjection"
-    const-string v32, "Getting Coordinates A"
-    invoke-static/range {v31 .. v32}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     # Coords A (Lat)
     const-string v31, "|LatA:"
@@ -1660,11 +1640,6 @@
     move-object/from16 v31, v30
     invoke-virtual/range {v31 .. v34}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
-    # LOG: About to get WayPoint B
-    const-string v31, "TechDataInjection"
-    const-string v32, "Getting WayPoint B"
-    invoke-static/range {v31 .. v32}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
     # Dist B
     const-string v31, "|DistB:"
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -1682,11 +1657,6 @@
     invoke-virtual/range {v31 .. v31}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDuration()I
     move-result v31
     invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    # LOG: About to get coordinates B
-    const-string v31, "TechDataInjection"
-    const-string v32, "Getting Coordinates B"
-    invoke-static/range {v31 .. v32}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     # Coords B (Lat)
     const-string v31, "|LatB:"
@@ -1720,21 +1690,11 @@
     move-object/from16 v31, v30
     invoke-virtual/range {v31 .. v34}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
-    # LOG: Building final string
-    const-string v31, "TechDataInjection"
-    const-string v32, "Building final string"
-    invoke-static/range {v31 .. v32}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
     invoke-virtual/range {v30 .. v30}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v21
     
-    # Copy tech data to v16 (distance field) so TextView 0x7f0a0f07 shows all trip data
+    # Copy tech data to v16 so TextView 0x7f0a0f07 shows all trip data
     move-object/from16 v16, v21
-    
-    # LOG: Success
-    const-string v30, "TechDataInjection"
-    const-string v31, "SUCCESS: Tech data built and copied to v16"
-    invoke-static/range {v30 .. v31}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
     # --- INJECTED CODE END ---
 

@@ -446,16 +446,22 @@
 .method public static final synthetic J1(Ly41/w0;Lu41/p1;)Ly41/y0;
     .registers 8
 
-    # LOGGING DOMAIN STATE REFINED
+    # LOGGING DOMAIN STATE REFINED V2
     new-instance v0, Ljava/lang/StringBuilder;
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    # ID
-    const-string v1, "ID: "
+    # ID Candidates
+    const-string v1, "ID1: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {p1}, Lu41/p1;->B()Lhh0/g;
+    invoke-virtual {p1}, Lu41/p1;->i()Ljava/lang/String;
     move-result-object v1
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v1, " | ID2: "
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {p1}, Lu41/p1;->l()Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     # Price
     const-string v1, " | Price: "
@@ -491,10 +497,21 @@
     move-result v1
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
+    # Addr A
+    const-string v1, " | Addr A: "
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {p1}, Lu41/p1;->u()Lhg0/a;
+    move-result-object v1
+    invoke-virtual {v1}, Lhg0/a;->getName()Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
     # Coords A
     const-string v1, " | Coords A: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {p1}, Lu41/p1;->H()Lsinet/startup/inDriver/core/data/data/Location;
+    invoke-virtual {p1}, Lu41/p1;->u()Lhg0/a;
+    move-result-object v1
+    invoke-virtual {v1}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
     move-result-object v1
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
 
@@ -519,7 +536,9 @@
     # Coords B
     const-string v1, " | Coords B: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {p1}, Lu41/p1;->h()Lsinet/startup/inDriver/core/data/data/Location;
+    invoke-virtual {p1}, Lu41/p1;->j()Lhg0/a;
+    move-result-object v1
+    invoke-virtual {v1}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
     move-result-object v1
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
 

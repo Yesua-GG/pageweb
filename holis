@@ -1003,6 +1003,9 @@
 
     .line 144
     move-result-object v16
+    
+    # Replace v16 with complete technical data instead of just distance
+    move-object/from16 v16, v21
 
     .line 145
     invoke-virtual/range {p1 .. p1}, Lu41/p1;->t()Lxj0/b;
@@ -1692,10 +1695,6 @@
 
     invoke-virtual/range {v30 .. v30}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v21
-    
-    # Copy tech data to v16 so TextView 0x7f0a0f07 shows all trip data
-    move-object/from16 v16, v21
-    
     # --- INJECTED CODE END ---
 
     move-object/from16 v10, v21

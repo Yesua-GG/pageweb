@@ -3400,7 +3400,16 @@
 .end method
 
 .method public static synthetic w6(Ly41/y0;)Ljava/lang/String;
-    .registers 1
+    .registers 3
+
+    # LOGGING: Registrar actualización de precio
+    const-string v0, "OrderInfoDebug"
+    
+    invoke-virtual {p0}, Ly41/y0;->toString()Ljava/lang/String;
+    
+    move-result-object v1
+    
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 1
     invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->p7(Ly41/y0;)Ljava/lang/String;
@@ -3424,7 +3433,16 @@
 .end method
 
 .method public static synthetic x6(Ly41/y0;)Ljava/lang/String;
-    .registers 1
+    .registers 3
+
+    # LOGGING: Registrar cada actualización de estado
+    const-string v0, "OrderInfoDebug"
+    
+    invoke-virtual {p0}, Ly41/y0;->toString()Ljava/lang/String;
+    
+    move-result-object v1
+    
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 1
     invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->T6(Ly41/y0;)Ljava/lang/String;
@@ -3504,7 +3522,16 @@
 .end method
 
 .method public static synthetic y6(Ly41/y0;)Ljava/lang/String;
-    .registers 1
+    .registers 3
+
+    # LOGGING: Registrar actualización de distancia
+    const-string v0, "OrderInfoDebug"
+    
+    invoke-virtual {p0}, Ly41/y0;->toString()Ljava/lang/String;
+    
+    move-result-object v1
+    
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 1
     invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->u7(Ly41/y0;)Ljava/lang/String;
@@ -3815,7 +3842,6 @@
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
     return-void
-.end method
 .end method
 
 .method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V

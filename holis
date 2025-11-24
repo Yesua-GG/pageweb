@@ -1622,7 +1622,7 @@
     invoke-virtual/range {v31 .. v31}, Lsinet/startup/inDriver/core/data/data/Point;->getLatitude()D
     move-result-wide v32
     move-object/from16 v31, v30
-    invoke-virtual/range {v31 .. v34}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual/range {v31 .. v33}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
     # Coords A (Lng)
     const-string v31, "|LngA:"
@@ -1638,7 +1638,7 @@
     invoke-virtual/range {v31 .. v31}, Lsinet/startup/inDriver/core/data/data/Point;->getLongitude()D
     move-result-wide v32
     move-object/from16 v31, v30
-    invoke-virtual/range {v31 .. v34}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual/range {v31 .. v33}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
     # Dist B
     const-string v31, "|DistB:"
@@ -1672,7 +1672,7 @@
     invoke-virtual/range {v31 .. v31}, Lsinet/startup/inDriver/core/data/data/Point;->getLatitude()D
     move-result-wide v32
     move-object/from16 v31, v30
-    invoke-virtual/range {v31 .. v34}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual/range {v31 .. v33}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
     # Coords B (Lng)
     const-string v31, "|LngB:"
@@ -1688,7 +1688,7 @@
     invoke-virtual/range {v31 .. v31}, Lsinet/startup/inDriver/core/data/data/Point;->getLongitude()D
     move-result-wide v32
     move-object/from16 v31, v30
-    invoke-virtual/range {v31 .. v34}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual/range {v31 .. v33}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
     invoke-virtual/range {v30 .. v30}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v21

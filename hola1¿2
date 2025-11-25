@@ -448,10 +448,16 @@
 .method public static final synthetic J1(Ly41/w0;Lu41/p1;)Ly41/y0;
     .registers 8
 
-    # LOGGING DOMAIN STATE REFINED V2
+    # LOGGING DOMAIN STATE REFINED V3
+    # Builder for Logcat (Full)
     new-instance v0, Ljava/lang/StringBuilder;
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
+    # Builder for UI (Short)
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    # --- FULL LOG CONSTRUCTION ---
     # ID Candidates
     const-string v1, "ID1: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -490,16 +496,24 @@
     move-result-wide v1
     invoke-virtual {v0, v1, v2}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
 
+    # --- SHARED DATA (Dist/Coords) ---
+    
     # Dist A
     const-string v1, " | Dist A: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    const-string v1, "Dist A: "
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
     invoke-virtual {p1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
     move-result-object v1
     invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
     move-result v1
+    
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    # Addr A
+    # Addr A (Log only)
     const-string v1, " | Addr A: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     invoke-virtual {p1}, Lu41/p1;->u()Lhg0/a;
@@ -511,22 +525,34 @@
     # Coords A
     const-string v1, " | Coords A: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    const-string v1, "\nCoords A: "
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
     invoke-virtual {p1}, Lu41/p1;->u()Lhg0/a;
     move-result-object v1
     invoke-virtual {v1}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
     move-result-object v1
+    
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
 
     # Dist B
     const-string v1, " | Dist B: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    const-string v1, "\nDist B: "
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
     invoke-virtual {p1}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
     move-result-object v1
     invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
     move-result v1
+    
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    # Addr B
+    # Addr B (Log only)
     const-string v1, " | Addr B: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     invoke-virtual {p1}, Lu41/p1;->j()Lhg0/a;
@@ -538,20 +564,28 @@
     # Coords B
     const-string v1, " | Coords B: "
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    const-string v1, "\nCoords B: "
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
     invoke-virtual {p1}, Lu41/p1;->j()Lhg0/a;
     move-result-object v1
     invoke-virtual {v1}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
     move-result-object v1
+    
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
 
-    # Log Output
+    # --- FINALIZE ---
+    # Save UI String to static field
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    sput-object v2, Ly41/w0;->debugInfo:Ljava/lang/String;
+
+    # Log Full String
     const-string v1, "OrderInfoDebug_Refined"
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v0
-    
-    # Save to static field
-    sput-object v0, Ly41/w0;->debugInfo:Ljava/lang/String;
-
     invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 1

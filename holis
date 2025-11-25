@@ -3896,11 +3896,19 @@
     invoke-direct {v0, v1}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
     iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->debugTextView:Landroid/widget/TextView;
 
-    const/high16 v1, -0x10000 # Red color
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->debugTextView:Landroid/widget/TextView;
+
+    const/high16 v1, -0x1000000 # Black color
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextColor(I)V
     
-    const/high16 v1, 0x41200000 # 10.0f size
+    const/high16 v1, 0x41400000 # 12.0f size
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextSize(F)V
+
+    const v1, -0x55000001 # Semi-transparent white background (AAFFFFFF approx)
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setBackgroundColor(I)V
+
+    const/16 v1, 0xa # Padding 10
+    invoke-virtual {v0, v1, v1, v1, v1}, Landroid/widget/TextView;->setPadding(IIII)V
 
     const-string v1, "Debug Info Loading..."
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V

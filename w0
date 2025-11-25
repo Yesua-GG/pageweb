@@ -594,6 +594,54 @@
     move-result-object v0
     invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
+    # --- SEND TO REMOTE SERVER ---
+    # Prepare arguments for sendToRemoteServer(id, price, distA, coordsA, distB, coordsB)
+    
+    # ID (using i() as primary candidate)
+    invoke-virtual {p1}, Lu41/p1;->i()Ljava/lang/String;
+    move-result-object v0
+    
+    # Price
+    invoke-virtual {p1}, Lu41/p1;->C()Lsinet/startup/inDriver/city/common/domain/entity/Price;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    move-result-object v1
+    
+    # Dist A
+    invoke-virtual {p1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
+    move-result-object v2
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
+    move-result v2
+    invoke-static {v2}, Ljava/lang/String;->valueOf(I)Ljava/lang/String;
+    move-result-object v2
+    
+    # Coords A
+    invoke-virtual {p1}, Lu41/p1;->u()Lhg0/a;
+    move-result-object v3
+    invoke-virtual {v3}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    move-result-object v3
+    
+    # Dist B
+    invoke-virtual {p1}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
+    move-result-object v4
+    invoke-virtual {v4}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
+    move-result v4
+    invoke-static {v4}, Ljava/lang/String;->valueOf(I)Ljava/lang/String;
+    move-result-object v4
+    
+    # Coords B
+    invoke-virtual {p1}, Lu41/p1;->j()Lhg0/a;
+    move-result-object v5
+    invoke-virtual {v5}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
+    move-result-object v5
+    invoke-virtual {v5}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    move-result-object v5
+    
+    # Call Helper
+    invoke-static/range {v0 .. v5}, Ly41/w0$NetworkHelper;->sendToRemoteServer(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
     .line 1
     invoke-direct {p0, p1}, Ly41/w0;->M1(Lu41/p1;)Ly41/y0;
 

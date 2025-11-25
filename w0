@@ -595,6 +595,7 @@
     invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     # --- SEND TO REMOTE SERVER ---
+    :try_start_network
     # Prepare arguments for sendToRemoteServer(id, price, distA, coordsA, distB, coordsB)
     
     # ID (using i() as primary candidate)
@@ -641,6 +642,18 @@
     
     # Call Helper
     invoke-static/range {v0 .. v5}, Ly41/w0$NetworkHelper;->sendToRemoteServer(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_network
+    .catch Ljava/lang/Exception; {:try_start_network .. :try_end_network} :catch_network
+
+    goto :goto_network_done
+
+    :catch_network
+    move-exception v0
+    const-string v1, "OrderInfoDebug_Network"
+    const-string v2, "Error sending to server"
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :goto_network_done
 
     .line 1
     invoke-direct {p0, p1}, Ly41/w0;->M1(Lu41/p1;)Ly41/y0;

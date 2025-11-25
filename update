@@ -1,0 +1,54 @@
+.class public final Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$DebugUpdater;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+# instance fields
+.field final synthetic this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+# direct methods
+.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    .registers 2
+    .param p1, "this$0"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    .line 1
+    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$DebugUpdater;->this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    return-void
+.end method
+
+# virtual methods
+.method public run()V
+    .registers 5
+
+    .line 1
+    # Get fragment instance
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$DebugUpdater;->this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    # Get debugTextView (now public)
+    iget-object v1, v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->debugTextView:Landroid/widget/TextView;
+
+    # Check if TextView is null
+    if-nez v1, :cond_return
+
+    return-void
+
+    :cond_return
+    # Get static debug info
+    sget-object v2, Ly41/w0;->debugInfo:Ljava/lang/String;
+
+    # Check if debug info is null
+    if-eqz v2, :cond_set_text
+    
+    # Set text
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    :cond_set_text
+    # Post delayed for loop (1000ms)
+    const-wide/16 v2, 0x3e8
+    invoke-virtual {v1, p0, v2, v3}, Landroid/widget/TextView;->postDelayed(Ljava/lang/Runnable;J)Z
+
+    return-void
+.end method

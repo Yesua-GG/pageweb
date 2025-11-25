@@ -130,7 +130,7 @@
     .end annotation
 .end field
 
-.field private debugTextView:Landroid/widget/TextView;
+.field public debugTextView:Landroid/widget/TextView;
     .annotation build Lorg/jetbrains/annotations/Nullable;
     .end annotation
 .end field
@@ -3421,6 +3421,19 @@
     
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
+    # Update Debug TextView (w6)
+    # Note: This is a static method, so we can't access 'this' (p0 is Ly41/y0).
+    # We need a way to access the fragment instance or make debugTextView static.
+    # Since we can't easily access the fragment instance here, we might need another approach.
+    # Wait, x6 and w6 are static synthetic methods used as lambdas?
+    # If they are static, I cannot access 'this.debugTextView'.
+    
+    # Let's check if I can access the fragment instance.
+    # The original code calls static methods like p7 and T6.
+    
+    # ABORTING THIS APPROACH for static methods. I need to find where these are used or if I can make debugTextView static.
+    # Actually, let's check if I can make debugTextView static in OrderInfoFragment.
+
     .line 1
     invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->p7(Ly41/y0;)Ljava/lang/String;
 
@@ -3896,6 +3909,12 @@
     move-object v1, p1
     check-cast v1, Landroid/view/ViewGroup;
     invoke-virtual {v1, v0}, Landroid/view/ViewGroup;->addView(Landroid/view/View;)V
+
+    # Start Polling Loop
+    new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$DebugUpdater;
+    invoke-direct {v1, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$DebugUpdater;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    const-wide/16 v2, 0x3e8 # 1000ms
+    invoke-virtual {v0, v1, v2, v3}, Landroid/widget/TextView;->postDelayed(Ljava/lang/Runnable;J)Z
 
     .line 4
     invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Q6()V

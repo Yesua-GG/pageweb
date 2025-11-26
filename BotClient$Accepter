@@ -1,0 +1,35 @@
+.class public Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Accepter;
+.super Ljava/lang/Object;
+.source "BotClient.java"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+# instance fields
+.field private final viewModel:Ly41/w0;
+
+# direct methods
+.method public constructor <init>(Ly41/w0;)V
+    .registers 2
+    .param p1, "vm"    # Ly41/w0;
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Accepter;->viewModel:Ly41/w0;
+    return-void
+.end method
+
+# virtual methods
+.method public run()V
+    .registers 2
+
+    .line 1
+    # Call O1 (Accept)
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Accepter;->viewModel:Ly41/w0;
+    
+    # Try calling O1. If it fails (method not found), catch it? No, Smali crashes.
+    # Assuming O1 exists as per OrderInfoFragment usage.
+    invoke-virtual {v0}, Ly41/w0;->O1()V
+
+    return-void
+.end method

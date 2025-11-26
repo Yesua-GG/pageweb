@@ -31,11 +31,24 @@
 
     .line 13
     .local v1, "JSON":Lokhttp3/MediaType;
+    invoke-static {v1, p0}, Lokhttp3/RequestBody;->create(Lokhttp3/MediaType;Ljava/lang/String;)Lokhttp3/RequestBody;
+
+    move-result-object v2
+
+    .line 15
+    .local v2, "body":Lokhttp3/RequestBody;
+    
+    # URL Construction
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    sget-object v4, Ly41/w0;->SERVER_URL:Ljava/lang/String;
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     const-string v4, "/decide"
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v3
     
+    # Request Construction
     new-instance v4, Lokhttp3/Request$Builder;
     invoke-direct {v4}, Lokhttp3/Request$Builder;-><init>()V
     invoke-virtual {v4, v3}, Lokhttp3/Request$Builder;->l(Ljava/lang/String;)Lokhttp3/Request$Builder;

@@ -1,0 +1,74 @@
+.class public final Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/view/View$OnClickListener;
+
+# instance fields
+.field final synthetic this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+
+# direct methods
+.method public constructor <init>(Lsinet/startup/inDriver/ui/driver/main/DriverActivity;)V
+    .registers 2
+    .param p1, "this$0"    # Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+
+    .line 1
+    iput-object p1, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    return-void
+.end method
+
+# virtual methods
+.method public onClick(Landroid/view/View;)V
+    .registers 8
+    .param p1, "v"    # Landroid/view/View;
+
+    .line 1
+    # Create Dialog
+    new-instance v0, Landroid/app/Dialog;
+    iget-object v1, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+    invoke-direct {v0, v1}, Landroid/app/Dialog;-><init>(Landroid/content/Context;)V
+
+    # Create WebView
+    new-instance v1, Landroid/webkit/WebView;
+    iget-object v2, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+    invoke-direct {v1, v2}, Landroid/webkit/WebView;-><init>(Landroid/content/Context;)V
+
+    # Configure WebView settings
+    invoke-virtual {v1}, Landroid/webkit/WebView;->getSettings()Landroid/webkit/WebSettings;
+    move-result-object v2
+    const/4 v3, 0x1
+    invoke-virtual {v2, v3}, Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V
+
+    # Set WebViewClient to keep navigation inside
+    new-instance v2, Landroid/webkit/WebViewClient;
+    invoke-direct {v2}, Landroid/webkit/WebViewClient;-><init>()V
+    invoke-virtual {v1, v2}, Landroid/webkit/WebView;->setWebViewClient(Landroid/webkit/WebViewClient;)V
+
+    # Load URL
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    sget-object v3, Ly41/w0;->SERVER_URL:Ljava/lang/String;
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v3, "/config"
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    
+    invoke-virtual {v1, v2}, Landroid/webkit/WebView;->loadUrl(Ljava/lang/String;)V
+
+    # Set Content View
+    invoke-virtual {v0, v1}, Landroid/app/Dialog;->setContentView(Landroid/view/View;)V
+
+    # Set Size (Full screen ish)
+    invoke-virtual {v0}, Landroid/app/Dialog;->getWindow()Landroid/view/Window;
+    move-result-object v2
+    const/4 v3, -0x1 # MATCH_PARENT
+    invoke-virtual {v2, v3, v3}, Landroid/view/Window;->setLayout(II)V
+
+    # Show
+    invoke-virtual {v0}, Landroid/app/Dialog;->show()V
+
+    return-void
+.end method

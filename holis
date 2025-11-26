@@ -4032,21 +4032,21 @@
     # DEBUG: Loguear el estado inicial del ViewModel
     invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
     
-    move-result-object p1
+    move-result-object v3
     
-    invoke-virtual {p1}, Luu1/i;->getViewState()Lix/s0;
+    invoke-virtual {v3}, Luu1/i;->getViewState()Lix/s0;
     
-    move-result-object p1
+    move-result-object v3
     
-    invoke-interface {p1}, Lix/s0;->getValue()Ljava/lang/Object;
+    invoke-interface {v3}, Lix/s0;->getValue()Ljava/lang/Object;
     
-    move-result-object p1
+    move-result-object v3
     
-    check-cast p1, Ly41/y0;
+    check-cast v3, Ly41/y0;
     
-    if-eqz p1, :skip_update
+    if-eqz v3, :skip_update
     
-    invoke-direct {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->a8(Ly41/y0;)V
+    invoke-direct {p0, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->a8(Ly41/y0;)V
     
     :skip_update
 

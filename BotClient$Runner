@@ -37,7 +37,7 @@
     const-string v1, "\"price\":"
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-    invoke-virtual {v1}, Lu41/p1;->C()Lsinet/startup/inDriver/city/common/domain/entity/Price;
+    invoke-virtual {v1}, Lu41/p1;->w()Lsinet/startup/inDriver/city/common/domain/entity/Price;
     move-result-object v1
     
     # Fix: Price.i() returns BigDecimal, then doubleValue()

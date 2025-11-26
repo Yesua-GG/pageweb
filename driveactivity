@@ -1569,11 +1569,14 @@
     const/4 v3, -0x2 # WRAP_CONTENT
     invoke-direct {v2, v3, v3}, Landroid/widget/FrameLayout$LayoutParams;-><init>(II)V
     
-    const/16 v3, 0x33 # Gravity.TOP | Gravity.LEFT
+    const/16 v3, 0x55 # Gravity.BOTTOM | Gravity.RIGHT
     iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->gravity:I
     
-    const/16 v3, 0x64 # Margin 100
-    iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->topMargin:I
+    const/16 v3, 0x12c # Bottom Margin 300 (approx 100dp) to avoid bottom bar
+    iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->bottomMargin:I
+    
+    const/16 v3, 0x32 # Right Margin 50
+    iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->rightMargin:I
 
     # Add to Root
     invoke-virtual {v0, v1, v2}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V

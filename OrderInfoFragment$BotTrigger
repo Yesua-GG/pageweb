@@ -1,0 +1,61 @@
+.class public Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;
+.super Ljava/lang/Object;
+.source "OrderInfoFragment.java"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = "BotTrigger"
+.end annotation
+
+# instance fields
+.field final synthetic this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+# direct methods
+.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    .registers 2
+    .param p1, "this$0"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    .line 1
+    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;->this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+.method public run()V
+    .registers 5
+
+    .line 1
+    # Log Start
+    const-string v0, "OrderInfoDebug_Manual"
+    const-string v1, "BotTrigger Runnable Started (Delayed)"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    # Get ViewModel
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;->this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    invoke-virtual {v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->getViewModelPublic()Ly41/w0;
+    move-result-object v0
+    
+    # Get OrderStore
+    invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
+    move-result-object v1
+    
+    # Get State (Order)
+    invoke-virtual {v1}, Lo62/j0;->s()Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Lu41/p1;
+    
+    # Call BotClient
+    invoke-static {v0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->checkAndAct(Ly41/w0;Lu41/p1;)V
+
+    return-void
+.end method

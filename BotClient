@@ -25,7 +25,7 @@
     .local v0, "client":Lokhttp3/OkHttpClient;
     const-string v1, "application/json; charset=utf-8"
 
-    invoke-static {v1}, Lokhttp3/MediaType;->parse(Ljava/lang/String;)Lokhttp3/MediaType;
+    invoke-static {v1}, Lokhttp3/MediaType;->e(Ljava/lang/String;)Lokhttp3/MediaType;
 
     move-result-object v1
 

@@ -39,8 +39,13 @@
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
     invoke-virtual {v1}, Lu41/p1;->C()Lsinet/startup/inDriver/city/common/domain/entity/Price;
     move-result-object v1
-    invoke-virtual {v1}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->getAmount()D
+    
+    # Fix: Price.i() returns BigDecimal, then doubleValue()
+    invoke-virtual {v1}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->i()Ljava/math/BigDecimal;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/math/BigDecimal;->doubleValue()D
     move-result-wide v1
+    
     invoke-virtual {v0, v1, v2}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
     
     # Dist A

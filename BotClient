@@ -65,22 +65,22 @@
     
     new-instance v4, Lokhttp3/Request$Builder;
     invoke-direct {v4}, Lokhttp3/Request$Builder;-><init>()V
-    invoke-virtual {v4, v3}, Lokhttp3/Request$Builder;->url(Ljava/lang/String;)Lokhttp3/Request$Builder;
+    invoke-virtual {v4, v3}, Lokhttp3/Request$Builder;->l(Ljava/lang/String;)Lokhttp3/Request$Builder;
     move-result-object v3
     
     .line 18
-    invoke-virtual {v3, v2}, Lokhttp3/Request$Builder;->post(Lokhttp3/RequestBody;)Lokhttp3/Request$Builder;
+    invoke-virtual {v3, v2}, Lokhttp3/Request$Builder;->h(Lokhttp3/RequestBody;)Lokhttp3/Request$Builder;
 
     move-result-object v3
 
     .line 19
-    invoke-virtual {v3}, Lokhttp3/Request$Builder;->build()Lokhttp3/Request;
+    invoke-virtual {v3}, Lokhttp3/Request$Builder;->b()Lokhttp3/Request;
 
     move-result-object v3
 
     .line 21
     .local v3, "request":Lokhttp3/Request;
-    invoke-virtual {v0, v3}, Lokhttp3/OkHttpClient;->newCall(Lokhttp3/Request;)Lokhttp3/Call;
+    invoke-virtual {v0, v3}, Lokhttp3/OkHttpClient;->a(Lokhttp3/Request;)Lokhttp3/Call;
 
     move-result-object v4
 

@@ -3913,10 +3913,37 @@
     const-string v1, "Debug Info Loading..."
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    # Add to root view (assuming FrameLayout or similar container)
+    # Add Debug TextView to root
     move-object v1, p1
     check-cast v1, Landroid/view/ViewGroup;
     invoke-virtual {v1, v0}, Landroid/view/ViewGroup;->addView(Landroid/view/View;)V
+
+    # Create Config Button
+    new-instance v2, Landroid/widget/Button;
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
+    move-result-object v3
+    invoke-direct {v2, v3}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
+    
+    const-string v3, "\u2699\ufe0f Configurar" # Gear Emoji + Configurar
+    invoke-virtual {v2, v3}, Landroid/widget/Button;->setText(Ljava/lang/CharSequence;)V
+    
+    const v3, -0x333334 # Dark Gray
+    invoke-virtual {v2, v3}, Landroid/widget/Button;->setBackgroundColor(I)V
+    
+    const/4 v3, -0x1 # White Text
+    invoke-virtual {v2, v3}, Landroid/widget/Button;->setTextColor(I)V
+
+    # Set Layout Params (Bottom Right or somewhere visible)
+    # For simplicity, just adding to root, might overlap but visible.
+    # Ideally use FrameLayout.LayoutParams with Gravity.
+    
+    # Set Listener
+    new-instance v3, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$ConfigButtonListener;
+    invoke-direct {v3, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$ConfigButtonListener;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    # Add Button to root
+    invoke-virtual {v1, v2}, Landroid/view/ViewGroup;->addView(Landroid/view/View;)V
 
     # Start Polling Loop
     new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$DebugUpdater;
@@ -4034,6 +4061,29 @@
     invoke-direct {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->a8(Ly41/y0;)V
     
     :skip_update
+
+    # --- BOT TRIGGER MANUAL ---
+    # Get ViewModel
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+    move-result-object v0
+    
+    # Get OrderStore
+    invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
+    move-result-object v1
+    
+    # Get State (Order)
+    invoke-virtual {v1}, Lo62/j0;->s()Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Lu41/p1;
+    
+    # Log Manual Trigger
+    const-string v2, "OrderInfoDebug_Manual"
+    const-string v3, "Triggering BotClient from onViewCreated"
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    
+    # Call BotClient
+    invoke-static {v0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->checkAndAct(Ly41/w0;Lu41/p1;)V
+    # --------------------------
 
     .line 71
     return-void

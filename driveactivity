@@ -1356,7 +1356,7 @@
 .end method
 
 .method public onCreate(Landroid/os/Bundle;)V
-    .registers 5
+    .registers 6
     .param p1  # Landroid/os/Bundle;
         .annotation build Lorg/jetbrains/annotations/Nullable;
         .end annotation
@@ -1540,8 +1540,10 @@
     .line 128
     invoke-virtual {p1, p0}, Lc52/a;->b(Lc52/b;)V
 
-    # --- INJECTED CONFIG BUTTON ---
-    # Get Root View (android.R.id.content)
+    # --- INJECTED CONFIG BUTTON (Fixed Registers) ---
+    # Registers: v0=Root, v1=Button, v2=LayoutParams, v3=Temp
+    
+    # Get Root View
     const v0, 0x1020002
     invoke-virtual {p0, v0}, Landroid/app/Activity;->findViewById(I)Landroid/view/View;
     move-result-object v0
@@ -1557,19 +1559,21 @@
     const/4 v2, -0x1 # White Text
     invoke-virtual {v1, v2}, Landroid/widget/Button;->setTextColor(I)V
 
-    # Layout Params (Wrap Content, Top Left)
+    # Set Listener
+    new-instance v2, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;
+    invoke-direct {v2, p0}, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;-><init>(Lsinet/startup/inDriver/ui/driver/main/DriverActivity;)V
+    invoke-virtual {v1, v2}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    # Layout Params
     new-instance v2, Landroid/widget/FrameLayout$LayoutParams;
     const/4 v3, -0x2 # WRAP_CONTENT
     invoke-direct {v2, v3, v3}, Landroid/widget/FrameLayout$LayoutParams;-><init>(II)V
+    
     const/16 v3, 0x33 # Gravity.TOP | Gravity.LEFT
     iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->gravity:I
+    
     const/16 v3, 0x64 # Margin 100
     iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->topMargin:I
-    
-    # Set Listener
-    new-instance v3, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;
-    invoke-direct {v3, p0}, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;-><init>(Lsinet/startup/inDriver/ui/driver/main/DriverActivity;)V
-    invoke-virtual {v1, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     # Add to Root
     invoke-virtual {v0, v1, v2}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V

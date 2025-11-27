@@ -186,6 +186,38 @@
     return-void
 .end method
 
+.method public static performCustomBid(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    .registers 4
+    .param p0, "fragment"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    .line 1
+    const-string v0, "BotClient"
+    const-string v1, "Invoking ViewModel.O1() for Custom Bid..."
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    if-nez p0, :cond_null
+    const-string v1, "Fragment is null, cannot invoke O1"
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+
+    :cond_null
+    # Get ViewModel via O6()
+    invoke-virtual {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+    move-result-object v1
+    
+    if-nez v1, :cond_vm_null
+    const-string v1, "ViewModel is null, cannot invoke O1"
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+
+    :cond_vm_null
+    # Call O1()
+    invoke-virtual {v1}, Ly41/w0;->O1()V
+    const-string v1, "ViewModel.O1() invoked successfully"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+.end method
+
 .method public static dumpViewHierarchy(Landroid/view/View;I)V
     .registers 8
     .param p0, "view"    # Landroid/view/View;

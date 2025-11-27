@@ -70,27 +70,7 @@
     invoke-virtual {v1, v2, v3, v4}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
     return-void
 
-    # Removed old finding logic
-    :cond_pencil_null
 
-    # Post delayed task to find EditText and enter price
-    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;
-    iget-object v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    iget-wide v5, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
-    invoke-direct {v2, v4, v5, v6}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
-    
-    # Delay 1000ms
-    const-wide/16 v4, 0x3e8
-    invoke-virtual {v3, v2, v4, v5}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
-
-    goto :goto_end
-
-    :cond_pencil_null
-    const-string v1, "No ImageView found in container 0x7f0a03b9"
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-
-    :goto_end
-    return-void
 .end method
 
 .method private findImageViewRecursive(Landroid/view/View;)Landroid/widget/ImageView;

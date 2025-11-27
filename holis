@@ -897,7 +897,7 @@
     return-object v0
 .end method
 
-.method private final O6()Ly41/w0;
+.method public final O6()Ly41/w0;
     .registers 2
 
     .line 1

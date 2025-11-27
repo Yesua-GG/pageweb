@@ -186,4 +186,6 @@
 
     :cond_end
     return-void
+
+    .catch Ljava/lang/Exception; {:try_start_json .. :try_end_json} :catch_json
 .end method

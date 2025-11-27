@@ -31,32 +31,37 @@
     const-string v1, "Starting Bidder..."
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Get Binding
+    # Get Fragment View
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->getBindingPublic()Lq41/k;
+    invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
     move-result-object v1
 
-    if-nez v1, :cond_binding_null
-    const-string v1, "Binding is null"
+    if-nez v1, :cond_view_null
+    const-string v1, "Fragment view is null"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
     return-void
 
-    :cond_binding_null
-    # Access binding.b (Lfh0/c)
-    iget-object v2, v1, Lq41/k;->b:Lfh0/c;
-    if-nez v2, :cond_b_null
-    const-string v1, "binding.b (Lfh0/c) is null"
+    :cond_view_null
+    # Find Container (0x7f0a03b9)
+    const v2, 0x7f0a03b9
+    invoke-virtual {v1, v2}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v2
+    
+    if-nez v2, :cond_container_null
+    const-string v1, "Container 0x7f0a03b9 not found"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
     return-void
 
-    :cond_b_null
-    # Access binding.b.n (ImageView) - Candidate for Pencil
-    iget-object v3, v2, Lfh0/c;->n:Landroid/widget/ImageView;
+    :cond_container_null
+    # Find ImageView inside Container
+    invoke-direct {p0, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->findImageViewRecursive(Landroid/view/View;)Landroid/widget/ImageView;
+    move-result-object v3
+    
     if-eqz v3, :cond_pencil_null
     
-    const-string v2, "Clicking pencil (binding.b.n)..."
+    const-string v2, "Clicking pencil (ImageView in 0x7f0a03b9)..."
     invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    invoke-virtual {v3}, Landroid/widget/ImageView;->performClick()Z
+    invoke-virtual {v3}, Landroid/view/View;->performClick()Z
 
     # Post delayed task to find EditText and enter price
     new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;
@@ -71,9 +76,48 @@
     goto :goto_end
 
     :cond_pencil_null
-    const-string v1, "Pencil view (binding.b.n) is null"
+    const-string v1, "No ImageView found in container 0x7f0a03b9"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
 
     :goto_end
     return-void
+.end method
+
+.method private findImageViewRecursive(Landroid/view/View;)Landroid/widget/ImageView;
+    .registers 6
+    .param p1, "view"    # Landroid/view/View;
+
+    .line 1
+    instance-of v0, p1, Landroid/widget/ImageView;
+    if-eqz v0, :cond_check_group
+    check-cast p1, Landroid/widget/ImageView;
+    return-object p1
+
+    :cond_check_group
+    instance-of v0, p1, Landroid/view/ViewGroup;
+    if-eqz v0, :cond_not_found
+    
+    check-cast p1, Landroid/view/ViewGroup;
+    invoke-virtual {p1}, Landroid/view/ViewGroup;->getChildCount()I
+    move-result v0
+    const/4 v1, 0x0
+    
+    :loop_start
+    if-ge v1, v0, :cond_not_found
+    
+    invoke-virtual {p1, v1}, Landroid/view/ViewGroup;->getChildAt(I)Landroid/view/View;
+    move-result-object v2
+    invoke-direct {p0, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->findImageViewRecursive(Landroid/view/View;)Landroid/widget/ImageView;
+    move-result-object v2
+    
+    if-eqz v2, :cond_next
+    return-object v2
+    
+    :cond_next
+    add-int/lit8 v1, v1, 0x1
+    goto :loop_start
+
+    :cond_not_found
+    const/4 v0, 0x0
+    return-object v0
 .end method

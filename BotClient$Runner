@@ -66,6 +66,37 @@
     move-result-object v1
     invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
     move-result v1
+
+    # --- FALLBACK CALCULATION START ---
+    if-nez v1, :cond_calc_done
+
+    # Get Address A (Pickup)
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->u()Lhg0/a;
+    move-result-object v2
+    if-eqz v2, :cond_calc_done
+    invoke-virtual {v2}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
+    move-result-object v2
+
+    # Get Address B (Dropoff)
+    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v3}, Lu41/p1;->j()Lhg0/a;
+    move-result-object v3
+    if-eqz v3, :cond_calc_done
+    invoke-virtual {v3}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
+    move-result-object v3
+
+    if-eqz v2, :cond_calc_done
+    if-eqz v3, :cond_calc_done
+
+    # Calculate Distance
+    invoke-virtual {v2, v3}, Lsinet/startup/inDriver/core/data/data/Location;->distanceTo(Lsinet/startup/inDriver/core/data/data/Location;)F
+    move-result v2
+    float-to-int v1, v2
+
+    :cond_calc_done
+    # --- FALLBACK CALCULATION END ---
+
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
     # Rating

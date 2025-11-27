@@ -4032,21 +4032,21 @@
     # DEBUG: Loguear el estado inicial del ViewModel
     invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
     
-    move-result-object v3
+    move-result-object v0
     
-    invoke-virtual {v3}, Luu1/i;->getViewState()Lix/s0;
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
     
-    move-result-object v3
+    move-result-object v0
     
-    invoke-interface {v3}, Lix/s0;->getValue()Ljava/lang/Object;
+    invoke-interface {v0}, Lix/s0;->getValue()Ljava/lang/Object;
     
-    move-result-object v3
+    move-result-object v0
     
-    check-cast v3, Ly41/y0;
+    check-cast v0, Ly41/y0;
     
-    if-eqz v3, :skip_update
+    if-eqz v0, :skip_update
     
-    invoke-direct {p0, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->a8(Ly41/y0;)V
+    invoke-direct {p0, v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->a8(Ly41/y0;)V
     
     :skip_update
 
@@ -4055,9 +4055,18 @@
     new-instance v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;
     invoke-direct {v0, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
     
-    # Post Delayed (1500ms)
-    const-wide/16 v1, 0x5dc
-    invoke-virtual {p1, v0, v1, v2}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
+    # Get View (p0 is safe now)
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
+    move-result-object v1
+    
+    if-eqz v1, :cond_skip_bot
+    
+    # Post Delayed (1500ms) - Use v4/v5 for long
+    const-wide/16 v4, 0x5dc
+    invoke-virtual {v1, v0, v4, v5}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
+    
+    :cond_skip_bot
+    # --------------------------
     # --------------------------
 
     .line 71

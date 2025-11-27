@@ -31,22 +31,13 @@
     return-void
 .end method
 
-.field private retryCount:I
-
 .method public run()V
-    .registers 6
+    .registers 5
 
     .line 1
     # Log Start
     const-string v0, "OrderInfoDebug_Manual"
-    new-instance v1, Ljava/lang/StringBuilder;
-    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v2, "BotTrigger Run. Attempt: "
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    iget v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;->retryCount:I
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v1
+    const-string v1, "BotTrigger Runnable Started (Delayed)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     # Get ViewModel
@@ -63,53 +54,9 @@
     move-result-object v1
     check-cast v1, Lu41/p1;
     
-    # Check Distance (K() is pickup, J() is dropoff - checking K for now as per M1 usage)
-    # Note: Using try-catch to avoid crash if K() returns null or method doesn't exist
-    :try_start_check
-    invoke-virtual {v1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
-    move-result-object v2
-    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
-    move-result v2
-    :try_end_check
-    .catch Ljava/lang/Exception; {:try_start_check .. :try_end_check} :catch_error
-
-    if-lez v2, :retry
-
-    # Data Valid - Trigger Bot
-    const-string v2, "OrderInfoDebug_Manual"
-    const-string v3, "Distance found! Triggering Bot."
-    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    invoke-static {v0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->checkAndAct(Ly41/w0;Lu41/p1;)V
-    return-void
-
-    :catch_error
-    # If error checking distance, treat as 0
-    const-string v2, "OrderInfoDebug_Manual"
-    const-string v3, "Error checking distance (maybe null?)"
-    invoke-static {v2, v3}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-
-    :retry
-    # Increment Retry
-    iget v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;->retryCount:I
-    add-int/lit8 v2, v2, 0x1
-    iput v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;->retryCount:I
-
-    const/16 v3, 0xa
-    if-ge v2, v3, :timeout
-
-    # Post Delayed 500ms
+    # Call BotClient
     iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;->this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v2}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
-    move-result-object v2
-    if-eqz v2, :cond_skip
-    const-wide/16 v3, 0x1f4
-    invoke-virtual {v2, p0, v3, v4}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
-    :cond_skip
-    return-void
+    invoke-static {v2, v0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->checkAndAct(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/w0;Lu41/p1;)V
 
-    :timeout
-    const-string v0, "OrderInfoDebug_Manual"
-    const-string v1, "Timeout waiting for distance data."
-    invoke-static {v0, v1}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
     return-void
 .end method

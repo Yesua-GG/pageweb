@@ -2,6 +2,32 @@
 .super Ljava/lang/Object;
 .source "BotClient.java"
 
+# interfaces
+.implements Ljava/lang/Runnable;
+
+# instance fields
+.field private final viewModel:Ly41/w0;
+.field private final order:Lu41/p1;
+.field private final fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+# direct methods
+.method public constructor <init>(Ly41/w0;Lu41/p1;Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    .registers 4
+    .param p1, "vm"    # Ly41/w0;
+    .param p2, "ord"    # Lu41/p1;
+    .param p3, "frag"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->viewModel:Ly41/w0;
+    iput-object p2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    iput-object p3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    return-void
+.end method
+
+# virtual methods
+.method public run()V
+    .registers 8
 
     .line 1
     # 1. Build JSON

@@ -58,6 +58,13 @@
     const-string v3, "Price set in EditText (0x7f0a1477)"
     invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
+    # Show Toast Typing
+    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    invoke-virtual {v3}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
+    move-result-object v3
+    const-string v4, "Bot: Typing Price..."
+    invoke-static {v3, v4}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->showToast(Landroid/content/Context;Ljava/lang/String;)V
+    
     # Find Done Button by ID (0x7f0a1468)
     const v3, 0x7f0a1468
     invoke-virtual {v1, v3}, Landroid/view/View;->findViewById(I)Landroid/view/View;
@@ -67,6 +74,14 @@
     
     const-string v4, "Clicking Done button (0x7f0a1468)..."
     invoke-static {v0, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    
+    # Show Toast Done
+    iget-object v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    invoke-virtual {v4}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
+    move-result-object v4
+    const-string v5, "Bot: Clicking Done..."
+    invoke-static {v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->showToast(Landroid/content/Context;Ljava/lang/String;)V
+    
     invoke-virtual {v3}, Landroid/view/View;->performClick()Z
     goto :goto_end
 

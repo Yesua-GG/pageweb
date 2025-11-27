@@ -53,16 +53,25 @@
     # const/4 v2, 0x0
     # invoke-static {v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->dumpViewHierarchy(Landroid/view/View;I)V
 
-    # Find Pencil Icon (0x7f0a0c1c)
-    const v2, 0x7f0a0c1c
-    invoke-virtual {v1, v2}, Landroid/view/View;->findViewById(I)Landroid/view/View;
-    move-result-object v3
-    
-    if-eqz v3, :cond_pencil_null
-    
-    const-string v2, "Clicking pencil (0x7f0a0c1c)..."
+    # Invoke Custom Bid via ViewModel
+    const-string v2, "Calling BotClient.performCustomBid..."
     invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    invoke-virtual {v3}, Landroid/view/View;->performClick()Z
+    
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    invoke-static {v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->performCustomBid(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    # Schedule Input Task
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;
+    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    iget-wide v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+    invoke-direct {v2, v3, v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
+    
+    const-wide/16 v3, 0x3e8
+    invoke-virtual {v1, v2, v3, v4}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
+    return-void
+
+    # Removed old finding logic
+    :cond_pencil_null
 
     # Post delayed task to find EditText and enter price
     new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;

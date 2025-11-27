@@ -27,9 +27,12 @@
 
 # virtual methods
 .method public run()V
-    .registers 8
+    .registers 9
 
     .line 1
+    # Preserve 'this' in v8 to avoid register conflicts
+    move-object v8, p0
+
     # 1. Build JSON
     new-instance v0, Ljava/lang/StringBuilder;
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -39,7 +42,7 @@
     # Price
     const-string v1, "\"price\":"
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    iget-object v1, v8, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
     invoke-virtual {v1}, Lu41/p1;->w()Lsinet/startup/inDriver/city/common/domain/entity/Price;
     move-result-object v1
     
@@ -54,7 +57,7 @@
     # Dist A
     const-string v1, ",\"dist_a\":"
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    iget-object v1, v8, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
     invoke-virtual {v1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
     move-result-object v1
     invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
@@ -64,48 +67,17 @@
     # Dist B
     const-string v1, ",\"dist_b\":"
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    iget-object v1, v8, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
     invoke-virtual {v1}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
     move-result-object v1
     invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
     move-result v1
-
-    # --- FALLBACK CALCULATION START ---
-    if-nez v1, :cond_calc_done
-
-    # Get Address A (Pickup)
-    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-    invoke-virtual {v2}, Lu41/p1;->u()Lhg0/a;
-    move-result-object v2
-    if-eqz v2, :cond_calc_done
-    invoke-virtual {v2}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
-    move-result-object v2
-
-    # Get Address B (Dropoff)
-    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-    invoke-virtual {v3}, Lu41/p1;->j()Lhg0/a;
-    move-result-object v3
-    if-eqz v3, :cond_calc_done
-    invoke-virtual {v3}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
-    move-result-object v3
-
-    if-eqz v2, :cond_calc_done
-    if-eqz v3, :cond_calc_done
-
-    # Calculate Distance
-    invoke-virtual {v2, v3}, Lsinet/startup/inDriver/core/data/data/Location;->distanceTo(Lsinet/startup/inDriver/core/data/data/Location;)F
-    move-result v2
-    float-to-int v1, v2
-
-    :cond_calc_done
-    # --- FALLBACK CALCULATION END ---
-
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
     # Rating
     const-string v1, ",\"rating\":"
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    iget-object v1, v8, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
     invoke-virtual {v1}, Lu41/p1;->G()Lte1/p;
     move-result-object v1
     invoke-virtual {v1}, Lte1/p;->l()F
@@ -115,7 +87,7 @@
     # Rides
     const-string v1, ",\"rides\":"
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    iget-object v1, v8, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
     invoke-virtual {v1}, Lu41/p1;->G()Lte1/p;
     move-result-object v1
     invoke-virtual {v1}, Lte1/p;->n()J
@@ -169,7 +141,7 @@
     invoke-direct {v3, v4}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
     
     new-instance v4, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Accepter;
-    iget-object v5, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->viewModel:Ly41/w0;
+    iget-object v5, v8, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->viewModel:Ly41/w0;
     invoke-direct {v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Accepter;-><init>(Ly41/w0;)V
     
     invoke-virtual {v3, v4}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
@@ -186,7 +158,7 @@
     invoke-virtual {v2, v3}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;)D
     move-result-wide v2
     
-    iget-object v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    iget-object v4, v8, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
     if-eqz v4, :cond_end
     
     invoke-static {v4, v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->performBid(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V

@@ -42,9 +42,11 @@
     return-void
 
     :cond_view_null
-    # Find EditText
-    invoke-direct {p0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->findEditText(Landroid/view/View;)Landroid/widget/EditText;
+    # Find EditText by ID (0x7f0a1477)
+    const v2, 0x7f0a1477
+    invoke-virtual {v1, v2}, Landroid/view/View;->findViewById(I)Landroid/view/View;
     move-result-object v2
+    check-cast v2, Landroid/widget/EditText;
     
     if-eqz v2, :cond_edit_not_found
     
@@ -53,115 +55,30 @@
     invoke-static {v3, v4}, Ljava/lang/String;->valueOf(D)Ljava/lang/String;
     move-result-object v3
     invoke-virtual {v2, v3}, Landroid/widget/EditText;->setText(Ljava/lang/CharSequence;)V
-    const-string v3, "Price set in EditText"
+    const-string v3, "Price set in EditText (0x7f0a1477)"
     invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
-    # Find Done Button
-    invoke-direct {p0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->findDoneButton(Landroid/view/View;)Landroid/view/View;
+    # Find Done Button by ID (0x7f0a1468)
+    const v3, 0x7f0a1468
+    invoke-virtual {v1, v3}, Landroid/view/View;->findViewById(I)Landroid/view/View;
     move-result-object v3
     
     if-eqz v3, :cond_done_not_found
     
-    const-string v4, "Clicking Done button..."
+    const-string v4, "Clicking Done button (0x7f0a1468)..."
     invoke-static {v0, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     invoke-virtual {v3}, Landroid/view/View;->performClick()Z
     goto :goto_end
 
     :cond_done_not_found
-    const-string v1, "Done button not found"
+    const-string v1, "Done button (0x7f0a1468) not found"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
     goto :goto_end
 
     :cond_edit_not_found
-    const-string v1, "EditText not found in hierarchy"
+    const-string v1, "EditText (0x7f0a1477) not found"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
 
     :goto_end
     return-void
-.end method
-
-.method private findEditText(Landroid/view/View;)Landroid/widget/EditText;
-    .registers 6
-    .param p1, "view"    # Landroid/view/View;
-
-    .line 1
-    instance-of v0, p1, Landroid/widget/EditText;
-    if-eqz v0, :cond_check_group
-    check-cast p1, Landroid/widget/EditText;
-    return-object p1
-
-    :cond_check_group
-    instance-of v0, p1, Landroid/view/ViewGroup;
-    if-eqz v0, :cond_not_found
-    
-    check-cast p1, Landroid/view/ViewGroup;
-    invoke-virtual {p1}, Landroid/view/ViewGroup;->getChildCount()I
-    move-result v0
-    const/4 v1, 0x0
-    
-    :loop_start
-    if-ge v1, v0, :cond_not_found
-    
-    invoke-virtual {p1, v1}, Landroid/view/ViewGroup;->getChildAt(I)Landroid/view/View;
-    move-result-object v2
-    invoke-direct {p0, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->findEditText(Landroid/view/View;)Landroid/widget/EditText;
-    move-result-object v2
-    
-    if-eqz v2, :cond_next
-    return-object v2
-    
-    :cond_next
-    add-int/lit8 v1, v1, 0x1
-    goto :loop_start
-
-    :cond_not_found
-    const/4 v0, 0x0
-    return-object v0
-.end method
-
-.method private findDoneButton(Landroid/view/View;)Landroid/view/View;
-    .registers 6
-    .param p1, "view"    # Landroid/view/View;
-
-    .line 1
-    # Check if clickable TextView (and not EditText)
-    instance-of v0, p1, Landroid/widget/TextView;
-    if-eqz v0, :cond_check_group_btn
-    
-    instance-of v0, p1, Landroid/widget/EditText;
-    if-nez v0, :cond_check_group_btn
-    
-    invoke-virtual {p1}, Landroid/view/View;->isClickable()Z
-    move-result v0
-    if-eqz v0, :cond_check_group_btn
-    
-    return-object p1
-
-    :cond_check_group_btn
-    instance-of v0, p1, Landroid/view/ViewGroup;
-    if-eqz v0, :cond_not_found_btn
-    
-    check-cast p1, Landroid/view/ViewGroup;
-    invoke-virtual {p1}, Landroid/view/ViewGroup;->getChildCount()I
-    move-result v0
-    const/4 v1, 0x0
-    
-    :loop_start_btn
-    if-ge v1, v0, :cond_not_found_btn
-    
-    invoke-virtual {p1, v1}, Landroid/view/ViewGroup;->getChildAt(I)Landroid/view/View;
-    move-result-object v2
-    invoke-direct {p0, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->findDoneButton(Landroid/view/View;)Landroid/view/View;
-    move-result-object v2
-    
-    if-eqz v2, :cond_next_btn
-    return-object v2
-    
-    :cond_next_btn
-    add-int/lit8 v1, v1, 0x1
-    goto :loop_start_btn
-
-    :cond_not_found_btn
-    const/4 v0, 0x0
-    return-object v0
 .end method

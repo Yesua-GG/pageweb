@@ -25,8 +25,16 @@
 
     .line 1
     # Call O1 (Accept)
+    # Call O1 (Accept)
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Accepter;->viewModel:Ly41/w0;
     
+    if-nez v0, :cond_vm_null
+    const-string v0, "BotClient_Accepter"
+    const-string v1, "ViewModel is null, cannot accept order"
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+
+    :cond_vm_null
     # Try calling O1. If it fails (method not found), catch it? No, Smali crashes.
     # Assuming O1 exists as per OrderInfoFragment usage.
     invoke-virtual {v0}, Ly41/w0;->O1()V

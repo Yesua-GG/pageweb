@@ -42,28 +42,36 @@
     return-void
 
     :cond_binding_null
-    # Click Pencil (h)
-    iget-object v2, v1, Lq41/k;->h:Landroid/widget/ImageView;
-    if-eqz v2, :cond_pencil_null
+    # Access binding.b (Lfh0/c)
+    iget-object v2, v1, Lq41/k;->b:Lfh0/c;
+    if-nez v2, :cond_b_null
+    const-string v1, "binding.b (Lfh0/c) is null"
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+
+    :cond_b_null
+    # Access binding.b.n (ImageView) - Candidate for Pencil
+    iget-object v3, v2, Lfh0/c;->n:Landroid/widget/ImageView;
+    if-eqz v3, :cond_pencil_null
     
-    const-string v3, "Clicking Pencil (h)..."
-    invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    invoke-virtual {v2}, Landroid/widget/ImageView;->performClick()Z
+    const-string v2, "Clicking pencil (binding.b.n)..."
+    invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    invoke-virtual {v3}, Landroid/widget/ImageView;->performClick()Z
 
     # Post delayed task to find EditText and enter price
-    new-instance v3, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;
     iget-object v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
     iget-wide v5, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
-    invoke-direct {v3, v4, v5, v6}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
+    invoke-direct {v2, v4, v5, v6}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
     
     # Delay 1000ms
     const-wide/16 v4, 0x3e8
-    invoke-virtual {v2, v3, v4, v5}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
+    invoke-virtual {v3, v2, v4, v5}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
 
     goto :goto_end
 
     :cond_pencil_null
-    const-string v1, "Pencil view (h) is null"
+    const-string v1, "Pencil view (binding.b.n) is null"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
 
     :goto_end

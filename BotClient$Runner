@@ -2,29 +2,6 @@
 .super Ljava/lang/Object;
 .source "BotClient.java"
 
-# interfaces
-.implements Ljava/lang/Runnable;
-
-# instance fields
-.field private final viewModel:Ly41/w0;
-.field private final order:Lu41/p1;
-
-# direct methods
-.method public constructor <init>(Ly41/w0;Lu41/p1;)V
-    .registers 3
-    .param p1, "vm"    # Ly41/w0;
-    .param p2, "o"    # Lu41/p1;
-
-    .line 1
-    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
-    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->viewModel:Ly41/w0;
-    iput-object p2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-    return-void
-.end method
-
-# virtual methods
-.method public run()V
-    .registers 8
 
     .line 1
     # 1. Build JSON
@@ -132,13 +109,21 @@
     # 3. Check Response
     if-eqz v1, :cond_end
     
-    const-string v2, "ACCEPT"
-    invoke-virtual {v1, v2}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v2
+    :try_start_json
+    new-instance v2, Lorg/json/JSONObject;
+    invoke-direct {v2, v1}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
     
-    if-eqz v2, :cond_end
+    const-string v3, "action"
+    invoke-virtual {v2, v3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
     
-    # 4. Post to Main Thread
+    # Check ACCEPT
+    const-string v4, "ACCEPT"
+    invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-eqz v4, :cond_check_bid
+    
+    # Accept Logic
     new-instance v3, Landroid/os/Handler;
     invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
     move-result-object v4
@@ -149,7 +134,30 @@
     invoke-direct {v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Accepter;-><init>(Ly41/w0;)V
     
     invoke-virtual {v3, v4}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
+    goto :cond_end
+
+    :cond_check_bid
+    const-string v4, "BID"
+    invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v3
+    if-eqz v3, :cond_end
     
+    # Bid Logic
+    const-string v3, "price"
+    invoke-virtual {v2, v3}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;)D
+    move-result-wide v2
+    
+    iget-object v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    if-eqz v4, :cond_end
+    
+    invoke-static {v4, v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->performBid(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
+    
+    goto :cond_end
+
+    :catch_json
+    move-exception v2
+    invoke-virtual {v2}, Ljava/lang/Exception;->printStackTrace()V
+
     :cond_end
     return-void
 .end method

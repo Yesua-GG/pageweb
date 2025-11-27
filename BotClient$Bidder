@@ -28,7 +28,14 @@
 
     .line 1
     const-string v0, "BotClient_Bidder"
-    const-string v1, "Starting Bidder..."
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Starting Bidder with price: "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-wide v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+    invoke-virtual {v1, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     # Get Fragment View
@@ -61,14 +68,6 @@
     
     const-string v2, "Clicking pencil (ImageView in 0x7f0a03b9)..."
     invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    
-    # Show Toast Success
-    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v2}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
-    move-result-object v2
-    const-string v4, "Bot: Clicking Pencil..."
-    invoke-static {v2, v4}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->showToast(Landroid/content/Context;Ljava/lang/String;)V
-    
     invoke-virtual {v3}, Landroid/view/View;->performClick()Z
 
     # Post delayed task to find EditText and enter price
@@ -86,13 +85,6 @@
     :cond_pencil_null
     const-string v1, "No ImageView found in container 0x7f0a03b9"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    
-    # Show Toast Failure
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
-    move-result-object v1
-    const-string v2, "Bot: Pencil NOT Found"
-    invoke-static {v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->showToast(Landroid/content/Context;Ljava/lang/String;)V
 
     :goto_end
     return-void

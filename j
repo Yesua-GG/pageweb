@@ -1,0 +1,1928 @@
+# classes5.dex
+
+.class public final Lpo3/j;
+.super Lb72/f;
+.source "SourceFile"
+
+# interfaces
+.implements Lcu1/i;
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Lpo3/j$a;,
+        Lpo3/j$b;
+    }
+.end annotation
+
+.annotation runtime Lkotlin/Metadata;
+    d1 = {
+        "\u0000\\\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\b\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0013\n\u0002\u0018\u0002\n\u0002\b\u0007\n\u0002\u0010\b\n\u0002\b\f\u0018\u0000 H2\u00020\u00012\u00020\u0002:\u0001IB\u0007¢\u0006\u0004\b\u0003\u0010\u0004J\u000f\u0010\u0006\u001a\u00020\u0005H\u0002¢\u0006\u0004\b\u0006\u0010\u0004J\u000f\u0010\u0007\u001a\u00020\u0005H\u0002¢\u0006\u0004\b\u0007\u0010\u0004J\u0019\u0010\u000b\u001a\u00020\n2\b\u0010\t\u001a\u0004\u0018\u00010\bH\u0002¢\u0006\u0004\b\u000b\u0010\fJ\u0017\u0010\u000f\u001a\u00020\b2\u0006\u0010\u000e\u001a\u00020\rH\u0002¢\u0006\u0004\b\u000f\u0010\u0010J\u000f\u0010\u0011\u001a\u00020\rH\u0002¢\u0006\u0004\b\u0011\u0010\u0012J\u0017\u0010\u0014\u001a\u00020\u00052\u0006\u0010\u0013\u001a\u00020\nH\u0002¢\u0006\u0004\b\u0014\u0010\u0015J!\u0010\u001a\u001a\u00020\u00052\u0006\u0010\u0017\u001a\u00020\u00162\b\u0010\u0019\u001a\u0004\u0018\u00010\u0018H\u0016¢\u0006\u0004\b\u001a\u0010\u001bR\u001b\u0010!\u001a\u00020\u001c8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b\u001d\u0010\u001e\u001a\u0004\b\u001f\u0010 R\u001b\u0010\'\u001a\u00020\"8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b#\u0010$\u001a\u0004\b%\u0010&R\u0018\u0010*\u001a\u0004\u0018\u00010\b8\u0002@\u0002X\u0082\u000e¢\u0006\u0006\n\u0004\b(\u0010)R\u001b\u0010.\u001a\u00020\n8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b+\u0010\u001e\u001a\u0004\b,\u0010-R\u001b\u00101\u001a\u00020\r8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b/\u0010\u001e\u001a\u0004\b0\u0010\u0012R\u0018\u00103\u001a\u0004\u0018\u00010\b8\u0002@\u0002X\u0082\u000e¢\u0006\u0006\n\u0004\b2\u0010)R\u0018\u00105\u001a\u0004\u0018\u00010\b8\u0002@\u0002X\u0082\u000e¢\u0006\u0006\n\u0004\b4\u0010)R\u001b\u0010:\u001a\u0002068BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b7\u0010\u001e\u001a\u0004\b8\u00109R\u001b\u0010=\u001a\u00020\n8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b;\u0010\u001e\u001a\u0004\b<\u0010-R\u001a\u0010C\u001a\u00020>8\u0016X\u0096\u0004¢\u0006\f\n\u0004\b?\u0010@\u001a\u0004\bA\u0010BR\u001a\u0010G\u001a\u00020\n8\u0016X\u0096D¢\u0006\f\n\u0004\bD\u0010E\u001a\u0004\bF\u0010-¨\u0006J"
+    }
+    d2 = {
+        "Lpo3/j;",
+        "Lb72/f;",
+        "Lcu1/i;",
+        "<init>",
+        "()V",
+        "",
+        "P6",
+        "K6",
+        "Ljava/math/BigDecimal;",
+        "price",
+        "",
+        "z6",
+        "(Ljava/math/BigDecimal;)Z",
+        "",
+        "text",
+        "J6",
+        "(Ljava/lang/String;)Ljava/math/BigDecimal;",
+        "H6",
+        "()Ljava/lang/String;",
+        "isError",
+        "T6",
+        "(Z)V",
+        "Landroid/view/View;",
+        "view",
+        "Landroid/os/Bundle;",
+        "savedInstanceState",
+        "onViewCreated",
+        "(Landroid/view/View;Landroid/os/Bundle;)V",
+        "Lpo3/k;",
+        "Z0",
+        "Lfw/m;",
+        "I6",
+        "()Lpo3/k;",
+        "params",
+        "Loo3/a;",
+        "a1",
+        "Lkotlin/properties/d;",
+        "D6",
+        "()Loo3/a;",
+        "binding",
+        "b1",
+        "Ljava/math/BigDecimal;",
+        "selectedPrice",
+        "c1",
+        "N6",
+        "()Z",
+        "isCurrencySymbolOnTheLeftSide",
+        "d1",
+        "E6",
+        "currencySymbol",
+        "e1",
+        "minPrice",
+        "f1",
+        "maxPrice",
+        "Lpo3/l;",
+        "g1",
+        "F6",
+        "()Lpo3/l;",
+        "driverRole",
+        "h1",
+        "G6",
+        "floatPriceEnabled",
+        "",
+        "i1",
+        "I",
+        "b6",
+        "()I",
+        "layoutRes",
+        "j1",
+        "Z",
+        "a6",
+        "hasKeyboardSupport",
+        "Companion",
+        "a",
+        "payment-driver_release"
+    }
+    k = 0x1
+    mv = {
+        0x2,
+        0x2,
+        0x0
+    }
+    xi = 0x30
+.end annotation
+
+.annotation build Lkotlin/jvm/internal/SourceDebugExtension;
+    value = {
+        "SMAP\nCustomPriceDialogFragment.kt\nKotlin\n*S Kotlin\n*F\n+ 1 CustomPriceDialogFragment.kt\nsinet/startup/inDriver/feature/payment_driver/ui/custom_price/CustomPriceDialogFragment\n+ 2 FragmentExtensions.kt\nsinet/startup/inDriver/core/common/extensions/FragmentExtensionsKt\n+ 3 ViewBindingExtensions.kt\nsinet/startup/inDriver/core/common/extensions/ViewBindingExtensionsKt\n+ 4 TextView.kt\nandroidx/core/widget/TextViewKt\n+ 5 BundleExtensions.kt\nsinet/startup/inDriver/core/common/extensions/BundleExtensionsKt\n*L\n1#1,228:1\n92#2,9:229\n32#3,2:238\n39#4:240\n55#4,12:241\n84#4,3:253\n6#5,5:256\n*S KotlinDebug\n*F\n+ 1 CustomPriceDialogFragment.kt\nsinet/startup/inDriver/feature/payment_driver/ui/custom_price/CustomPriceDialogFragment\n*L\n47#1:229,9\n48#1:238,2\n94#1:240\n94#1:241,12\n94#1:253,3\n75#1:256,5\n*E\n"
+    }
+.end annotation
+
+
+# static fields
+.field public static final Companion:Lpo3/j$a;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field static final synthetic k1:[Lkotlin/reflect/KProperty;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "[",
+            "Lkotlin/reflect/KProperty<",
+            "Ljava/lang/Object;",
+            ">;"
+        }
+    .end annotation
+.end field
+
+
+# instance fields
+.field private final Z0:Lfw/m;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final a1:Lkotlin/properties/d;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private b1:Ljava/math/BigDecimal;
+    .annotation build Lorg/jetbrains/annotations/Nullable;
+    .end annotation
+.end field
+
+.field private final c1:Lfw/m;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final d1:Lfw/m;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private e1:Ljava/math/BigDecimal;
+    .annotation build Lorg/jetbrains/annotations/Nullable;
+    .end annotation
+.end field
+
+.field private f1:Ljava/math/BigDecimal;
+    .annotation build Lorg/jetbrains/annotations/Nullable;
+    .end annotation
+.end field
+
+.field private final g1:Lfw/m;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final h1:Lfw/m;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final i1:I
+
+.field private final j1:Z
+
+
+# direct methods
+.method static constructor <clinit>()V
+    .registers 5
+
+    .line 1
+    new-instance v0, Lkotlin/jvm/internal/PropertyReference1Impl;
+
+    .line 3
+    const-class v1, Lpo3/j;
+
+    .line 5
+    const-string v2, "binding"
+
+    .line 7
+    const-string v3, "getBinding()Lsinet/startup/inDriver/feature/payment_driver/databinding/FeaturesPaymentDriverFragmentCustomPriceBinding;"
+
+    .line 9
+    const/4 v4, 0x0
+
+    .line 10
+    invoke-direct {v0, v1, v2, v3, v4}, Lkotlin/jvm/internal/PropertyReference1Impl;-><init>(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;I)V
+
+    .line 13
+    invoke-static {v0}, Lkotlin/jvm/internal/Reflection;->property1(Lkotlin/jvm/internal/PropertyReference1;)Lkotlin/reflect/KProperty1;
+
+    .line 16
+    move-result-object v0
+
+    .line 17
+    const/4 v1, 0x1
+
+    .line 18
+    new-array v1, v1, [Lkotlin/reflect/KProperty;
+
+    .line 20
+    aput-object v0, v1, v4
+
+    .line 22
+    sput-object v1, Lpo3/j;->k1:[Lkotlin/reflect/KProperty;
+
+    .line 24
+    new-instance v0, Lpo3/j$a;
+
+    .line 26
+    const/4 v1, 0x0
+
+    .line 27
+    invoke-direct {v0, v1}, Lpo3/j$a;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+    .line 30
+    sput-object v0, Lpo3/j;->Companion:Lpo3/j$a;
+
+    .line 32
+    return-void
+.end method
+
+.method public constructor <init>()V
+    .registers 4
+
+    .line 1
+    invoke-direct {p0}, Lb72/f;-><init>()V
+
+    .line 4
+    new-instance v0, Lpo3/j$d;
+
+    .line 6
+    const-string v1, "ARG_CUSTOM_PRICE_PARAMS"
+
+    .line 8
+    invoke-direct {v0, p0, v1}, Lpo3/j$d;-><init>(Landroidx/fragment/app/Fragment;Ljava/lang/String;)V
+
+    .line 11
+    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
+
+    .line 14
+    move-result-object v0
+
+    .line 15
+    iput-object v0, p0, Lpo3/j;->Z0:Lfw/m;
+
+    .line 17
+    new-instance v0, Lnu1/r2;
+
+    .line 19
+    const-class v1, Loo3/a;
+
+    .line 21
+    invoke-static {v1}, Lkotlin/jvm/internal/Reflection;->getOrCreateKotlinClass(Ljava/lang/Class;)Lkotlin/reflect/KClass;
+
+    .line 24
+    move-result-object v1
+
+    .line 25
+    const/4 v2, 0x0
+
+    .line 26
+    invoke-direct {v0, p0, v1, v2}, Lnu1/r2;-><init>(Landroidx/fragment/app/Fragment;Lkotlin/reflect/KClass;Ljava/lang/Integer;)V
+
+    .line 29
+    iput-object v0, p0, Lpo3/j;->a1:Lkotlin/properties/d;
+
+    .line 31
+    new-instance v0, Lpo3/d;
+
+    .line 33
+    invoke-direct {v0, p0}, Lpo3/d;-><init>(Lpo3/j;)V
+
+    .line 36
+    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
+
+    .line 39
+    move-result-object v0
+
+    .line 40
+    iput-object v0, p0, Lpo3/j;->c1:Lfw/m;
+
+    .line 42
+    new-instance v0, Lpo3/e;
+
+    .line 44
+    invoke-direct {v0, p0}, Lpo3/e;-><init>(Lpo3/j;)V
+
+    .line 47
+    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
+
+    .line 50
+    move-result-object v0
+
+    .line 51
+    iput-object v0, p0, Lpo3/j;->d1:Lfw/m;
+
+    .line 53
+    new-instance v0, Lpo3/f;
+
+    .line 55
+    invoke-direct {v0, p0}, Lpo3/f;-><init>(Lpo3/j;)V
+
+    .line 58
+    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
+
+    .line 61
+    move-result-object v0
+
+    .line 62
+    iput-object v0, p0, Lpo3/j;->g1:Lfw/m;
+
+    .line 64
+    new-instance v0, Lpo3/g;
+
+    .line 66
+    invoke-direct {v0, p0}, Lpo3/g;-><init>(Lpo3/j;)V
+
+    .line 69
+    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
+
+    .line 72
+    move-result-object v0
+
+    .line 73
+    iput-object v0, p0, Lpo3/j;->h1:Lfw/m;
+
+    .line 75
+    sget v0, Lno3/b;->a:I
+
+    .line 77
+    iput v0, p0, Lpo3/j;->i1:I
+
+    .line 79
+    const/4 v0, 0x1
+
+    .line 80
+    iput-boolean v0, p0, Lpo3/j;->j1:Z
+
+    .line 82
+    return-void
+.end method
+
+.method private static final A6(Lpo3/j;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-virtual {p0}, Lpo3/k;->a()Ljava/lang/String;
+
+    .line 8
+    move-result-object p0
+
+    .line 9
+    return-object p0
+.end method
+
+.method private static final B6(Lpo3/j;)Lpo3/l;
+    .registers 1
+
+    .line 1
+    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-virtual {p0}, Lpo3/k;->b()Lpo3/l;
+
+    .line 8
+    move-result-object p0
+
+    .line 9
+    return-object p0
+.end method
+
+.method private static final C6(Lpo3/j;)Z
+    .registers 1
+
+    .line 1
+    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-virtual {p0}, Lpo3/k;->c()Z
+
+    .line 8
+    move-result p0
+
+    .line 9
+    return p0
+.end method
+
+.method private final D6()Loo3/a;
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lpo3/j;->a1:Lkotlin/properties/d;
+
+    .line 3
+    sget-object v1, Lpo3/j;->k1:[Lkotlin/reflect/KProperty;
+
+    .line 5
+    const/4 v2, 0x0
+
+    .line 6
+    aget-object v1, v1, v2
+
+    .line 8
+    invoke-interface {v0, p0, v1}, Lkotlin/properties/d;->getValue(Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
+
+    .line 11
+    move-result-object v0
+
+    .line 12
+    check-cast v0, Loo3/a;
+
+    .line 14
+    return-object v0
+.end method
+
+.method private final E6()Ljava/lang/String;
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lpo3/j;->d1:Lfw/m;
+
+    .line 3
+    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, Ljava/lang/String;
+
+    .line 9
+    return-object v0
+.end method
+
+.method private final F6()Lpo3/l;
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lpo3/j;->g1:Lfw/m;
+
+    .line 3
+    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, Lpo3/l;
+
+    .line 9
+    return-object v0
+.end method
+
+.method private final G6()Z
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lpo3/j;->h1:Lfw/m;
+
+    .line 3
+    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, Ljava/lang/Boolean;
+
+    .line 9
+    invoke-virtual {v0}, Ljava/lang/Boolean;->booleanValue()Z
+
+    .line 12
+    move-result v0
+
+    .line 13
+    return v0
+.end method
+
+.method private final H6()Ljava/lang/String;
+    .registers 4
+
+    .line 1
+    invoke-direct {p0}, Lpo3/j;->N6()Z
+
+    .line 4
+    move-result v0
+
+    .line 5
+    if-eqz v0, :cond_1c
+
+    .line 7
+    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+
+    .line 10
+    move-result-object v0
+
+    .line 11
+    iget-object v1, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 13
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    .line 15
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 18
+    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 21
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 24
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 27
+    move-result-object v0
+
+    .line 28
+    goto :goto_31
+
+    .line 29
+    :cond_1c
+    iget-object v0, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 31
+    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+
+    .line 34
+    move-result-object v1
+
+    .line 35
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    .line 37
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 40
+    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 43
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 46
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 49
+    move-result-object v0
+
+    .line 50
+    :goto_31
+    invoke-direct {p0}, Lpo3/j;->F6()Lpo3/l;
+
+    .line 53
+    move-result-object v1
+
+    .line 54
+    sget-object v2, Lpo3/j$b;->a:[I
+
+    .line 56
+    invoke-virtual {v1}, Ljava/lang/Enum;->ordinal()I
+
+    .line 59
+    move-result v1
+
+    .line 60
+    aget v1, v2, v1
+
+    .line 62
+    const/4 v2, 0x1
+
+    .line 63
+    if-eq v1, v2, :cond_54
+
+    .line 65
+    const/4 v2, 0x2
+
+    .line 66
+    if-ne v1, v2, :cond_4e
+
+    .line 68
+    sget v1, Lno3/c;->a:I
+
+    .line 70
+    filled-new-array {v0}, [Ljava/lang/Object;
+
+    .line 73
+    move-result-object v0
+
+    .line 74
+    invoke-virtual {p0, v1, v0}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
+
+    .line 77
+    move-result-object v0
+
+    .line 78
+    return-object v0
+
+    .line 79
+    :cond_4e
+    new-instance v0, Lkotlin/NoWhenBranchMatchedException;
+
+    .line 81
+    invoke-direct {v0}, Lkotlin/NoWhenBranchMatchedException;-><init>()V
+
+    .line 84
+    throw v0
+
+    .line 85
+    :cond_54
+    sget v1, Lno3/c;->e:I
+
+    .line 87
+    filled-new-array {v0}, [Ljava/lang/Object;
+
+    .line 90
+    move-result-object v0
+
+    .line 91
+    invoke-virtual {p0, v1, v0}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
+
+    .line 94
+    move-result-object v0
+
+    .line 95
+    return-object v0
+.end method
+
+.method private final I6()Lpo3/k;
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lpo3/j;->Z0:Lfw/m;
+
+    .line 3
+    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, Lpo3/k;
+
+    .line 9
+    return-object v0
+.end method
+
+.method private final J6(Ljava/lang/String;)Ljava/math/BigDecimal;
+    .registers 8
+
+    .line 1
+    const/4 v4, 0x4
+
+    .line 2
+    const/4 v5, 0x0
+
+    .line 3
+    const-string v1, ","
+
+    .line 5
+    const-string v2, "."
+
+    .line 7
+    const/4 v3, 0x0
+
+    .line 8
+    move-object v0, p1
+
+    .line 9
+    invoke-static/range {v0 .. v5}, Lkotlin/text/StringsKt;->X(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Ljava/lang/String;
+
+    .line 12
+    move-result-object p1
+
+    .line 13
+    invoke-static {p1}, Lkotlin/text/StringsKt;->u(Ljava/lang/String;)Ljava/math/BigDecimal;
+
+    .line 16
+    move-result-object p1
+
+    .line 17
+    if-nez p1, :cond_14
+
+    .line 19
+    sget-object p1, Ljava/math/BigDecimal;->ZERO:Ljava/math/BigDecimal;
+
+    .line 21
+    :cond_14
+    invoke-static {p1}, Lcom/google/android/gms/internal/measurement/a;->a(Ljava/math/BigDecimal;)Ljava/math/BigDecimal;
+
+    .line 24
+    move-result-object v0
+
+    .line 25
+    invoke-virtual {v0}, Ljava/math/BigDecimal;->scale()I
+
+    .line 28
+    move-result v0
+
+    .line 29
+    if-lez v0, :cond_25
+
+    .line 31
+    const/4 v0, 0x2
+
+    .line 32
+    sget-object v1, Ljava/math/RoundingMode;->HALF_UP:Ljava/math/RoundingMode;
+
+    .line 34
+    invoke-virtual {p1, v0, v1}, Ljava/math/BigDecimal;->setScale(ILjava/math/RoundingMode;)Ljava/math/BigDecimal;
+
+    .line 37
+    move-result-object p1
+
+    .line 38
+    :cond_25
+    return-object p1
+.end method
+
+.method private final K6()V
+    .registers 7
+
+    .line 1
+    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Loo3/a;->e:Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;
+
+    .line 7
+    new-instance v1, Lpo3/j$c;
+
+    .line 9
+    invoke-direct {v1, v0, p0}, Lpo3/j$c;-><init>(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;)V
+
+    .line 12
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->addTextChangedListener(Landroid/text/TextWatcher;)V
+
+    .line 15
+    new-instance v1, Lpo3/h;
+
+    .line 17
+    invoke-direct {v1, v0, p0}, Lpo3/h;-><init>(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;)V
+
+    .line 20
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setOnEditorActionListener(Landroid/widget/TextView$OnEditorActionListener;)V
+
+    .line 23
+    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+
+    .line 26
+    move-result-object v1
+
+    .line 27
+    invoke-virtual {v0, v1}, Lsinet/startup/inDriver/core/ui/text_field_number/SymbolEditText;->setSymbol(Ljava/lang/String;)V
+
+    .line 30
+    invoke-direct {p0}, Lpo3/j;->N6()Z
+
+    .line 33
+    move-result v1
+
+    .line 34
+    const/4 v2, 0x2
+
+    .line 35
+    if-eqz v1, :cond_26
+
+    .line 37
+    move v1, v2
+
+    .line 38
+    goto :goto_27
+
+    .line 39
+    :cond_26
+    const/4 v1, 0x3
+
+    .line 40
+    :goto_27
+    invoke-virtual {v0, v1}, Lsinet/startup/inDriver/core/ui/text_field_number/SymbolEditText;->setSymbolAlignment(I)V
+
+    .line 43
+    invoke-direct {p0}, Lpo3/j;->G6()Z
+
+    .line 46
+    move-result v1
+
+    .line 47
+    const/4 v3, 0x0
+
+    .line 48
+    const/4 v4, 0x1
+
+    .line 49
+    if-eqz v1, :cond_4e
+
+    .line 51
+    new-instance v1, Lqu1/a;
+
+    .line 53
+    const-string v5, "0123456789.,"
+
+    .line 55
+    invoke-static {v5}, Landroid/text/method/DigitsKeyListener;->getInstance(Ljava/lang/String;)Landroid/text/method/DigitsKeyListener;
+
+    .line 58
+    move-result-object v5
+
+    .line 59
+    invoke-direct {v1, v5}, Lqu1/a;-><init>(Landroid/text/method/DigitsKeyListener;)V
+
+    .line 62
+    invoke-virtual {v0, v1}, Landroidx/appcompat/widget/AppCompatEditText;->setKeyListener(Landroid/text/method/KeyListener;)V
+
+    .line 65
+    new-instance v1, Lkv1/f;
+
+    .line 67
+    const/4 v5, 0x6
+
+    .line 68
+    invoke-direct {v1, v5, v2}, Lkv1/f;-><init>(II)V
+
+    .line 71
+    new-array v2, v4, [Landroid/text/InputFilter;
+
+    .line 73
+    aput-object v1, v2, v3
+
+    .line 75
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setFilters([Landroid/text/InputFilter;)V
+
+    .line 78
+    return-void
+
+    .line 79
+    :cond_4e
+    new-instance v1, Lkv1/k;
+
+    .line 81
+    const/4 v2, 0x0
+
+    .line 82
+    invoke-direct {v1, v3, v4, v2}, Lkv1/k;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+    .line 85
+    new-array v2, v4, [Landroid/text/InputFilter;
+
+    .line 87
+    aput-object v1, v2, v3
+
+    .line 89
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setFilters([Landroid/text/InputFilter;)V
+
+    .line 92
+    return-void
+.end method
+
+.method private static final L6(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;Landroid/widget/TextView;ILandroid/view/KeyEvent;)Z
+    .registers 11
+
+    .line 1
+    if-eqz p4, :cond_a
+
+    .line 3
+    invoke-virtual {p4}, Landroid/view/KeyEvent;->getKeyCode()I
+
+    .line 6
+    move-result p2
+
+    .line 7
+    const/16 p4, 0x42
+
+    .line 9
+    if-eq p2, p4, :cond_d
+
+    .line 11
+    :cond_a
+    const/4 p2, 0x6
+
+    .line 12
+    if-ne p3, p2, :cond_1c
+
+    .line 14
+    :cond_d
+    new-instance v3, Lpo3/i;
+
+    .line 16
+    invoke-direct {v3, p1}, Lpo3/i;-><init>(Lpo3/j;)V
+
+    .line 19
+    const/4 v4, 0x1
+
+    .line 20
+    const/4 v5, 0x0
+
+    .line 21
+    const-wide/16 v1, 0x0
+
+    .line 23
+    move-object v0, p0
+
+    .line 24
+    invoke-static/range {v0 .. v5}, Lnu1/k3;->k0(Ljava/lang/Object;JLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+
+    .line 27
+    const/4 p0, 0x1
+
+    .line 28
+    return p0
+
+    .line 29
+    :cond_1c
+    const/4 p0, 0x0
+
+    .line 30
+    return p0
+.end method
+
+.method private static final M6(Lpo3/j;Ljava/lang/Object;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lpo3/j;->P6()V
+
+    .line 4
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 6
+    return-object p0
+.end method
+
+.method private final N6()Z
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lpo3/j;->c1:Lfw/m;
+
+    .line 3
+    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, Ljava/lang/Boolean;
+
+    .line 9
+    invoke-virtual {v0}, Ljava/lang/Boolean;->booleanValue()Z
+
+    .line 12
+    move-result v0
+
+    .line 13
+    return v0
+.end method
+
+.method private static final O6(Lpo3/j;)Z
+    .registers 1
+
+    .line 1
+    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-virtual {p0}, Lpo3/k;->f()Z
+
+    .line 8
+    move-result p0
+
+    .line 9
+    return p0
+.end method
+
+.method private final P6()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lpo3/j;->b1:Ljava/math/BigDecimal;
+
+    .line 3
+    invoke-direct {p0, v0}, Lpo3/j;->z6(Ljava/math/BigDecimal;)Z
+
+    .line 6
+    move-result v0
+
+    .line 7
+    if-eqz v0, :cond_1c
+
+    .line 9
+    const-string v0, "ARG_OFFER_PRICES"
+
+    .line 11
+    iget-object v1, p0, Lpo3/j;->b1:Ljava/math/BigDecimal;
+
+    .line 13
+    invoke-static {v0, v1}, Lfw/y;->a(Ljava/lang/Object;Ljava/lang/Object;)Lkotlin/Pair;
+
+    .line 16
+    move-result-object v0
+
+    .line 17
+    filled-new-array {v0}, [Lkotlin/Pair;
+
+    .line 20
+    move-result-object v0
+
+    .line 21
+    const-string v1, "CustomPriceDialogFragmentRESULT_OFFER_PRICE"
+
+    .line 23
+    invoke-static {p0, v1, v0}, Lnu1/a;->w(Landroidx/fragment/app/Fragment;Ljava/lang/String;[Lkotlin/Pair;)V
+
+    .line 26
+    invoke-virtual {p0}, Lcom/google/android/material/bottomsheet/b;->dismissAllowingStateLoss()V
+
+    .line 29
+    :cond_1c
+    return-void
+.end method
+
+.method private static final Q6(Lpo3/j;Landroid/view/View;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lpo3/j;->P6_Force()V
+
+    .line 4
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 6
+    return-object p0
+.end method
+
+.method private static final R6(Lpo3/j;Landroid/view/View;)V
+    .registers 2
+
+    .line 1
+    invoke-virtual {p0}, Lcom/google/android/material/bottomsheet/b;->dismissAllowingStateLoss()V
+
+    .line 4
+    return-void
+.end method
+
+.method private static final S6(Lpo3/j;Landroid/os/Bundle;)Lkotlin/Unit;
+    .registers 5
+
+    .line 1
+    const-string v0, "ARG_PRICES"
+
+    .line 3
+    invoke-virtual {p1, v0}, Landroid/os/BaseBundle;->get(Ljava/lang/String;)Ljava/lang/Object;
+
+    .line 6
+    move-result-object v1
+
+    .line 7
+    if-eqz v1, :cond_52
+
+    .line 9
+    instance-of p1, v1, Lkotlin/Pair;
+
+    .line 11
+    if-nez p1, :cond_d
+
+    .line 13
+    const/4 v1, 0x0
+
+    .line 14
+    :cond_d
+    check-cast v1, Lkotlin/Pair;
+
+    .line 16
+    if-eqz v1, :cond_31
+
+    .line 18
+    invoke-virtual {v1}, Lkotlin/Pair;->j()Ljava/lang/Object;
+
+    .line 21
+    move-result-object p1
+
+    .line 22
+    check-cast p1, Ljava/math/BigDecimal;
+
+    .line 24
+    iput-object p1, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 26
+    invoke-virtual {v1}, Lkotlin/Pair;->k()Ljava/lang/Object;
+
+    .line 29
+    move-result-object p1
+
+    .line 30
+    check-cast p1, Ljava/math/BigDecimal;
+
+    .line 32
+    iput-object p1, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
+
+    .line 34
+    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
+
+    .line 37
+    move-result-object p1
+
+    .line 38
+    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
+
+    .line 40
+    invoke-direct {p0}, Lpo3/j;->H6()Ljava/lang/String;
+
+    .line 43
+    move-result-object p0
+
+    .line 44
+    invoke-virtual {p1, p0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 47
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 49
+    return-object p0
+
+    .line 50
+    :cond_31
+    new-instance p0, Ljava/lang/ClassCastException;
+
+    .line 52
+    new-instance p1, Ljava/lang/StringBuilder;
+
+    .line 54
+    invoke-direct {p1}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 57
+    const-string v1, "Can\'t cast an argument with the key \""
+
+    .line 59
+    invoke-virtual {p1, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 62
+    invoke-virtual {p1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 65
+    const-string v0, "\" to "
+
+    .line 67
+    invoke-virtual {p1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 70
+    const-class v0, Lkotlin/Pair;
+
+    .line 72
+    invoke-virtual {p1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 75
+    invoke-virtual {p1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 78
+    move-result-object p1
+
+    .line 79
+    invoke-direct {p0, p1}, Ljava/lang/ClassCastException;-><init>(Ljava/lang/String;)V
+
+    .line 82
+    throw p0
+
+    .line 83
+    :cond_52
+    new-instance p0, Ljava/lang/IllegalArgumentException;
+
+    .line 85
+    new-instance v1, Ljava/lang/StringBuilder;
+
+    .line 87
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 90
+    const-string v2, "The Fragment "
+
+    .line 92
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 95
+    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 98
+    const-string p1, " does not have an argument with the key \""
+
+    .line 100
+    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 103
+    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 106
+    const-string p1, "\""
+
+    .line 108
+    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 111
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 114
+    move-result-object p1
+
+    .line 115
+    invoke-direct {p0, p1}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/String;)V
+
+    .line 118
+    throw p0
+.end method
+
+.method private final T6(Z)V
+    .registers 5
+
+    .line 1
+    if-eqz p1, :cond_5
+
+    .line 3
+    sget v0, Lx62/f;->Q:I
+
+    .line 5
+    goto :goto_7
+
+    .line 6
+    :cond_5
+    sget v0, Lx62/f;->Q0:I
+
+    .line 8
+    :goto_7
+    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
+
+    .line 11
+    move-result-object v1
+
+    .line 12
+    iget-object v2, v1, Loo3/a;->b:Landroid/widget/TextView;
+
+    .line 14
+    invoke-static {v2, v0}, Lnu1/k3;->i0(Landroid/widget/TextView;I)V
+
+    .line 17
+    iget-object v0, v1, Loo3/a;->e:Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;
+
+    .line 19
+    invoke-virtual {v0, p1}, Lsinet/startup/inDriver/core/ui/text_field_number/SymbolEditText;->setError(Z)V
+
+    .line 22
+    if-nez p1, :cond_20
+
+    .line 24
+    iget-object p1, v1, Loo3/a;->b:Landroid/widget/TextView;
+
+    .line 26
+    invoke-direct {p0}, Lpo3/j;->H6()Ljava/lang/String;
+
+    .line 29
+    move-result-object v0
+
+    .line 30
+    invoke-virtual {p1, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 33
+    :cond_20
+    return-void
+.end method
+
+.method public static synthetic n6(Lpo3/j;Landroid/view/View;)V
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lpo3/j;->R6(Lpo3/j;Landroid/view/View;)V
+
+    return-void
+.end method
+
+.method public static synthetic o6(Lpo3/j;Ljava/lang/Object;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lpo3/j;->M6(Lpo3/j;Ljava/lang/Object;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic p6(Lpo3/j;)Lpo3/l;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lpo3/j;->B6(Lpo3/j;)Lpo3/l;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic q6(Lpo3/j;Landroid/view/View;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lpo3/j;->Q6(Lpo3/j;Landroid/view/View;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic r6(Lpo3/j;)Z
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lpo3/j;->C6(Lpo3/j;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method public static synthetic s6(Lpo3/j;)Z
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lpo3/j;->O6(Lpo3/j;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method public static synthetic t6(Lpo3/j;Landroid/os/Bundle;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lpo3/j;->S6(Lpo3/j;Landroid/os/Bundle;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic u6(Lpo3/j;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lpo3/j;->A6(Lpo3/j;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic v6(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;Landroid/widget/TextView;ILandroid/view/KeyEvent;)Z
+    .registers 5
+
+    .line 1
+    invoke-static {p0, p1, p2, p3, p4}, Lpo3/j;->L6(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;Landroid/widget/TextView;ILandroid/view/KeyEvent;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method public static final synthetic w6(Lpo3/j;Ljava/lang/String;)Ljava/math/BigDecimal;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0, p1}, Lpo3/j;->J6(Ljava/lang/String;)Ljava/math/BigDecimal;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static final synthetic x6(Lpo3/j;Ljava/math/BigDecimal;)V
+    .registers 2
+
+    .line 1
+    iput-object p1, p0, Lpo3/j;->b1:Ljava/math/BigDecimal;
+
+    .line 3
+    return-void
+.end method
+
+.method public static final synthetic y6(Lpo3/j;Z)V
+    .registers 2
+
+    .line 1
+    invoke-direct {p0, p1}, Lpo3/j;->T6(Z)V
+
+    .line 4
+    return-void
+.end method
+
+.method private final z6(Ljava/math/BigDecimal;)Z
+    .registers 8
+
+    .line 1
+    const/4 v0, 0x0
+
+    .line 2
+    const/4 v1, 0x1
+
+    .line 3
+    if-nez p1, :cond_17
+
+    .line 5
+    invoke-direct {p0, v1}, Lpo3/j;->T6(Z)V
+
+    .line 8
+    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
+
+    .line 11
+    move-result-object p1
+
+    .line 12
+    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
+
+    .line 14
+    sget v1, Lno3/c;->b:I
+
+    .line 16
+    invoke-virtual {p0, v1}, Landroidx/fragment/app/Fragment;->getString(I)Ljava/lang/String;
+
+    .line 19
+    move-result-object v1
+
+    .line 20
+    invoke-virtual {p1, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 23
+    return v0
+
+    .line 24
+    :cond_17
+    iget-object v2, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 26
+    invoke-virtual {p1, v2}, Ljava/math/BigDecimal;->compareTo(Ljava/math/BigDecimal;)I
+
+    .line 29
+    move-result v2
+
+    .line 30
+    if-gez v2, :cond_71
+
+    .line 32
+    invoke-direct {p0, v1}, Lpo3/j;->T6(Z)V
+
+    .line 35
+    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
+
+    .line 38
+    move-result-object p1
+
+    .line 39
+    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
+
+    .line 41
+    invoke-direct {p0}, Lpo3/j;->N6()Z
+
+    .line 44
+    move-result v1
+
+    .line 45
+    if-eqz v1, :cond_4e
+
+    .line 47
+    sget v1, Lno3/c;->d:I
+
+    .line 49
+    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+
+    .line 52
+    move-result-object v2
+
+    .line 53
+    iget-object v3, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 55
+    new-instance v4, Ljava/lang/StringBuilder;
+
+    .line 57
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 60
+    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 63
+    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 66
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 69
+    move-result-object v2
+
+    .line 70
+    filled-new-array {v2}, [Ljava/lang/Object;
+
+    .line 73
+    move-result-object v2
+
+    .line 74
+    invoke-virtual {p0, v1, v2}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
+
+    .line 77
+    move-result-object v1
+
+    .line 78
+    goto :goto_6d
+
+    .line 79
+    :cond_4e
+    sget v1, Lno3/c;->d:I
+
+    .line 81
+    iget-object v2, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 83
+    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+
+    .line 86
+    move-result-object v3
+
+    .line 87
+    new-instance v4, Ljava/lang/StringBuilder;
+
+    .line 89
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 92
+    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 95
+    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 98
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 101
+    move-result-object v2
+
+    .line 102
+    filled-new-array {v2}, [Ljava/lang/Object;
+
+    .line 105
+    move-result-object v2
+
+    .line 106
+    invoke-virtual {p0, v1, v2}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
+
+    .line 109
+    move-result-object v1
+
+    .line 110
+    :goto_6d
+    invoke-virtual {p1, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 113
+    return v0
+
+    .line 114
+    :cond_71
+    iget-object v2, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
+
+    .line 116
+    if-eqz v2, :cond_d8
+
+    .line 118
+    invoke-virtual {p1, v2}, Ljava/math/BigDecimal;->compareTo(Ljava/math/BigDecimal;)I
+
+    .line 121
+    move-result p1
+
+    .line 122
+    if-lez p1, :cond_d8
+
+    .line 124
+    invoke-direct {p0, v1}, Lpo3/j;->T6(Z)V
+
+    .line 127
+    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
+
+    .line 130
+    move-result-object p1
+
+    .line 131
+    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
+
+    .line 133
+    invoke-direct {p0}, Lpo3/j;->N6()Z
+
+    .line 136
+    move-result v2
+
+    .line 137
+    if-eqz v2, :cond_aa
+
+    .line 139
+    sget v2, Lno3/c;->c:I
+
+    .line 141
+    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+
+    .line 144
+    move-result-object v3
+
+    .line 145
+    iget-object v4, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
+
+    .line 147
+    new-instance v5, Ljava/lang/StringBuilder;
+
+    .line 149
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 152
+    invoke-virtual {v5, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 155
+    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 158
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 161
+    move-result-object v3
+
+    .line 162
+    filled-new-array {v3}, [Ljava/lang/Object;
+
+    .line 165
+    move-result-object v3
+
+    .line 166
+    invoke-virtual {p0, v2, v3}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
+
+    .line 169
+    move-result-object v2
+
+    .line 170
+    goto :goto_c9
+
+    .line 171
+    :cond_aa
+    sget v2, Lno3/c;->c:I
+
+    .line 173
+    iget-object v3, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
+
+    .line 175
+    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+
+    .line 178
+    move-result-object v4
+
+    .line 179
+    new-instance v5, Ljava/lang/StringBuilder;
+
+    .line 181
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 184
+    invoke-virtual {v5, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 187
+    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 190
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 193
+    move-result-object v3
+
+    .line 194
+    filled-new-array {v3}, [Ljava/lang/Object;
+
+    .line 197
+    move-result-object v3
+
+    .line 198
+    invoke-virtual {p0, v2, v3}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
+
+    .line 201
+    move-result-object v2
+
+    .line 202
+    :goto_c9
+    invoke-virtual {p1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 205
+    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
+
+    .line 208
+    move-result-object p1
+
+    .line 209
+    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
+
+    .line 211
+    const/4 v2, 0x2
+
+    .line 212
+    const/4 v3, 0x0
+
+    .line 213
+    invoke-static {p1, v1, v3, v2, v3}, Lj72/o;->N(Landroid/view/View;ZLm82/j;ILjava/lang/Object;)V
+
+    .line 216
+    return v0
+
+    .line 217
+    :cond_d8
+    return v1
+.end method
+
+
+# virtual methods
+.method public a6()Z
+    .registers 2
+
+    .line 1
+    iget-boolean v0, p0, Lpo3/j;->j1:Z
+
+    .line 3
+    return v0
+.end method
+
+.method public b6()I
+    .registers 2
+
+    .line 1
+    iget v0, p0, Lpo3/j;->i1:I
+
+    .line 3
+    return v0
+.end method
+
+.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+    .registers 9
+    .param p1  # Landroid/view/View;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p2  # Landroid/os/Bundle;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+
+    .line 1
+    invoke-super {p0, p1, p2}, Lb72/f;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+
+    .line 4
+    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
+
+    .line 7
+    move-result-object p1
+
+    .line 8
+    invoke-virtual {p1}, Lpo3/k;->e()Ljava/math/BigDecimal;
+
+    .line 11
+    move-result-object p1
+
+    .line 12
+    iput-object p1, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 14
+    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
+
+    .line 17
+    move-result-object p1
+
+    .line 18
+    invoke-virtual {p1}, Lpo3/k;->d()Ljava/math/BigDecimal;
+
+    .line 21
+    move-result-object p1
+
+    .line 22
+    iput-object p1, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
+
+    .line 24
+    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
+
+    .line 27
+    move-result-object p1
+
+    .line 28
+    iget-object v0, p1, Loo3/a;->c:Landroid/widget/Button;
+
+    .line 30
+    new-instance v3, Lpo3/a;
+
+    .line 32
+    invoke-direct {v3, p0}, Lpo3/a;-><init>(Lpo3/j;)V
+
+    .line 35
+    const/4 v4, 0x1
+
+    .line 36
+    const/4 v5, 0x0
+
+    .line 37
+    const-wide/16 v1, 0x0
+
+    .line 39
+    invoke-static/range {v0 .. v5}, Lj72/o;->I(Landroid/view/View;JLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+
+    .line 42
+    invoke-virtual {p1}, Loo3/a;->a()Lsinet/startup/inDriver/core/ui/bottom_sheet/BottomSheetView;
+
+    .line 45
+    move-result-object p2
+
+    .line 46
+    new-instance v0, Lpo3/b;
+
+    .line 48
+    invoke-direct {v0, p0}, Lpo3/b;-><init>(Lpo3/j;)V
+
+    .line 51
+    invoke-virtual {p2, v0}, Lsinet/startup/inDriver/core/ui/bottom_sheet/BottomSheetView;->setOnCloseClickListener(Landroid/view/View$OnClickListener;)V
+
+    .line 54
+    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
+
+    .line 56
+    invoke-direct {p0}, Lpo3/j;->H6()Ljava/lang/String;
+
+    .line 59
+    move-result-object p2
+
+    .line 60
+    invoke-virtual {p1, p2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 63
+    invoke-direct {p0}, Lpo3/j;->K6()V
+
+    .line 66
+    new-instance p1, Lpo3/c;
+
+    .line 68
+    invoke-direct {p1, p0}, Lpo3/c;-><init>(Lpo3/j;)V
+
+    .line 71
+    const-string p2, "CustomPriceDialogFragmentRESULT_PRICES"
+
+    .line 73
+    invoke-static {p0, p2, p1}, Lnu1/a;->p(Landroidx/fragment/app/Fragment;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+
+    .line 76
+    return-void
+.end method
+
+.method private final P6_Force()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 9
+    const-string v1, "ARG_OFFER_PRICES"
+
+    .line 13
+    invoke-static {v1, v0}, Lfw/y;->a(Ljava/lang/Object;Ljava/lang/Object;)Lkotlin/Pair;
+
+    .line 16
+    move-result-object v0
+
+    .line 17
+    filled-new-array {v0}, [Lkotlin/Pair;
+
+    .line 20
+    move-result-object v0
+
+    .line 21
+    const-string v1, "CustomPriceDialogFragmentRESULT_OFFER_PRICE"
+
+    .line 23
+    invoke-static {p0, v1, v0}, Lnu1/a;->w(Landroidx/fragment/app/Fragment;Ljava/lang/String;[Lkotlin/Pair;)V
+
+    .line 26
+    invoke-virtual {p0}, Lcom/google/android/material/bottomsheet/b;->dismissAllowingStateLoss()V
+
+    .line 29
+    return-void
+.end method

@@ -24,7 +24,7 @@
 
 # virtual methods
 .method public run()V
-    .registers 10
+    .registers 16
 
     .line 1
     const-string v0, "BotClient_Bidder"
@@ -46,59 +46,54 @@
     if-nez v1, :cond_fm_null
     const-string v1, "ChildFragmentManager is null"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    # BUT, the constructor signature says Lpo3/l; so it might not be nullable in Kotlin (no ?).
-    # Let's try to get a value from po3/l.
-    # For this attempt, I will use a dummy value or null if I can't find one.
-    # Let's use null for now (0x0).
-    const/4 v6, 0x0 
+    return-void
+
+    :cond_fm_null
+    # Prepare args for po3/k
     
-    # 6. floatPriceEnabled (boolean)
-    const/4 v7, 0x1
+    # v9 = userOfferPrice
+    iget-wide v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+    invoke-static {v2, v3}, Ljava/math/BigDecimal;->valueOf(D)Ljava/math/BigDecimal;
+    move-result-object v9
     
-    # Create po3/k instance
-    # Note: If po3/l is required non-null, this might crash. 
-    # Ideally I should have checked po3/l.
-    # Let's assume for a moment I can pass null.
+    # v10 = currencySymbol
+    const-string v10, "$"
     
+    # v11 = isCurrencySymbolOnTheLeftSide
+    const/4 v11, 0x1
+    
+    # v12 = maxPrice
+    iget-wide v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+    invoke-static {v2, v3}, Ljava/math/BigDecimal;->valueOf(D)Ljava/math/BigDecimal;
+    move-result-object v12
+    
+    # v13 = driverRole
+    sget-object v13, Lpo3/l;->PASSENGERS:Lpo3/l;
+    
+    # v14 = floatPriceEnabled
+    const/4 v14, 0x1
+    
+    # v8 = instance
     new-instance v8, Lpo3/k;
     invoke-direct/range {v8 .. v14}, Lpo3/k;-><init>(Ljava/math/BigDecimal;Ljava/lang/String;ZLjava/math/BigDecimal;Lpo3/l;Z)V
-    # Registers for constructor: p0=v8, p1=v2, p2=v3, p3=v4, p4=v5, p5=v6, p6=v7
-    # Wait, invoke-direct/range arguments must be consecutive.
-    # I need to arrange registers.
-    # v2=price, v3=currency, v4=boolean, v5=maxPrice, v6=role, v7=boolean
-    # v8=instance
-    # Order: instance, price, currency, boolean, maxPrice, role, boolean
-    # This is tricky with /range.
-    # Let's use invoke-direct with specific registers if possible, or rearrange.
-    # v0 is log tag. v1 is FragmentManager.
     
-    # Rearranging registers for po3/k constructor
-    # Need 7 registers: instance, p1, p2, p3, p4, p5, p6
-    # Let's use v2..v8
+    # Create Dialog
+    sget-object v2, Lpo3/j;->Companion:Lpo3/j$a;
+    invoke-virtual {v2, v8}, Lpo3/j$a;->a(Lpo3/k;)Lpo3/j;
+    move-result-object v2
     
-    # v2 = instance
-    new-instance v2, Lpo3/k;
+    # Show
+    const-string v3, "CustomPriceDialogFragment"
+    invoke-virtual {v2, v1, v3}, Landroidx/fragment/app/n;->show(Landroidx/fragment/app/i0;Ljava/lang/String;)V
     
-    # v3 = userOfferPrice
-    iget-wide v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
-    invoke-static {v3, v4}, Ljava/math/BigDecimal;->valueOf(D)Ljava/math/BigDecimal;
-    move-result-object v3
+    const-string v1, "CustomPriceDialogFragment shown manually"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
-    # v4 = currencySymbol
-    const-string v4, "$"
+    # Set Price and Offer
+    invoke-virtual {v2, v9}, Lpo3/j;->setPriceAndOffer(Ljava/math/BigDecimal;)V
     
-    # v5 = isCurrencySymbolOnTheLeftSide
-    const/4 v5, 0x1
-    
-    # v6 = maxPrice
-    iget-wide v7, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
-    invoke-static {v7, v8}, Ljava/math/BigDecimal;->valueOf(D)Ljava/math/BigDecimal;
-    move-result-object v6
-    
-    # v7 = driverRole (po3/l)
-    # I need a valid po3/l. 
-    # Let's try to read po3/l static fields first? 
-    # I'll pause this edit to check po3/l.
+    const-string v1, "setPriceAndOffer called"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
     return-void
 .end method

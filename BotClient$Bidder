@@ -89,10 +89,28 @@
     const-string v1, "CustomPriceDialogFragment shown manually"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
-    # Set Price and Offer
-    invoke-virtual {v2, v9}, Lpo3/j;->setPriceAndOffer(Ljava/math/BigDecimal;)V
+    # Schedule InputTask to set price after delay (to ensure fragment is attached)
+    # Get Fragment View for postDelayed
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
+    move-result-object v1
     
-    const-string v1, "setPriceAndOffer called"
+    if-nez v1, :cond_view_null
+    const-string v1, "Fragment view is null, cannot schedule InputTask"
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+    
+    :cond_view_null
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;
+    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    iget-wide v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+    invoke-direct {v2, v3, v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
+    
+    const-wide/16 v3, 0x1f4
+    # 500ms delay
+    invoke-virtual {v1, v2, v3, v4}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
+    
+    const-string v1, "InputTask scheduled"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
     return-void

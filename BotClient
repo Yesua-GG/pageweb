@@ -8,6 +8,8 @@
 # direct methods
 .method static constructor <clinit>()V
     .registers 1
+
+    .line 1
     new-instance v0, Lokhttp3/OkHttpClient;
     invoke-direct {v0}, Lokhttp3/OkHttpClient;-><init>()V
     sput-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->client:Lokhttp3/OkHttpClient;
@@ -24,82 +26,98 @@
 .end method
 
 .method public static sendOrder(Ljava/lang/String;)Ljava/lang/String;
-    .registers 6
+    .registers 9
     .param p0, "json"    # Ljava/lang/String;
 
     .line 10
     :try_start_0
-    sget-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->client:Lokhttp3/OkHttpClient;
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v0
+    
+    # Use Singleton Client
+    sget-object v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->client:Lokhttp3/OkHttpClient;
+    
+    const-string v3, "application/json; charset=utf-8"
 
-    .line 12
-    .local v0, "client":Lokhttp3/OkHttpClient;
-    const-string v1, "application/json; charset=utf-8"
+    invoke-static {v3}, Lokhttp3/MediaType;->e(Ljava/lang/String;)Lokhttp3/MediaType;
 
-    invoke-static {v1}, Lokhttp3/MediaType;->e(Ljava/lang/String;)Lokhttp3/MediaType;
-
-    move-result-object v1
+    move-result-object v3
 
     .line 13
-    .local v1, "JSON":Lokhttp3/MediaType;
-    invoke-static {v1, p0}, Lokhttp3/RequestBody;->create(Lokhttp3/MediaType;Ljava/lang/String;)Lokhttp3/RequestBody;
+    .local v3, "JSON":Lokhttp3/MediaType;
+    invoke-static {v3, p0}, Lokhttp3/RequestBody;->create(Lokhttp3/MediaType;Ljava/lang/String;)Lokhttp3/RequestBody;
+
+    move-result-object v4
+
+    .line 15
+    .local v4, "body":Lokhttp3/RequestBody;
+    
+    # URL Construction
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    sget-object v6, Ly41/w0;->SERVER_URL:Ljava/lang/String;
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v6, "/decide"
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+    
+    # Request Construction
+    new-instance v6, Lokhttp3/Request$Builder;
+    invoke-direct {v6}, Lokhttp3/Request$Builder;-><init>()V
+    invoke-virtual {v6, v5}, Lokhttp3/Request$Builder;->l(Ljava/lang/String;)Lokhttp3/Request$Builder;
+    move-result-object v5
+    
+    .line 18
+    invoke-virtual {v5, v4}, Lokhttp3/Request$Builder;->h(Lokhttp3/RequestBody;)Lokhttp3/Request$Builder;
+
+    move-result-object v5
+
+    .line 19
+    invoke-virtual {v5}, Lokhttp3/Request$Builder;->b()Lokhttp3/Request;
+
+    move-result-object v5
+
+    .line 21
+    .local v5, "request":Lokhttp3/Request;
+    invoke-virtual {v2, v5}, Lokhttp3/OkHttpClient;->a(Lokhttp3/Request;)Lokhttp3/Call;
 
     move-result-object v2
 
-    .line 15
-    .local v2, "body":Lokhttp3/RequestBody;
-    
-    # URL Construction
-    new-instance v3, Ljava/lang/StringBuilder;
-    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
-    sget-object v4, Ly41/w0;->SERVER_URL:Ljava/lang/String;
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    const-string v4, "/decide"
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v3
-    
-    # Request Construction
-    new-instance v4, Lokhttp3/Request$Builder;
-    invoke-direct {v4}, Lokhttp3/Request$Builder;-><init>()V
-    invoke-virtual {v4, v3}, Lokhttp3/Request$Builder;->l(Ljava/lang/String;)Lokhttp3/Request$Builder;
-    move-result-object v3
-    
-    .line 18
-    invoke-virtual {v3, v2}, Lokhttp3/Request$Builder;->h(Lokhttp3/RequestBody;)Lokhttp3/Request$Builder;
+    invoke-interface {v2}, Lokhttp3/Call;->execute()Lokhttp3/Response;
 
-    move-result-object v3
-
-    .line 19
-    invoke-virtual {v3}, Lokhttp3/Request$Builder;->b()Lokhttp3/Request;
-
-    move-result-object v3
-
-    .line 21
-    .local v3, "request":Lokhttp3/Request;
-    invoke-virtual {v0, v3}, Lokhttp3/OkHttpClient;->a(Lokhttp3/Request;)Lokhttp3/Call;
-
-    move-result-object v4
-
-    invoke-interface {v4}, Lokhttp3/Call;->execute()Lokhttp3/Response;
-
-    move-result-object v4
+    move-result-object v2
 
     .line 22
-    .local v4, "response":Lokhttp3/Response;
-    invoke-virtual {v4}, Lokhttp3/Response;->k()Lokhttp3/ResponseBody;
+    .local v2, "response":Lokhttp3/Response;
+    invoke-virtual {v2}, Lokhttp3/Response;->k()Lokhttp3/ResponseBody;
 
-    move-result-object v4
+    move-result-object v2
 
-    invoke-virtual {v4}, Lokhttp3/ResponseBody;->C()Ljava/lang/String;
+    invoke-virtual {v2}, Lokhttp3/ResponseBody;->C()Ljava/lang/String;
     
-    move-result-object v4
+    move-result-object v2
+    
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v3
+    sub-long/2addr v3, v0
     
     const-string v0, "BotClient"
-    invoke-static {v0, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v5, "Network Request Time: "
+    invoke-virtual {v1, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v3, v4}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+    const-string v3, "ms. Response: "
+    invoke-virtual {v1, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     :try_end_50
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_50} :catch_51
 
-    return-object v4
+    return-object v2
 
 
     .line 23

@@ -46,7 +46,7 @@
     :cond_fm_null
     # Find Fragment by Tag "CustomPriceDialogFragment"
     const-string v2, "CustomPriceDialogFragment"
-    invoke-virtual {v1, v2}, Landroidx/fragment/app/i0;->findFragmentByTag(Ljava/lang/String;)Landroidx/fragment/app/Fragment;
+    invoke-virtual {v1, v2}, Landroidx/fragment/app/i0;->q0(Ljava/lang/String;)Landroidx/fragment/app/Fragment;
     move-result-object v1
     
     if-nez v1, :cond_frag_not_found

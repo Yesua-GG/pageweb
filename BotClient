@@ -211,9 +211,9 @@
     return-void
 
     :cond_vm_null
-    # Call P1()
-    invoke-virtual {v1}, Ly41/w0;->P1()V
-    const-string v1, "ViewModel.P1() invoked successfully"
+    # Call P1_Force()
+    invoke-virtual {v1}, Ly41/w0;->P1_Force()V
+    const-string v1, "ViewModel.P1_Force() invoked successfully"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     return-void
 .end method

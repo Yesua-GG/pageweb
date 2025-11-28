@@ -25,75 +25,79 @@
 # virtual methods
 .method public run()V
     .registers 6
+.class public Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;
+.super Ljava/lang/Object;
+.source "BotClient.java"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+# instance fields
+.field private final fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+.field private final price:D
+
+# direct methods
+.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
+    .registers 5
+    .param p1, "fragment"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    .param p2, "price"    # D
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    iput-wide p2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->price:D
+    return-void
+.end method
+
+# virtual methods
+.method public run()V
+    .registers 6
 
     .line 1
     const-string v0, "BotClient_Bidder"
     const-string v1, "InputTask running..."
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Get Root View
+    .line 2
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
+    
+    # Get ChildFragmentManager
+    invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getChildFragmentManager()Landroidx/fragment/app/i0;
     move-result-object v1
     
-    if-nez v1, :cond_view_null
-    const-string v1, "Fragment view is null"
+    if-nez v1, :cond_fm_null
+    const-string v1, "ChildFragmentManager is null"
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
     return-void
 
-    :cond_view_null
-    # Find EditText by ID (0x7f0a1477)
-    const v2, 0x7f0a1477
-    invoke-virtual {v1, v2}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    :cond_fm_null
+    # Find Fragment by Tag "CustomPriceDialogFragment"
+    const-string v2, "CustomPriceDialogFragment"
+    invoke-virtual {v1, v2}, Landroidx/fragment/app/i0;->findFragmentByTag(Ljava/lang/String;)Landroidx/fragment/app/Fragment;
+    move-result-object v1
+    
+    if-nez v1, :cond_frag_not_found
+    const-string v1, "CustomPriceDialogFragment not found"
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+
+    :cond_frag_not_found
+    # Cast to po3/j
+    check-cast v1, Lpo3/j;
+    
+    # Convert double price to BigDecimal
+    iget-wide v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->price:D
+    invoke-static {v2, v3}, Ljava/math/BigDecimal;->valueOf(D)Ljava/math/BigDecimal;
     move-result-object v2
-    check-cast v2, Landroid/widget/EditText;
     
-    if-eqz v2, :cond_edit_not_found
-    
-    # Set Text
-    iget-wide v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->price:D
-    invoke-static {v3, v4}, Ljava/lang/String;->valueOf(D)Ljava/lang/String;
-    move-result-object v3
-    invoke-virtual {v2, v3}, Landroid/widget/EditText;->setText(Ljava/lang/CharSequence;)V
-    const-string v3, "Price set in EditText (0x7f0a1477)"
+    # Call setPriceAndOffer
+    const-string v3, "Calling setPriceAndOffer on CustomPriceDialogFragment..."
     invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
-    # Show Toast Typing
-    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v3}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
-    move-result-object v3
-    const-string v4, "Bot: Typing Price..."
-    invoke-static {v3, v4}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->showToast(Landroid/content/Context;Ljava/lang/String;)V
+    invoke-virtual {v1, v2}, Lpo3/j;->setPriceAndOffer(Ljava/math/BigDecimal;)V
     
-    # Find Done Button by ID (0x7f0a1468)
-    const v3, 0x7f0a1468
-    invoke-virtual {v1, v3}, Landroid/view/View;->findViewById(I)Landroid/view/View;
-    move-result-object v3
-    
-    if-eqz v3, :cond_done_not_found
-    
-    const-string v4, "Clicking Done button (0x7f0a1468)..."
-    invoke-static {v0, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    
-    # Show Toast Done
-    iget-object v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v4}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
-    move-result-object v4
-    const-string v5, "Bot: Clicking Done..."
-    invoke-static {v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->showToast(Landroid/content/Context;Ljava/lang/String;)V
-    
-    invoke-virtual {v3}, Landroid/view/View;->performClick()Z
-    goto :goto_end
+    const-string v1, "setPriceAndOffer called successfully"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    :cond_done_not_found
-    const-string v1, "Done button (0x7f0a1468) not found"
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    goto :goto_end
-
-    :cond_edit_not_found
-    const-string v1, "EditText (0x7f0a1477) not found"
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-
-    :goto_end
     return-void
 .end method

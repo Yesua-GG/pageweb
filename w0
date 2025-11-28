@@ -2053,7 +2053,7 @@
     iget-object v0, p0, Ly41/w0;->i0:Lo62/j0;
 
     .line 3
-    sget-object v1, Lu41/h1;->a:Lu41/h1;
+    sget-object v1, Lu41/j1;->a:Lu41/j1;
 
     .line 5
     invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V

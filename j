@@ -1058,7 +1058,7 @@
     .registers 2
 
     .line 1
-    invoke-direct {p0}, Lpo3/j;->P6_Force()V
+    invoke-direct {p0}, Lpo3/j;->P6()V
 
     .line 4
     sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
@@ -1924,5 +1924,18 @@
     invoke-virtual {p0}, Lcom/google/android/material/bottomsheet/b;->dismissAllowingStateLoss()V
 
     .line 29
+    return-void
+.end method
+
+.method public final setPriceAndOffer(Ljava/math/BigDecimal;)V
+    .registers 2
+
+    .line 1
+    iput-object p1, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+
+    .line 3
+    invoke-direct {p0}, Lpo3/j;->P6_Force()V
+
+    .line 6
     return-void
 .end method

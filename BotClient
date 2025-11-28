@@ -152,33 +152,16 @@
 .end method
 
 .method public static final performBid(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
-    .registers 10
+    .registers 5
     .param p0, "fragment"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
     .param p1, "price"    # D
 
     .line 1
-    # Move parameters to local registers to avoid conflicts
-    # p0 (fragment) is in v7 (last reg - 3 args) -> move to v8 (wait, registers 10 means v0-v9)
-    # p0 is v7. p1 is v8,v9.
-    
-    move-object v6, p0
-    move-wide v4, p1
-
-    const-string v0, "BotClient"
-    new-instance v1, Ljava/lang/StringBuilder;
-    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v2, "performBid called with price: "
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v1, v4, v5}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v1
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
     new-instance v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;
-    invoke-direct {v0, v6, v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
+    invoke-direct {v0, p0, p1, p2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
     
     # Run on UI Thread
-    invoke-virtual {v6}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
     move-result-object v1
     if-eqz v1, :cond_run
     invoke-virtual {v1, v0}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
@@ -186,100 +169,39 @@
     return-void
 .end method
 
-.method public static performCustomBid(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
-    .registers 4
-    .param p0, "fragment"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+.method public static final performDirectBid(Ly41/w0;D)V
+    .registers 6
+    .param p0, "viewModel"    # Ly41/w0;
+    .param p1, "price"    # D
 
+    .prologue
     .line 1
     const-string v0, "BotClient"
-    const-string v1, "Invoking ViewModel.P1() for Custom Bid..."
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Performing direct bid: "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p1, p2}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    if-nez p0, :cond_null
-    const-string v1, "Fragment is null, cannot invoke P1"
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    return-void
+    # Convert double to BigDecimal
+    new-instance v0, Ljava/math/BigDecimal;
+    invoke-direct {v0, p1, p2}, Ljava/math/BigDecimal;-><init>(D)V
 
-    :cond_null
-    # Get ViewModel via O6()
-    invoke-virtual {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+    # Get OrderStore from ViewModel
+    invoke-virtual {p0}, Ly41/w0;->getOrderStore()Lo62/j0;
     move-result-object v1
-    
-    if-nez v1, :cond_vm_null
-    const-string v1, "ViewModel is null, cannot invoke P1"
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    return-void
 
-    :cond_vm_null
-    # Call P1_Force()
-    invoke-virtual {v1}, Ly41/w0;->P1_Force()V
-    const-string v1, "ViewModel.P1_Force() invoked successfully"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    return-void
-.end method
+    # Dispatch OnOfferPriceClicked (Lu41/a0)
+    sget-object v2, Lu41/a0;->a:Lu41/a0;
+    invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
 
-.method public static dumpViewHierarchy(Landroid/view/View;I)V
-    .registers 8
-    .param p0, "view"    # Landroid/view/View;
-    .param p1, "depth"    # I
+    # Dispatch OnCustomPricePickedAction (Lu41/b0)
+    new-instance v2, Lu41/b0;
+    invoke-direct {v2, v0}, Lu41/b0;-><init>(Ljava/math/BigDecimal;)V
+    invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
 
-    .line 1
-    if-nez p0, :cond_null
-    return-void
-
-    :cond_null
-    new-instance v0, Ljava/lang/StringBuilder;
-    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
-    
-    # Indent
-    const/4 v1, 0x0
-    :loop_indent
-    if-ge v1, p1, :cond_indent_done
-    const-string v2, "  "
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    add-int/lit8 v1, v1, 0x1
-    goto :loop_indent
-    
-    :cond_indent_done
-    # Class Name
-    invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
-    move-result-object v1
-    invoke-virtual {v1}, Ljava/lang/Class;->getSimpleName()Ljava/lang/String;
-    move-result-object v1
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    
-    # ID
-    const-string v1, " ID: 0x"
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {p0}, Landroid/view/View;->getId()I
-    move-result v1
-    invoke-static {v1}, Ljava/lang/Integer;->toHexString(I)Ljava/lang/String;
-    move-result-object v1
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    
-    # Log
-    const-string v1, "BotClient_Dump"
-    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v2
-    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    
-    # Recurse if ViewGroup
-    instance-of v1, p0, Landroid/view/ViewGroup;
-    if-eqz v1, :cond_end
-    move-object v1, p0
-    check-cast v1, Landroid/view/ViewGroup;
-    invoke-virtual {v1}, Landroid/view/ViewGroup;->getChildCount()I
-    move-result v2
-    const/4 v3, 0x0
-    :loop_child
-    if-ge v3, v2, :cond_end
-    invoke-virtual {v1, v3}, Landroid/view/ViewGroup;->getChildAt(I)Landroid/view/View;
-    move-result-object v4
-    add-int/lit8 v5, p1, 0x1
-    invoke-static {v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->dumpViewHierarchy(Landroid/view/View;I)V
-    add-int/lit8 v3, v3, 0x1
-    goto :loop_child
-    
-    :cond_end
     return-void
 .end method

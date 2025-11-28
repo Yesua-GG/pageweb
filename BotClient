@@ -2,7 +2,18 @@
 .super Ljava/lang/Object;
 .source "BotClient.java"
 
+# static fields
+.field private static final client:Lokhttp3/OkHttpClient;
+
 # direct methods
+.method static constructor <clinit>()V
+    .registers 1
+    new-instance v0, Lokhttp3/OkHttpClient;
+    invoke-direct {v0}, Lokhttp3/OkHttpClient;-><init>()V
+    sput-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->client:Lokhttp3/OkHttpClient;
+    return-void
+.end method
+
 .method public constructor <init>()V
     .registers 1
 
@@ -18,8 +29,7 @@
 
     .line 10
     :try_start_0
-    new-instance v0, Lokhttp3/OkHttpClient;
-    invoke-direct {v0}, Lokhttp3/OkHttpClient;-><init>()V
+    sget-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->client:Lokhttp3/OkHttpClient;
 
     .line 12
     .local v0, "client":Lokhttp3/OkHttpClient;

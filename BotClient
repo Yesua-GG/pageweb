@@ -5,6 +5,7 @@
 # static fields
 .field private static final client:Lokhttp3/OkHttpClient;
 .field private static final executor:Ljava/util/concurrent/ExecutorService;
+.field private static volatile lastBidTime:J
 
 # direct methods
 .method static constructor <clinit>()V
@@ -205,12 +206,33 @@
 .end method
 
 .method public static final performDirectBid(Ly41/w0;D)V
-    .registers 6
+    .registers 10
     .param p0, "viewModel"    # Ly41/w0;
     .param p1, "price"    # D
 
     .prologue
     .line 1
+    # --- COOLDOWN CHECK ---
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v0
+    
+    sget-wide v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->lastBidTime:J
+    sub-long v2, v0, v2
+    
+    const-wide/16 v4, 0xbb8  # 3000ms
+    cmp-long v2, v2, v4
+    if-gez v2, :cond_cooldown
+    
+    const-string v0, "BotClient"
+    const-string v1, "Bid rejected due to cooldown (3s)"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+    
+    :cond_cooldown
+    # Update lastBidTime
+    sput-wide v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->lastBidTime:J
+    # ----------------------
+
     const-string v0, "BotClient"
     new-instance v1, Ljava/lang/StringBuilder;
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V

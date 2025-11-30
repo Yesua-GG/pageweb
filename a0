@@ -441,6 +441,40 @@
     if-eqz v0, :cond_2e
 
     .line 13
+    check-cast p1, Lu41/t1;
+
+    invoke-virtual {p1}, Lu41/t1;->a()Z
+
+    move-result p1
+
+    # --- INTERCEPT FOR AUTO TIME ---
+    sget v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->serverTime:I
+
+    if-lez v0, :cond_auto_time_skip
+
+    const-string v1, "BaseOrderFragment"
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v3, "Auto-selecting time from server: "
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    invoke-virtual {p0}, La51/a0;->S6()La51/t1;
+    move-result-object v1
+    const/4 v2, 0x0
+    invoke-virtual {v1, v2, v0}, La51/t1;->T1(II)V
+
+    const/4 v0, 0x0
+    sput v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->serverTime:I
+    return-void
+
+    :cond_auto_time_skip
+    const/4 v0, 0x1
+    const/4 v1, 0x0
+
     if-eqz p1, :cond_1e
 
     .line 15

@@ -262,3 +262,73 @@
 
     return-void
 .end method
+
+.method public static final performDirectBidWithTime(Ly41/w0;DLsinet/startup/inDriver/city/common/domain/entity/Price;I)V
+    .registers 12
+    .param p0, "viewModel"    # Ly41/w0;
+    .param p1, "price"    # D
+    .param p3, "priceEntity"    # Lsinet/startup/inDriver/city/common/domain/entity/Price;
+    .param p4, "minutes"    # I
+
+    .prologue
+    .line 1
+    # --- COOLDOWN CHECK ---
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v0
+    
+    sget-wide v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->lastBidTime:J
+    sub-long v2, v0, v2
+    
+    const-wide/16 v4, 0xbb8  # 3000ms
+    cmp-long v2, v2, v4
+    if-gez v2, :cond_cooldown
+    
+    const-string v0, "BotClient"
+    const-string v1, "Bid rejected due to cooldown (3s)"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+    
+    :cond_cooldown
+    # Update lastBidTime
+    sput-wide v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->lastBidTime:J
+    # ----------------------
+
+    const-string v0, "BotClient"
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Performing direct bid with time: "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p1, p2}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    const-string v2, " Time: "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    # Convert double to BigDecimal
+    new-instance v0, Ljava/math/BigDecimal;
+    invoke-direct {v0, p1, p2}, Ljava/math/BigDecimal;-><init>(D)V
+
+    # Get OrderStore from ViewModel
+    invoke-virtual {p0}, Ly41/w0;->getOrderStore()Lo62/j0;
+    move-result-object v1
+
+    # 1. Dispatch OnOfferPriceClicked (Lu41/a0)
+    sget-object v2, Lu41/a0;->a:Lu41/a0;
+    invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    # 2. Dispatch OnCustomPricePickedAction (Lu41/b0)
+    new-instance v2, Lu41/b0;
+    invoke-direct {v2, v0}, Lu41/b0;-><init>(Ljava/math/BigDecimal;)V
+    invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
+    
+    # 3. Dispatch OnArrivalTimeSelectedAction (Lu41/s)
+    # Constructor: (IZLsinet/startup/inDriver/city/common/domain/entity/Price;)V
+    new-instance v2, Lu41/s;
+    const/4 v3, 0x1 # selectedByUser = true
+    invoke-direct {v2, p4, v3, p3}, Lu41/s;-><init>(IZLsinet/startup/inDriver/city/common/domain/entity/Price;)V
+    invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    return-void
+.end method

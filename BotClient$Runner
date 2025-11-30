@@ -172,13 +172,13 @@
     invoke-virtual {v2, v3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v3
 
-    # Log Action
+    # Log Full Response
     const-string v5, "BotClient"
     new-instance v6, Ljava/lang/StringBuilder;
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v7, "Server Action: "
+    const-string v7, "Server Response: "
     invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v6, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v6
     invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I

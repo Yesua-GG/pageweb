@@ -53,6 +53,20 @@
     invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     const-string v3, "/config"
     invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    # --- NEW: Append user_id ---
+    const-string v3, "?user_id="
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    # Get Context (Activity)
+    iget-object v3, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+    
+    # Get ID
+    invoke-static {v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->getUserId(Landroid/content/Context;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    # ---------------------------
+
     invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v2
     

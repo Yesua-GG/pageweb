@@ -306,7 +306,7 @@
     move-result-object v1
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Convert double to BigDecimal
+    # Convert double to BigDecimal (New Price)
     new-instance v0, Ljava/math/BigDecimal;
     invoke-direct {v0, p1, p2}, Ljava/math/BigDecimal;-><init>(D)V
 
@@ -323,11 +323,48 @@
     invoke-direct {v2, v0}, Lu41/b0;-><init>(Ljava/math/BigDecimal;)V
     invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
     
+    # --- CONSTRUCT NEW PRICE OBJECT ---
+    # We need to create a new Price object with the NEW value (v0)
+    # but keeping the currency and other fields from the original Price (p3).
+    
+    # Get Currency (f())
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->f()Lsinet/startup/inDriver/city/common/domain/entity/Currency;
+    move-result-object v3
+    
+    # Get DiscountedValue (g())
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->g()Ljava/math/BigDecimal;
+    move-result-object v4
+    
+    # Get BonusForDriver (d())
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->d()Ljava/math/BigDecimal;
+    move-result-object v5
+    
+    # Get Tips (h())
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->h()Ljava/math/BigDecimal;
+    move-result-object v6
+    
+    # Get BookingFee (e())
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->e()Ljava/math/BigDecimal;
+    move-result-object v7
+    
+    # Create NEW Price
+    # Constructor: (BigDecimal value, Currency currency, BigDecimal discountedValue, BigDecimal bonusForDriver, BigDecimal tips, BigDecimal bookingFee)
+    new-instance v8, Lsinet/startup/inDriver/city/common/domain/entity/Price;
+    move-object v2, v8
+    # v0 is new value
+    # v3 is currency
+    # v4 is discounted
+    # v5 is bonus
+    # v6 is tips
+    # v7 is fee
+    invoke-direct/range {v2 .. v7}, Lsinet/startup/inDriver/city/common/domain/entity/Price;-><init>(Ljava/math/BigDecimal;Lsinet/startup/inDriver/city/common/domain/entity/Currency;Ljava/math/BigDecimal;Ljava/math/BigDecimal;Ljava/math/BigDecimal;Ljava/math/BigDecimal;)V
+    
     # 3. Dispatch OnArrivalTimeSelectedAction (Lu41/s)
     # Constructor: (IZLsinet/startup/inDriver/city/common/domain/entity/Price;)V
     new-instance v2, Lu41/s;
     const/4 v3, 0x1 # selectedByUser = true
-    invoke-direct {v2, p4, v3, p3}, Lu41/s;-><init>(IZLsinet/startup/inDriver/city/common/domain/entity/Price;)V
+    # Pass the NEW Price object (v8)
+    invoke-direct {v2, p4, v3, v8}, Lu41/s;-><init>(IZLsinet/startup/inDriver/city/common/domain/entity/Price;)V
     invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
 
     return-void

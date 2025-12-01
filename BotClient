@@ -363,6 +363,9 @@
     new-instance v2, Lsinet/startup/inDriver/city/common/domain/entity/Price;
     invoke-direct/range {v2 .. v8}, Lsinet/startup/inDriver/city/common/domain/entity/Price;-><init>(Ljava/math/BigDecimal;Lsinet/startup/inDriver/city/common/domain/entity/Currency;Ljava/math/BigDecimal;Ljava/math/BigDecimal;Ljava/math/BigDecimal;Ljava/math/BigDecimal;)V
     
+    # SAVE NEW PRICE TO v8 (Overwrite dead BookingFee)
+    move-object v8, v2
+
     # 3. Dispatch OnArrivalTimeSelectedAction (Lu41/s)
     # Constructor: (IZLsinet/startup/inDriver/city/common/domain/entity/Price;)V
     new-instance v2, Lu41/s;

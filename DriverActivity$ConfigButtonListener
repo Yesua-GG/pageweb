@@ -62,8 +62,13 @@
     iget-object v3, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
     
     # Get ID
-    invoke-static {v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->getUserId(Landroid/content/Context;)Ljava/lang/String;
+    # Inline getUserId logic
+    invoke-virtual {v3}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+    move-result-object v4
+    const-string v5, "android_id"
+    invoke-static {v4, v5}, Landroid/provider/Settings$Secure;->getString(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;
     move-result-object v3
+    
     invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     # ---------------------------
 

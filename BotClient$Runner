@@ -40,19 +40,57 @@
     const-string v1, "\"user_id\":\""
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    # Get Context
+    # Get Context Logic
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    
+    if-eqz v1, :try_activity_thread
     invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
     move-result-object v1
+    if-eqz v1, :try_activity_thread
+    goto :got_context
 
-    # Get ID
-    # Inline getUserId logic
+    :try_activity_thread
+    # Reflection to get Application Context
+    :try_start_reflect
+    const-string v1, "android.app.ActivityThread"
+    invoke-static {v1}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+    move-result-object v1
+    const-string v2, "currentApplication"
+    const/4 v3, 0x0
+    new-array v4, v3, [Ljava/lang/Class;
+    invoke-virtual {v1, v2, v4}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+    move-result-object v1
+    const/4 v2, 0x0
+    new-array v3, v3, [Ljava/lang/Object;
+    invoke-virtual {v1, v2, v3}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Landroid/content/Context;
+    :try_end_reflect
+    .catch Ljava/lang/Exception; {:try_start_reflect .. :try_end_reflect} :catch_reflect
+
+    if-eqz v1, :fallback_unknown
+    goto :got_context
+
+    :catch_reflect
+    move-exception v1
+    # Fall through to fallback
+
+    :fallback_unknown
+    const-string v1, "unknown_user"
+    goto :append_id
+
+    :got_context
+    # Get ID from Context v1
     invoke-virtual {v1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
     move-result-object v1
     const-string v2, "android_id"
     invoke-static {v1, v2}, Landroid/provider/Settings$Secure;->getString(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;
     move-result-object v1
     
+    if-nez v1, :append_id
+    const-string v1, "unknown_id_null"
+
+    :append_id
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     const-string v1, "\","

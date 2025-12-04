@@ -330,6 +330,26 @@
     goto :cond_end
 
     :cond_check_bid
+    const-string v4, "REJECT"
+    invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-eqz v4, :cond_check_bid_real
+    
+    # Reject Logic
+    new-instance v3, Landroid/os/Handler;
+    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
+    move-result-object v4
+    invoke-direct {v3, v4}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
+    
+    new-instance v4, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;
+    iget-object v5, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    iget-object v6, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->viewModel:Ly41/w0;
+    invoke-direct {v4, v5, v6}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/w0;)V
+    
+    invoke-virtual {v3, v4}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
+    goto :cond_end
+
+    :cond_check_bid_real
     const-string v4, "BID"
     invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v3

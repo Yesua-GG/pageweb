@@ -1,0 +1,60 @@
+.class public Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;
+.super Ljava/lang/Object;
+.source "BotClient.java"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# instance fields
+.field private final fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+.field private final viewModel:Ly41/w0;
+
+
+# direct methods
+.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/w0;)V
+    .registers 3
+    .param p1, "fragment"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    .param p2, "viewModel"    # Ly41/w0;
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    iput-object p2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public run()V
+    .registers 3
+
+    .line 1
+    # 1. Call viewModel.O1() (Skip/Remove)
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
+
+    if-eqz v0, :cond_vm
+
+    invoke-virtual {v0}, Ly41/w0;->O1()V
+
+    :cond_vm
+    # 2. Close Fragment (onBackPressed)
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    if-eqz v0, :cond_end
+
+    invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_end
+
+    invoke-virtual {v0}, Landroid/app/Activity;->onBackPressed()V
+
+    :cond_end
+    return-void
+.end method

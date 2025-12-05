@@ -30,6 +30,16 @@
     .registers 16
 
     .line 1
+    .line 1
+    # --- DELAY 500ms ---
+    const-wide/16 v0, 0x1f4
+    :try_start_sleep
+    invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
+    :try_end_sleep
+    .catch Ljava/lang/InterruptedException; {:try_start_sleep .. :try_end_sleep} :catch_sleep
+
+    :catch_sleep
+    
     # 1. Build JSON
     new-instance v0, Ljava/lang/StringBuilder;
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V

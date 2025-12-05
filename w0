@@ -2088,3 +2088,35 @@
     .line 3
     return-object v0
 .end method
+
+.method public final dispatchHideOrder(Ljava/lang/String;)V
+    .registers 9
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+
+    .line 1
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    move-result-object v0
+
+    .line 4
+    new-instance v3, Ly41/w0$HideOrder;
+
+    const/4 v1, 0x0
+
+    invoke-direct {v3, p0, p1, v1}, Ly41/w0$HideOrder;-><init>(Ly41/w0;Ljava/lang/String;Lkw/c;)V
+
+    .line 7
+    const/4 v4, 0x3
+
+    const/4 v5, 0x0
+
+    const/4 v1, 0x0
+
+    const/4 v2, 0x0
+
+    invoke-static/range {v0 .. v5}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 10
+    return-void
+.end method

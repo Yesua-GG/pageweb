@@ -11,12 +11,15 @@
 
 .field private final viewModel:Ly41/w0;
 
+.field private final orderId:Ljava/lang/String;
+
 
 # direct methods
-.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/w0;)V
-    .registers 3
+.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/w0;Ljava/lang/String;)V
+    .registers 4
     .param p1, "fragment"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
     .param p2, "viewModel"    # Ly41/w0;
+    .param p3, "id"    # Ljava/lang/String;
 
     .line 1
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -25,13 +28,15 @@
 
     iput-object p2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
 
+    iput-object p3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
+
     return-void
 .end method
 
 
 # virtual methods
 .method public run()V
-    .registers 3
+    .registers 6
 
     .line 1
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
@@ -43,6 +48,16 @@
     move-result-object v0
 
     if-eqz v0, :cond_store
+
+    # Dispatch Lmz0/h (Hide Order)
+    # new Lmz0/h(orderId, emptyList, false)
+    new-instance v1, Lmz0/h;
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
+    invoke-static {}, Ljava/util/Collections;->emptyList()Ljava/util/List;
+    move-result-object v3
+    const/4 v4, 0x0
+    invoke-direct {v1, v2, v3, v4}, Lmz0/h;-><init>(Ljava/lang/String;Ljava/util/List;Z)V
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
     # Dispatch Lu41/o0 (Reject/Skip)
     sget-object v1, Lu41/o0;->a:Lu41/o0;

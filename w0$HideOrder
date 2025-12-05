@@ -176,7 +176,7 @@
 .end method
 
 .method public final invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
-    .registers 7
+    .registers 10
 
     .line 1
     invoke-static {}, Llw/b;->g()Ljava/lang/Object;

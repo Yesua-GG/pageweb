@@ -31,39 +31,41 @@
 
 # virtual methods
 .method public run()V
-    .registers 4
+    .registers 3
 
     .line 1
-    # 1. Call viewModel.O1() (Skip/Remove)
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
 
-    if-eqz v0, :cond_vm
+    if-eqz v0, :cond_store
 
-    invoke-virtual {v0}, Ly41/w0;->O1()V
+    # Get OrderStore
+    invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
+    move-result-object v0
 
-    :cond_vm
-    
-    # 2. Try standard onBackPressed first
+    if-eqz v0, :cond_store
+
+    # Dispatch Lu41/o0 (Reject/Skip)
+    sget-object v1, Lu41/o0;->a:Lu41/o0;
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    # Dispatch Lu41/y (Close)
+    sget-object v1, Lu41/y;->a:Lu41/y;
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    :cond_store
+    # Close Fragment (onBackPressed) as fallback
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
 
-    if-eqz v0, :cond_back
+    if-eqz v0, :cond_end
 
     invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
 
     move-result-object v0
 
-    if-eqz v0, :cond_back
+    if-eqz v0, :cond_end
 
     invoke-virtual {v0}, Landroid/app/Activity;->onBackPressed()V
 
-    :cond_back
-    
-    # 3. Force Back Press using Instrumentation (in a new thread)
-    new-instance v0, Ljava/lang/Thread;
-    new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter$1;
-    invoke-direct {v1, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter$1;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;)V
-    invoke-direct {v0, v1}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
-    invoke-virtual {v0}, Ljava/lang/Thread;->start()V
-
+    :cond_end
     return-void
 .end method

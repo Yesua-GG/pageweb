@@ -49,17 +49,15 @@
 
     if-eqz v0, :cond_store
 
-    # Dispatch Lmz0/h (Hide Order)
-    # new Lmz0/h(orderId, emptyList, false)
-    new-instance v1, Lmz0/h;
-    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
-    invoke-static {}, Ljava/util/Collections;->emptyList()Ljava/util/List;
-    move-result-object v3
-    const/4 v4, 0x0
-    invoke-direct {v1, v2, v3, v4}, Lmz0/h;-><init>(Ljava/lang/String;Ljava/util/List;Z)V
-    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+    # Dispatch Lmz0/h (Hide Order) via ViewModel helper
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
+    invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
 
-    # Dispatch Lu41/o0 (Reject/Skip)
+    # Get OrderStore for other actions
+    invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
+    move-result-object v0
+
+    if-eqz v0, :cond_store
     sget-object v1, Lu41/o0;->a:Lu41/o0;
     invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 

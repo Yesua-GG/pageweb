@@ -31,8 +31,8 @@
 
     .line 1
     .line 1
-    # --- DELAY 500ms ---
-    const-wide/16 v0, 0x1f4
+    # --- DELAY 300ms ---
+    const-wide/16 v0, 0x12c
     :try_start_sleep
     invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
     :try_end_sleep
@@ -392,6 +392,23 @@
     goto :cond_end
 
     :cond_check_bid_real
+    const-string v4, "IGNORE"
+    invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-eqz v4, :cond_check_bid_final
+
+    # IGNORE Logic: Retry after 200ms
+    new-instance v3, Landroid/os/Handler;
+    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
+    move-result-object v4
+    invoke-direct {v3, v4}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
+    
+    # Post THIS runner again
+    const-wide/16 v4, 0xc8
+    invoke-virtual {v3, p0, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    goto :cond_end
+
+    :cond_check_bid_final
     const-string v4, "BID"
     invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v3

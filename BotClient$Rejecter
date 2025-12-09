@@ -42,7 +42,7 @@
 
 # virtual methods
 .method public run()V
-    .registers 6
+    .registers 10
     
     # Check step
     iget v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->step:I
@@ -77,8 +77,8 @@
     move-result-object v1
     invoke-direct {v0, v1}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
     
-    const-wide/16 v1, 0x1f4
-    invoke-virtual {v0, p0, v1, v2}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    const-wide/16 v3, 0x1f4
+    invoke-virtual {v0, p0, v3, v4}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
     return-void
 
     # --- STEP 1: Close Activity ---

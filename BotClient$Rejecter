@@ -13,9 +13,6 @@
 
 .field private final orderId:Ljava/lang/String;
 
-.field private step:I
-
-
 
 # direct methods
 .method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/w0;Ljava/lang/String;)V
@@ -33,67 +30,48 @@
 
     iput-object p3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
 
-    const/4 v0, 0x0
-    iput v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->step:I
-
     return-void
 .end method
 
 
 # virtual methods
 .method public run()V
-    .registers 10
-    
-    # Check step
-    iget v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->step:I
-    if-eqz v0, :step_close
+    .registers 6
 
-    # --- STEP 0: Dispatch & Schedule Close ---
+    .line 1
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
 
-    if-eqz v0, :cond_schedule
-    
-    # 1. Dispatch Hide Order
+    if-eqz v0, :cond_store
+
+    # Dispatch Lmz0/h (Hide Order) via ViewModel helper
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
     invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
 
-    # 2. Update Order Store (Action: Close/Omit)
+    # Get OrderStore for other actions
     invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
     move-result-object v0
-    if-eqz v0, :cond_schedule
+
+    if-eqz v0, :cond_store
     sget-object v1, Lu41/o0;->a:Lu41/o0;
     invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    # Dispatch Lu41/y (Close)
     sget-object v1, Lu41/y;->a:Lu41/y;
     invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
-    :cond_schedule
-    # 3. Advance Step
-    const/4 v0, 0x1
-    iput v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->step:I
-
-    # 4. Post Delayed (500ms)
+    :cond_store
+    # Delayed Close (500ms) to allow HideOrder to finish
     new-instance v0, Landroid/os/Handler;
     invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
     move-result-object v1
     invoke-direct {v0, v1}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
-    
-    const-wide/16 v3, 0x1f4
-    invoke-virtual {v0, p0, v3, v4}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-    return-void
 
-    # --- STEP 1: Close Activity ---
-    :step_close
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    invoke-direct {v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
 
-    if-eqz v0, :cond_end
-
-    invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_end
-
-    invoke-virtual {v0}, Landroid/app/Activity;->onBackPressed()V
+    const-wide/16 v2, 0x1f4
+    invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 
     :cond_end
     return-void

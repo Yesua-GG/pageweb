@@ -183,6 +183,10 @@
 
     move-result-object v0
 
+    const-string p1, "HideOrder"
+    const-string v1, "Start: HideOrder invoked"
+    invoke-static {p1, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     .line 4
     iget v1, p0, Ly41/w0$HideOrder;->a0:I
 
@@ -227,6 +231,10 @@
 
     move-result-object p1
 
+    const-string v1, "HideOrder"
+    const-string v3, "Store retrieved"
+    invoke-static {v1, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     .line 32
     # Create Lmz0/h
     new-instance v1, Lmz0/h;
@@ -235,6 +243,10 @@
     move-result-object v4
     const/4 v5, 0x0
     invoke-direct {v1, v3, v4, v5}, Lmz0/h;-><init>(Ljava/lang/String;Ljava/util/List;Z)V
+
+    const-string v3, "HideOrder"
+    const-string v4, "Dispatching HideOrder Action"
+    invoke-static {v3, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 35
     iput v2, p0, Ly41/w0$HideOrder;->a0:I
@@ -253,6 +265,11 @@
     .line 44
     :cond_2b
     :goto_2b
+    :goto_2b
+    const-string p1, "HideOrder"
+    const-string v0, "Success: HideOrder dispatched"
+    invoke-static {p1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     sget-object p1, Lkotlin/Unit;->a:Lkotlin/Unit;
 
     .line 46

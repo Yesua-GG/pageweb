@@ -1580,13 +1580,25 @@
     sget-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->pendingHideId:Ljava/lang/String;
     if-eqz v0, :cond_bot_skip_e2
 
+    # Get Store: p0.i0 -> v2
+    iget-object v2, p0, Lh31/l0;->i0:Lo62/j0;
+
+    # Get State: v2.s() -> v3
+    invoke-virtual {v2}, Lo62/j0;->s()Ljava/lang/Object;
+    move-result-object v3
+    check-cast v3, Ld31/o0;
+
+    # Get Orders: v3.l() -> v4
+    invoke-virtual {v3}, Ld31/o0;->l()Ljava/util/List;
+    move-result-object v4
+
     # Create Remove Action (d01/i)
-    new-instance v1, Ld01/i;
-    invoke-direct {v1, v0}, Ld01/i;-><init>(Ljava/lang/String;)V
+    new-instance v5, Ld01/i;
+    const/4 v6, 0x0
+    invoke-direct {v5, v0, v4, v6}, Ld01/i;-><init>(Ljava/lang/String;Ljava/util/List;Z)V
 
     # Dispatch to Store
-    iget-object v0, p0, Lh31/l0;->i0:Lo62/j0;
-    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+    invoke-virtual {v2, v5}, Lo62/j0;->n(Ljava/lang/Object;)V
 
     # Clear valid
     const/4 v0, 0x0

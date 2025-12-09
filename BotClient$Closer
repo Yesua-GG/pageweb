@@ -44,11 +44,26 @@
     invoke-virtual {v0}, Landroid/app/Activity;->onBackPressed()V
 
     :cond_close
-    # 2. Execute Remove (dispatchHideOrder)
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->viewModel:Ly41/w0;
-    if-eqz v0, :cond_end
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->orderId:Ljava/lang/String;
-    invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
+    # 2. Execute Remove (dispatchHideOrder) via ProcessScope
+    # Get Scope
+    invoke-static {}, Landroidx/lifecycle/ProcessLifecycleOwner;->get()Landroidx/lifecycle/LifecycleOwner;
+    move-result-object v0
+    invoke-static {v0}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+    move-result-object v1
+
+    # Create HideOrder Suspend Function
+    new-instance v4, Ly41/w0$HideOrder;
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->viewModel:Ly41/w0;
+    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->orderId:Ljava/lang/String;
+    const/4 v5, 0x0
+    invoke-direct {v4, v2, v3, v5}, Ly41/w0$HideOrder;-><init>(Ly41/w0;Ljava/lang/String;Lkw/c;)V
+
+    # Launch
+    const/4 v2, 0x0 
+    const/4 v3, 0x0
+    const/4 v5, 0x3
+    const/4 v6, 0x0
+    invoke-static/range {v1 .. v6}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
 
     :cond_end
     return-void

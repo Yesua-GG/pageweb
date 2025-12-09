@@ -6,6 +6,7 @@
 .field private static final client:Lokhttp3/OkHttpClient;
 .field private static final executor:Ljava/util/concurrent/ExecutorService;
 .field private static volatile lastBidTime:J
+.field public static volatile pendingHideId:Ljava/lang/String;
 
 # direct methods
 .method static constructor <clinit>()V

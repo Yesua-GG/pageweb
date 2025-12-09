@@ -1,4 +1,4 @@
-.class final Ly41/w0$HideOrder;
+.class public final Ly41/w0$HideOrder;
 .super Lkotlin/coroutines/jvm/internal/m;
 .source "SourceFile"
 
@@ -68,7 +68,7 @@
 
 
 # direct methods
-.method constructor <init>(Ly41/w0;Ljava/lang/String;Lkw/c;)V
+.method public constructor <init>(Ly41/w0;Ljava/lang/String;Lkw/c;)V
     .registers 4
     .annotation system Ldalvik/annotation/Signature;
         value = {

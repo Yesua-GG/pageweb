@@ -205,6 +205,18 @@
     return-object v0
 .end method
 
+.method public final getInterStore()Lp62/a;
+    .registers 2
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+
+    .line 1
+    iget-object v0, p0, Ly41/w0;->p0:Lp62/a;
+
+    .line 3
+    return-object v0
+.end method
+
 .method public constructor <init>(Lo62/j0;Lih0/e;Lku1/c;Lku1/a;Lwh0/e;Lrh0/a;Lef1/d;Lp62/a;Lku1/c;Lz12/b;)V
     .registers 12
     .param p1  # Lo62/j0;

@@ -183,9 +183,9 @@
 
     move-result-object v0
 
-    const-string p1, "HideOrder"
-    const-string v1, "Start: HideOrder invoked"
-    invoke-static {p1, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    const-string v4, "HideOrder"
+    const-string v5, "Start: HideOrder invoked"
+    invoke-static {v4, v5}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 4
     iget v1, p0, Ly41/w0$HideOrder;->a0:I
@@ -226,14 +226,14 @@
     iget-object p1, p0, Ly41/w0$HideOrder;->b0:Ly41/w0;
 
     .line 29
-    # Get interStore via getter I added or field access
-    invoke-virtual {p1}, Ly41/w0;->getInterStore()Lp62/a;
+    # Use static accessor I1
+    invoke-static {p1}, Ly41/w0;->I1(Ly41/w0;)Lp62/a;
 
     move-result-object p1
 
-    const-string v1, "HideOrder"
-    const-string v3, "Store retrieved"
-    invoke-static {v1, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    const-string v4, "HideOrder"
+    const-string v5, "Store retrieved via I1"
+    invoke-static {v4, v5}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 32
     # Create Lmz0/h
@@ -264,7 +264,6 @@
 
     .line 44
     :cond_2b
-    :goto_2b
     :goto_2b
     const-string p1, "HideOrder"
     const-string v0, "Success: HideOrder dispatched"

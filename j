@@ -1009,16 +1009,6 @@
     invoke-virtual {p1}, Lmz0/h;->d()Ljava/lang/String;
     move-result-object v0
 
-    const-string v3, "RequestsTray"
-    new-instance v4, Ljava/lang/StringBuilder;
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v5, "Received HideOrder for ID: "
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v4
-    invoke-static {v3, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
     # Get Store: p0.i0 -> v1
     # i0 is private, use getter Y1 or direct field access if in same class.
     # Since T1 is static in Lh31/l0, we need to access field i0 of p0.
@@ -2024,6 +2014,23 @@
     .registers 3
 
     .line 1
+    # Check for pending rejected order removal
+    sget-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->pendingHideId:Ljava/lang/String;
+    if-eqz v0, :cond_bot_skip
+
+    # Create Remove Action (d01/i)
+    new-instance v1, Ld01/i;
+    invoke-direct {v1, v0}, Ld01/i;-><init>(Ljava/lang/String;)V
+
+    # Dispatch to Store
+    iget-object v0, p0, Lh31/l0;->i0:Lo62/j0;
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    # Clear valid
+    const/4 v0, 0x0
+    sput-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->pendingHideId:Ljava/lang/String;
+
+    :cond_bot_skip
     iget-object v0, p0, Lh31/l0;->i0:Lo62/j0;
 
     .line 3

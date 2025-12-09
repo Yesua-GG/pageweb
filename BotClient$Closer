@@ -8,17 +8,23 @@
 
 # instance fields
 .field private final fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+.field private final viewModel:Ly41/w0;
+.field private final orderId:Ljava/lang/String;
 
 
 # direct methods
-.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
-    .registers 2
+.method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/w0;Ljava/lang/String;)V
+    .registers 4
     .param p1, "fragment"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    .param p2, "viewModel"    # Ly41/w0;
+    .param p3, "id"    # Ljava/lang/String;
 
     .line 1
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    iput-object p2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->viewModel:Ly41/w0;
+    iput-object p3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->orderId:Ljava/lang/String;
 
     return-void
 .end method
@@ -26,20 +32,23 @@
 
 # virtual methods
 .method public run()V
-    .registers 2
+    .registers 3
 
     .line 1
+    # 1. Close Activity
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-
-    if-eqz v0, :cond_end
-
+    if-eqz v0, :cond_close
     invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
-
     move-result-object v0
-
-    if-eqz v0, :cond_end
-
+    if-eqz v0, :cond_close
     invoke-virtual {v0}, Landroid/app/Activity;->onBackPressed()V
+
+    :cond_close
+    # 2. Execute Remove (dispatchHideOrder)
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->viewModel:Ly41/w0;
+    if-eqz v0, :cond_end
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;->orderId:Ljava/lang/String;
+    invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
 
     :cond_end
     return-void

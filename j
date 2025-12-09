@@ -1576,6 +1576,23 @@
     .registers 12
 
     .line 1
+    # Check for pending rejected order removal
+    sget-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->pendingHideId:Ljava/lang/String;
+    if-eqz v0, :cond_bot_skip_e2
+
+    # Create Remove Action (d01/i)
+    new-instance v1, Ld01/i;
+    invoke-direct {v1, v0}, Ld01/i;-><init>(Ljava/lang/String;)V
+
+    # Dispatch to Store
+    iget-object v0, p0, Lh31/l0;->i0:Lo62/j0;
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    # Clear valid
+    const/4 v0, 0x0
+    sput-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->pendingHideId:Ljava/lang/String;
+
+    :cond_bot_skip_e2
     sget-object v2, Lff1/b;->a:Lff1/b;
 
     .line 3
@@ -2014,23 +2031,6 @@
     .registers 3
 
     .line 1
-    # Check for pending rejected order removal
-    sget-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->pendingHideId:Ljava/lang/String;
-    if-eqz v0, :cond_bot_skip
-
-    # Create Remove Action (d01/i)
-    new-instance v1, Ld01/i;
-    invoke-direct {v1, v0}, Ld01/i;-><init>(Ljava/lang/String;)V
-
-    # Dispatch to Store
-    iget-object v0, p0, Lh31/l0;->i0:Lo62/j0;
-    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
-
-    # Clear valid
-    const/4 v0, 0x0
-    sput-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->pendingHideId:Ljava/lang/String;
-
-    :cond_bot_skip
     iget-object v0, p0, Lh31/l0;->i0:Lo62/j0;
 
     .line 3

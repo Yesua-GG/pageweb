@@ -54,13 +54,22 @@
     # ---------------------------------------------
 
     # --- 2. Remove Order (Hide) ---
+    # --- 2. Remove Order (Hide) ---
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
 
     if-eqz v0, :cond_end
 
-    # Dispatch Hide (Remove from tray)
+    # Create HideOrder Suspend Function
+    new-instance v2, Ly41/w0$HideOrder;
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
-    invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
+    const/4 v3, 0x0
+    invoke-direct {v2, v0, v1, v3}, Ly41/w0$HideOrder;-><init>(Ly41/w0;Ljava/lang/String;Lkw/c;)V
+
+    # Execute with runBlocking (Lfx/i;->f(ctx, block, mask, obj))
+    const/4 v3, 0x0
+    const/4 v4, 0x1
+    const/4 v5, 0x0
+    invoke-static {v3, v2, v4, v5}, Lfx/i;->f(Lkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Ljava/lang/Object;
 
     # Get Store
     invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;

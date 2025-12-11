@@ -73,7 +73,8 @@
     invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
     :cond_store
-    # 2. CLOSE ACTIVITY LOGIC
+    :cond_store
+    # 2. CLOSE ACTIVITY LOGIC (DELAYED)
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
     if-eqz v0, :cond_end
     invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
@@ -81,9 +82,22 @@
     if-eqz v1, :cond_end
 
     const-string v2, "BotClient_Rejecter"
-    const-string v3, "Closing activity..."
+    const-string v3, "Posting delayed close check..."
     invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    invoke-virtual {v1}, Landroid/app/Activity;->onBackPressed()V
+
+    # Create Handler
+    new-instance v2, Landroid/os/Handler;
+    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
+    move-result-object v3
+    invoke-direct {v2, v3}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
+
+    # Create Closer Runnable
+    new-instance v3, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;
+    invoke-direct {v3, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;-><init>(Landroid/app/Activity;)V
+
+    # Post Delayed (300ms)
+    const-wide/16 v0, 0x12c
+    invoke-virtual {v2, v3, v0, v1}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 
     :cond_end
     return-void

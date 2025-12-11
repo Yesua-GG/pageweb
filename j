@@ -4481,7 +4481,7 @@
 .end method
 
 .method public final W(Lpz0/e;I)V
-    .registers 6
+    .registers 12
     .param p1  # Lpz0/e;
         .annotation build Lorg/jetbrains/annotations/NotNull;
         .end annotation
@@ -4490,61 +4490,29 @@
     .line 1
     .line 1
     .line 1
-    # INJECTED: Trigger Hide Logic if ID matches
-    invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;
+    # INJECTED: Safe Register Usage
+    move-object v8, p0
+    move-object v7, p1
 
-    move-result-object v0
+    invoke-virtual {v7}, Lpz0/e;->o()Ljava/lang/String;
+    move-result-object v5
 
-    sget-object v1, Ly41/w0;->currentOrderId:Ljava/lang/String;
+    sget-object v6, Ly41/w0;->currentOrderId:Ljava/lang/String;
 
-    if-eqz v0, :cond_normal_bind
+    if-eqz v5, :cond_normal_bind
+    if-eqz v6, :cond_normal_bind
+    invoke-virtual {v5, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v5
+    if-eqz v5, :cond_normal_bind
 
-    if-eqz v1, :cond_normal_bind
+    const-string v5, "BotClient_List"
+    const-string v6, "MATCH FOUND - INVOKING b0.j()"
+    invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-
-    move-result v0
-
-    if-eqz v0, :cond_normal_bind
-
-    const-string v0, "BotClient_List"
-
-    new-instance v2, Ljava/lang/StringBuilder;
-
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v3, "Match found for ID: "
-
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v2
-
-    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v2
-
-    const-string v3, ". Invoking b0.j()"
-
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v2
-
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    iget-object v0, p0, Lf01/b0;->b0:Lnz0/c;
-
-    if-eqz v0, :cond_unbind_id
-
-    invoke-interface {v0, v1}, Lnz0/c;->j(Ljava/lang/String;)V
-
-    :cond_unbind_id
-    # Continue to normal bind, the listener logic should handle the removal/update
-    # But we might want to prevent UI flicker by setting it invisible briefly?
-    # Let's trust the logic as requested.
+    iget-object v5, v8, Lf01/b0;->b0:Lnz0/c;
+    if-eqz v5, :cond_normal_bind
+    sget-object v6, Ly41/w0;->currentOrderId:Ljava/lang/String;
+    invoke-interface {v5, v6}, Lnz0/c;->j(Ljava/lang/String;)V
 
     :cond_normal_bind
     iput-object p1, p0, Lf01/b0;->l1:Lpz0/e;

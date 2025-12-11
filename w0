@@ -990,20 +990,19 @@
 
     # Capture Current Order ID
     invoke-virtual/range {p1 .. p1}, Lu41/p1;->i()Ljava/lang/String;
-    move-result-object v19
-    sput-object v19, Ly41/w0;->currentOrderId:Ljava/lang/String;
-    const-string v29, "BotClient_ID"
-    new-instance v30, Ljava/lang/StringBuilder;
-    invoke-direct/range {v30 .. v30}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v31, "Captured Order ID: "
-    invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v30
-    move-object/from16 v31, v19
-    invoke-virtual/range {v30 .. v31}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v30
-    invoke-virtual/range {v30 .. v30}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v30
-    invoke-static/range {v29 .. v30}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    move-result-object v10
+    sput-object v10, Ly41/w0;->currentOrderId:Ljava/lang/String;
+    const-string v11, "BotClient_ID"
+    new-instance v12, Ljava/lang/StringBuilder;
+    invoke-direct {v12}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v13, "Captured Order ID: "
+    invoke-virtual {v12, v13}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v12
+    invoke-virtual {v12, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v12
+    invoke-virtual {v12}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v12
+    invoke-static {v11, v12}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 3
     iget-object v1, v0, Ly41/w0;->j0:Lih0/e;

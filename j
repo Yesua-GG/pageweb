@@ -1,4 +1,4 @@
-# classes15.dex
+# classes14.dex
 
 .class public final Lf01/b0;
 .super Landroidx/recyclerview/widget/RecyclerView$f0;
@@ -1337,10 +1337,6 @@
 
     .line 13
     invoke-interface {v0, p1}, Lnz0/c;->j(Ljava/lang/String;)V
-
-    iget-object v1, p0, Lf01/b0;->b0:Lnz0/c;
-
-    invoke-interface {v1, p1}, Lnz0/c;->g(Ljava/lang/String;)V
 
     .line 16
     :cond_f
@@ -4492,6 +4488,48 @@
     .end param
 
     .line 1
+    .line 1
+    .line 1
+    # INJECTED: Trigger Hide Logic if ID matches
+    invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;
+    move-result-object v0
+
+    sget-object v1, Ly41/w0;->currentOrderId:Ljava/lang/String;
+
+    if-eqz v0, :cond_normal_bind
+    if-eqz v1, :cond_normal_bind
+    invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :cond_normal_bind
+
+    # IDs match -> Trigger Logic to Hide Order via Delegate
+    const-string v0, "BotClient_List"
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Triggering Hide Logic for ID: "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    sget-object v2, Ly41/w0;->currentOrderId:Ljava/lang/String;
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    iget-object v0, p0, Lf01/b0;->h0:Lnz0/a;
+    if-eqz v0, :cond_unbind_id
+    sget-object v1, Ly41/w0;->currentOrderId:Ljava/lang/String;
+    invoke-interface {v0, v1}, Lnz0/a;->b(Ljava/lang/String;)V
+    
+    # Optional: Clear currentOrderId to prevent repeated calls?
+    # No, keep it until next reject happens to be safe.
+    
+    :cond_unbind_id
+    # Continue to normal bind, the listener logic should handle the removal/update
+    # But we might want to prevent UI flicker by setting it invisible briefly?
+    # Let's trust the logic as requested.
+
+    :cond_normal_bind
     iput-object p1, p0, Lf01/b0;->l1:Lpz0/e;
 
     .line 3

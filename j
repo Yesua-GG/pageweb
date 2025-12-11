@@ -4492,38 +4492,55 @@
     .line 1
     # INJECTED: Trigger Hide Logic if ID matches
     invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;
+
     move-result-object v0
 
     sget-object v1, Ly41/w0;->currentOrderId:Ljava/lang/String;
 
     if-eqz v0, :cond_normal_bind
+
     if-eqz v1, :cond_normal_bind
+
     invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
     move-result v0
+
     if-eqz v0, :cond_normal_bind
 
-    # IDs match -> Trigger Logic to Hide Order via Delegate
     const-string v0, "BotClient_List"
-    new-instance v1, Ljava/lang/StringBuilder;
-    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v2, "Triggering Hide Logic for ID: "
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v1
-    sget-object v2, Ly41/w0;->currentOrderId:Ljava/lang/String;
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v1
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v1
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    iget-object v0, p0, Lf01/b0;->h0:Lnz0/a;
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v3, "Match found for ID: "
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v3, ". Invoking b0.j()"
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    iget-object v0, p0, Lf01/b0;->b0:Lnz0/c;
+
     if-eqz v0, :cond_unbind_id
-    sget-object v1, Ly41/w0;->currentOrderId:Ljava/lang/String;
-    invoke-interface {v0, v1}, Lnz0/a;->b(Ljava/lang/String;)V
-    
-    # Optional: Clear currentOrderId to prevent repeated calls?
-    # No, keep it until next reject happens to be safe.
-    
+
+    invoke-interface {v0, v1}, Lnz0/c;->j(Ljava/lang/String;)V
+
     :cond_unbind_id
     # Continue to normal bind, the listener logic should handle the removal/update
     # But we might want to prevent UI flicker by setting it invisible briefly?

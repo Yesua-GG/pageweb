@@ -988,8 +988,8 @@
     .line 1
     move-object/from16 v0, p0
 
-    # Capture Current Order ID
-    invoke-virtual/range {p1 .. p1}, Lu41/p1;->i()Ljava/lang/String;
+    # Capture Current Order ID (Corrected to use l() instead of i())
+    invoke-virtual/range {p1 .. p1}, Lu41/p1;->l()Ljava/lang/String;
     move-result-object v10
     sput-object v10, Ly41/w0;->currentOrderId:Ljava/lang/String;
     const-string v11, "BotClient_ID"

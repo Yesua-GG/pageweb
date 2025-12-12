@@ -73,12 +73,9 @@
     move-result-object v3
     if-eqz v3, :cond_close
 
-    # Create the HideOrder event: Lmz0/h;-><init>(Ljava/lang/String;Ljava/util/List;Z)V
-    new-instance v4, Lmz0/h;
-    invoke-static {}, Ljava/util/Collections;->emptyList()Ljava/util/List;
-    move-result-object v5
-    const/4 v6, 0x0
-    invoke-direct {v4, v2, v5, v6}, Lmz0/h;-><init>(Ljava/lang/String;Ljava/util/List;Z)V
+    # Create the HideOrder event: Lmz0/a;-><init>(Ljava/lang/String;)V
+    new-instance v4, Lmz0/a;
+    invoke-direct {v4, v2}, Lmz0/a;-><init>(Ljava/lang/String;)V
 
     # Dispatch HideOrder event to OrderStore (synchronous call)
     invoke-virtual {v3, v4}, Lo62/j0;->n(Ljava/lang/Object;)V

@@ -41,33 +41,44 @@
     .registers 5
 
     .line 1
-    # 1. HIDE ORDER LOGIC
-    # 1. HIDE ORDER LOGIC - DIRECT via FRAGMENT (nz0/c)
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    # 1. HIDE ORDER LOGIC - Via OrderStore direct event emission
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
 
-    if-eqz v0, :cond_store
+    if-eqz v0, :cond_store_skip
 
-    # Try Global ID resolution first (robustness)
+    # Resolve Order ID (Global or Local)
     sget-object v1, Ly41/w0;->currentOrderId:Ljava/lang/String;
     if-eqz v1, :cond_local
     const-string v2, "BotClient_Rejecter"
-    const-string v3, "Using Global Current Order ID"
+    const-string v3, "Using Global Current Order ID for Store"
     invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    goto :cond_call_hide
+    goto :cond_emit_event
 
     :cond_local
     const-string v2, "BotClient_Rejecter"
-    const-string v3, "Using Local Order ID"
+    const-string v3, "Using Local Order ID for Store"
     invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
 
-    :cond_call_hide
-    # Cast to interface and call g(String) [Hide]
-    check-cast v0, Lnz0/c;
-    invoke-interface {v0, v1}, Lnz0/c;->g(Ljava/lang/String;)V
+    :cond_emit_event
+    # Get the OrderStore from ViewModel
+    invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
+    move-result-object v2
+    if-eqz v2, :cond_store_skip
 
-    :cond_store
-    :cond_store
+    # Emit Hide Event (Lu41/o0 is the HideOrder event)
+    sget-object v3, Lu41/o0;->a:Lu41/o0;
+    invoke-virtual {v2, v3}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    # Emit Refresh Event (Lu41/y is the Refresh event)
+    sget-object v3, Lu41/y;->a:Lu41/y;
+    invoke-virtual {v2, v3}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    const-string v3, "BotClient_Rejecter"
+    const-string v4, "Hide events emitted to OrderStore"
+    invoke-static {v3, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    :cond_store_skip
     # 2. CLOSE ACTIVITY LOGIC
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
     if-eqz v0, :cond_end

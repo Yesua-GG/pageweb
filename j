@@ -274,6 +274,8 @@
 .end field
 
 
+.field public static currentOrderId:Ljava/lang/String;
+
 # direct methods
 .method static constructor <clinit>()V
     .registers 2
@@ -295,8 +297,6 @@
 
     .line 11
     sput v0, Ly41/y0;->Z0:I
-
-    .field public static currentOrderId:Ljava/lang/String;
 
     .line 13
     return-void
@@ -459,13 +459,16 @@
     iput-object p12, p0, Ly41/y0;->k0:Ljava/lang/String;
 
     .line 14
-    iput-object p13, p0, Ly41/y0;->l0:Ljava/lang/String;
+    move-object/from16 v0, p13
+    iput-object v0, p0, Ly41/y0;->l0:Ljava/lang/String;
 
     .line 15
-    iput-object p14, p0, Ly41/y0;->m0:Luh0/d;
+    move-object/from16 v0, p14
+    iput-object v0, p0, Ly41/y0;->m0:Luh0/d;
 
     .line 16
-    iput-boolean p15, p0, Ly41/y0;->N0:Z
+    move v0, p15
+    iput-boolean v0, p0, Ly41/y0;->N0:Z
 
     move-object/from16 p1, p16
 

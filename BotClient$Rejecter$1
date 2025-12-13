@@ -38,6 +38,13 @@
 
     .line 1
     :try_start_0
+    const-string v0, "BotClient"
+
+    const-string v1, "UI Runnable started - searching fragments"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 2
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter$1;->val$activity:Landroid/app/Activity;
 
     check-cast v0, Landroidx/fragment/app/FragmentActivity;
@@ -113,7 +120,7 @@
     .line 10
     const-string v1, "BotClient"
 
-    const-string v2, "Custom hide logic executed via runOnUiThread"
+    const-string v2, "SUCCESS: Found fragment and called g()"
 
     invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     :try_end_57
@@ -128,14 +135,29 @@
     move-exception v0
 
     .line 13
-    invoke-virtual {v0}, Ljava/lang/Exception;->printStackTrace()V
+    const-string v1, "BotClient"
+
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v3, "Error in UI Runnable: "
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v0}, Ljava/lang/Exception;->getMessage()Ljava/lang/String;
+
+    move-result-object v3
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 16
     :goto_5c
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter$1;->val$activity:Landroid/app/Activity;
-
-    invoke-virtual {v0}, Landroid/app/Activity;->onBackPressed()V
-
-    .line 17
     return-void
 .end method

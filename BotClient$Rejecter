@@ -38,79 +38,62 @@
 
 # virtual methods
 .method public run()V
-    .registers 8
+    .registers 5
 
     .line 1
-    # Log start
-    const-string v0, "BotClient_Rejecter"
-    const-string v1, "Starting run() - With Delay Fix"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    # Get Order ID (prefer global, fallback to local)
-    sget-object v2, Ly41/w0;->currentOrderId:Ljava/lang/String;
-    if-nez v2, :cond_use_id
-    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
-
-    :cond_use_id
-    if-eqz v2, :cond_close
-
-    # Log the ID being used
-    const-string v0, "BotClient_Rejecter"
-    new-instance v3, Ljava/lang/StringBuilder;
-    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v4, "Dispatching hide for order ID: "
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v3
-    invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    # Get ViewModel and call dispatchHideOrder (this launches the coroutine)
+    # 1. HIDE ORDER LOGIC
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
-    if-eqz v0, :cond_close
 
-    invoke-virtual {v0, v2}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
+    if-eqz v0, :cond_store
 
-    const-string v0, "BotClient_Rejecter"
-    const-string v1, "dispatchHideOrder called, waiting before close..."
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    # Try Global ID
+    sget-object v1, Ly41/w0;->currentOrderId:Ljava/lang/String;
+    if-eqz v1, :cond_local
+    const-string v2, "BotClient_Rejecter"
+    const-string v3, "Using Global Current Order ID"
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    goto :cond_dispatch
 
-    # Dispatch supplementary store events synchronously
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
-    if-eqz v0, :cond_close
+    :cond_local
+    const-string v2, "BotClient_Rejecter"
+    const-string v3, "Using Local Order ID"
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
+
+    :cond_dispatch
+    invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
+
+    # Store Events
     invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
-    move-result-object v3
-    if-eqz v3, :cond_close
-    sget-object v4, Lu41/o0;->a:Lu41/o0;
-    invoke-virtual {v3, v4}, Lo62/j0;->n(Ljava/lang/Object;)V
-    sget-object v4, Lu41/y;->a:Lu41/y;
-    invoke-virtual {v3, v4}, Lo62/j0;->n(Ljava/lang/Object;)V
+    move-result-object v0
+    if-eqz v0, :cond_store
+    sget-object v1, Lu41/o0;->a:Lu41/o0;
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+    sget-object v1, Lu41/y;->a:Lu41/y;
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
-    :cond_close
-    # CLOSE ACTIVITY with a delay using Handler to allow coroutine to complete
+    :cond_store
+    :cond_store
+    # 2. CLOSE ACTIVITY LOGIC
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
     if-eqz v0, :cond_end
     invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
     move-result-object v1
     if-eqz v1, :cond_end
 
-    # Create a Handler and post a delayed close
-    new-instance v3, Landroid/os/Handler;
-    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
-    move-result-object v4
-    invoke-direct {v3, v4}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
+    const-string v2, "BotClient_Rejecter"
+    const-string v3, "Closing activity..."
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Create Closer runnable
-    new-instance v4, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;
-    invoke-direct {v4, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Closer;-><init>(Landroid/app/Activity;)V
+    # SLEEP 500ms to allow HideOrder coroutine to complete
+    const-wide/16 v2, 0x1f4
+    :try_start_sleep
+    invoke-static {v2, v3}, Ljava/lang/Thread;->sleep(J)V
+    :try_end_sleep
+    .catch Ljava/lang/InterruptedException; {:try_start_sleep .. :try_end_sleep} :catch_ignored
 
-    # Post with 500ms delay to allow coroutine to dispatch
-    const-wide/16 v5, 0x1f4
-    invoke-virtual {v3, v4, v5, v6}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-
-    const-string v0, "BotClient_Rejecter"
-    const-string v3, "Scheduled delayed close (500ms)"
-    invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    :catch_ignored
+    invoke-virtual {v1}, Landroid/app/Activity;->onBackPressed()V
 
     :cond_end
     return-void

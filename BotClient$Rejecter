@@ -60,8 +60,18 @@
     invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
 
-    :cond_dispatch
-    invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
+    # Direct delegation to OrderDelegateListener (Hide)
+    # Direct delegation to OrderDelegateListener (Hide)
+    const-string v2, "BotClient_Rejecter"
+    const-string v3, "Delegating to OrderDelegateListener.j (Hide)"
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    if-eqz v2, :cond_dispatch_end
+    # Cast fragment to OrderDelegateListener
+    check-cast v2, Lnz0/c;
+    invoke-interface {v2, v1}, Lnz0/c;->j(Ljava/lang/String;)V
+    :cond_dispatch_end
 
     # Store Events
     invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;

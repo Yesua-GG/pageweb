@@ -39,6 +39,13 @@
     .registers 5
 
     .line 1
+    const-string v0, "BotClient"
+
+    const-string v1, "Rejecter run called"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 2
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
 
     .line 3
@@ -97,7 +104,7 @@
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v3, "Rejecting Order ID: "
+    const-string v3, "Dispatching Hide UI for ID: "
 
     invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -117,6 +124,16 @@
     invoke-direct {v2, p0, v1, v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter$1;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;Landroid/app/Activity;Ljava/lang/String;)V
 
     invoke-virtual {v1, v2}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
+
+    .line 28
+    const-string v2, "BotClient"
+
+    const-string v3, "Closing activity..."
+
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 29
+    invoke-virtual {v1}, Landroid/app/Activity;->onBackPressed()V
 
     .line 100
     :cond_c0

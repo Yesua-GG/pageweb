@@ -1,5 +1,3 @@
-# classes16.dex
-
 .class public Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;
 .super Ljava/lang/Object;
 .source "BotClient.java"
@@ -38,32 +36,143 @@
 
 # virtual methods
 .method public run()V
-    .registers 3
+    .registers 8
 
     .line 1
-    # 1. HIDE ORDER (Direct Delegate)
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
 
-    if-eqz v0, :cond_close
+    if-nez v0, :cond_fix_id
 
-    # Cast to interface nz0/c and call g(String)
-    check-cast v0, Lnz0/c;
+    sget-object v0, Ly41/y0;->currentOrderId:Ljava/lang/String;
+
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
+
+    :cond_fix_id
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
+
+    .line 3
+    if-eqz v0, :cond_1e
+
+    .line 5
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
-    invoke-interface {v0, v1}, Lnz0/c;->g(Ljava/lang/String;)V
 
-    :cond_close
-    # 2. CLOSE ACTIVITY
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    .line 7
+    invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
 
-    if-eqz v0, :cond_end
+    .line 10
+    invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
 
-    invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
+    .line 13
     move-result-object v0
 
-    if-eqz v0, :cond_end
+    .line 14
+    if-eqz v0, :cond_1e
 
+    .line 16
+    sget-object v1, Lu41/o0;->a:Lu41/o0;
+
+    .line 18
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 21
+    sget-object v1, Lu41/y;->a:Lu41/y;
+
+    .line 23
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 26
+    :cond_1e
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    .line 28
+    if-eqz v0, :cond_c0
+
+    .line 30
+    invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
+
+    .line 33
+    move-result-object v0
+
+    .line 34
+    if-eqz v0, :cond_c0
+
+    .line 35
+    :try_start_27
+    invoke-virtual {v0}, Landroidx/fragment/app/FragmentActivity;->getSupportFragmentManager()Landroidx/fragment/app/FragmentManager;
+
+    move-result-object v1
+
+    invoke-virtual {v1}, Landroidx/fragment/app/FragmentManager;->getFragments()Ljava/util/List;
+
+    move-result-object v1
+
+    invoke-interface {v1}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+
+    move-result-object v1
+
+    :cond_35
+    invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v2
+
+    if-eqz v2, :cond_8b
+
+    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Landroidx/fragment/app/Fragment;
+
+    invoke-virtual {v2}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+
+    move-result-object v3
+
+    invoke-virtual {v3}, Ljava/lang/Class;->getName()Ljava/lang/String;
+
+    move-result-object v4
+
+    const-string v5, "sinet.startup.inDriver.city.driver.feed.impl.ui.OrdersFragment"
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v4
+
+    if-eqz v4, :cond_35
+
+    const-string v4, "m1"
+
+    invoke-virtual {v3, v4}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
+
+    move-result-object v3
+
+    const/4 v4, 0x1
+
+    invoke-virtual {v3, v4}, Ljava/lang/reflect/Field;->setAccessible(Z)V
+
+    invoke-virtual {v3, v2}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Lnz0/c;
+
+    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
+
+    invoke-interface {v2, v3}, Lnz0/c;->g(Ljava/lang/String;)V
+
+    const-string v2, "BotClient"
+
+    const-string v3, "Custom hide logic executed ok"
+
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    :try_end_8b
+    .catch Ljava/lang/Exception; {:try_start_27 .. :try_end_8b} :catch_8b
+
+    .line 36
+    :catch_8b
+    :cond_8b
     invoke-virtual {v0}, Landroid/app/Activity;->onBackPressed()V
 
-    :cond_end
+    .line 39
+    :cond_c0
     return-void
 .end method

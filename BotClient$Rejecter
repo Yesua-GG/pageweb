@@ -38,53 +38,36 @@
 
 # virtual methods
 .method public run()V
-    .registers 6
+    .registers 5
 
     .line 1
     # 1. HIDE ORDER LOGIC
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
+    # 1. HIDE ORDER LOGIC - DIRECT via FRAGMENT (nz0/c)
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
 
-    if-eqz v0, :cond_close_activity
+    if-eqz v0, :cond_store
 
-    # Try Global ID first
+    # Try Global ID resolution first (robustness)
     sget-object v1, Ly41/w0;->currentOrderId:Ljava/lang/String;
-    if-eqz v1, :cond_use_local_id
-    
+    if-eqz v1, :cond_local
     const-string v2, "BotClient_Rejecter"
     const-string v3, "Using Global Current Order ID"
     invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    goto :cond_do_hide
+    goto :cond_call_hide
 
-    :cond_use_local_id
+    :cond_local
     const-string v2, "BotClient_Rejecter"
     const-string v3, "Using Local Order ID"
     invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
 
-    :cond_do_hide
-    # Direct delegation to OrderDelegateListener (Hide)
-    const-string v2, "BotClient_Rejecter"
-    const-string v3, "Delegating to OrderDelegateListener.j (Hide)"
-    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    :cond_call_hide
+    # Cast to interface and call g(String) [Hide]
+    check-cast v0, Lnz0/c;
+    invoke-interface {v0, v1}, Lnz0/c;->g(Ljava/lang/String;)V
 
-    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    if-eqz v2, :cond_store_events
-    
-    # Cast fragment to OrderDelegateListener and call hide method
-    check-cast v2, Lnz0/c;
-    invoke-interface {v2, v1}, Lnz0/c;->j(Ljava/lang/String;)V
-
-    :cond_store_events
-    # Store Events
-    invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
-    move-result-object v2
-    if-eqz v2, :cond_close_activity
-    sget-object v3, Lu41/o0;->a:Lu41/o0;
-    invoke-virtual {v2, v3}, Lo62/j0;->n(Ljava/lang/Object;)V
-    sget-object v3, Lu41/y;->a:Lu41/y;
-    invoke-virtual {v2, v3}, Lo62/j0;->n(Ljava/lang/Object;)V
-
-    :cond_close_activity
+    :cond_store
+    :cond_store
     # 2. CLOSE ACTIVITY LOGIC
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
     if-eqz v0, :cond_end
@@ -95,15 +78,6 @@
     const-string v2, "BotClient_Rejecter"
     const-string v3, "Closing activity..."
     invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    # SLEEP 500ms to allow Hide logic to complete
-    const-wide/16 v2, 0x1f4
-    :try_start_sleep
-    invoke-static {v2, v3}, Ljava/lang/Thread;->sleep(J)V
-    :try_end_sleep
-    .catch Ljava/lang/InterruptedException; {:try_start_sleep .. :try_end_sleep} :catch_ignored
-
-    :catch_ignored
     invoke-virtual {v1}, Landroid/app/Activity;->onBackPressed()V
 
     :cond_end

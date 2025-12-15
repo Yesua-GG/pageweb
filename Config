@@ -6,6 +6,7 @@
 .field public static maxPickupDist:D
 .field public static maxRepeats:I
 .field public static isPolling:Z
+.field public static isOffering:Z
 
 .method static constructor <clinit>()V
     .registers 2
@@ -17,6 +18,9 @@
     sput v0, Lf01/Config;->maxRepeats:I
 
     sput-boolean v0, Lf01/Config;->isPolling:Z
+
+    const/4 v0, 0x0
+    sput-boolean v0, Lf01/Config;->isOffering:Z
 
     return-void
 .end method

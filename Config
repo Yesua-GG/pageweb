@@ -62,6 +62,17 @@
     # Parse double from string (e.g. "3.5 km" -> 3.5)
     # We replace " km" and trim, keeping only numbers and dot
     :cond_9
+    # LOGGING INPUT
+    const-string v3, "ConfigDebug"
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v5, "Input Dist: "
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v4
+    invoke-static {v3, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     :try_start
     const-string v0, " km"
     const-string v1, ""
@@ -80,6 +91,21 @@
     invoke-static {v0}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
     move-result-wide v0
     
+    # LOGGING
+    const-string v3, "ConfigDebug"
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v5, "Parsed: "
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, v0, v1}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    const-string v5, " Max: "
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    sget-wide v5, Lf01/Config;->maxPickupDist:D
+    invoke-virtual {v4, v5, v6}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v4
+    invoke-static {v3, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     # Check if > maxPickupDist
     sget-wide v2, Lf01/Config;->maxPickupDist:D
     cmpl-double v4, v0, v2

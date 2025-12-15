@@ -2963,9 +2963,15 @@
     const/16 v0, 0x8
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
     goto :cond_check_done
+    
     :cond_check_hide
     const/4 v0, 0x0
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
+    
+    # Auto Open Map (Action from Lf01/q -> b0.L)
+    const/4 v0, 0x0 # null view
+    invoke-static {p0, v0}, Lf01/b0;->L(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
+    
     :cond_check_done
 
     .line 1

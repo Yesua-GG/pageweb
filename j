@@ -2993,9 +2993,9 @@
     goto :cond_check_done
 
     :cond_skip_offer
-    # Lock and Offer
-    const/4 v0, 0x1
-    sput-boolean v0, Lf01/Config;->isOffering:Z
+    # Lock checked, logic moved to Runner
+    # const/4 v0, 0x1
+    # sput-boolean v0, Lf01/Config;->isOffering:Z
 
     # Auto Open Map (Action from Lf01/m -> b0.z)
     # v1 holds itemView

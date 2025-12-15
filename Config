@@ -62,8 +62,6 @@
     if-nez v0, :cond_9
     goto :goto_40
 
-    # Parse double from string (e.g. "3.5 km" -> 3.5)
-    # We replace " km" and trim, keeping only numbers and dot
     :cond_9
     # LOGGING INPUT
     const-string v3, "ConfigDebug"
@@ -77,12 +75,37 @@
     invoke-static {v3, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     :try_start
-    const-string v0, " km"
+    # Check for unit types
+    const-string v0, "metro"
+    invoke-virtual {v8, v0}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v9 # v9 is boolean hasMetro
+    
+    # Clean up string
+    # Remove "~"
+    const-string v0, "~"
     const-string v1, ""
     invoke-virtual {v8, v0, v1}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
     move-result-object v0
     
-    # Replace comma with dot just in case ("3,5")
+    # Remove " km"
+    const-string v1, " km"
+    const-string v2, ""
+    invoke-virtual {v0, v1, v2}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+    move-result-object v0
+    
+    # Remove " metro"
+    const-string v1, " metro"
+    const-string v2, ""
+    invoke-virtual {v0, v1, v2}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+    move-result-object v0
+    
+    # Remove " m" (just in case)
+    const-string v1, " m"
+    const-string v2, ""
+    invoke-virtual {v0, v1, v2}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+    move-result-object v0
+
+    # Replace comma with dot
     const-string v1, ","
     const-string v2, "."
     invoke-virtual {v0, v1, v2}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
@@ -94,11 +117,17 @@
     invoke-static {v0}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
     move-result-wide v0
     
+    # If unit was meters (metro), convert to km (div by 1000)
+    if-eqz v9, :cond_raw_parsed
+    const-wide v10, 0x408f400000000000L # 1000.0
+    div-double/2addr v0, v10
+    
+    :cond_raw_parsed
     # LOGGING
     const-string v3, "ConfigDebug"
     new-instance v4, Ljava/lang/StringBuilder;
     invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v5, "Parsed: "
+    const-string v5, "Parsed (km): "
     invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     invoke-virtual {v4, v0, v1}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
     const-string v5, " Max: "
@@ -111,18 +140,13 @@
 
     # Check if > maxPickupDist
     sget-wide v2, Lf01/Config;->maxPickupDist:D
+    # const-wide/high16 v2, 0x3ff0000000000000L # 1.0 (Test value) - REVERTED
     cmpl-double v4, v0, v2
     if-lez v4, :cond_29
     const/4 v0, 0x1 # True, hide it
     return v0
     
     :cond_29
-    # Also check if maxPickupDist is 0 (disable feature?) -> No, assumed active.
-    # What about min distance? Not requested yet.
-    
-    # Check maxRepeats validation if needed (not passed in string though)
-    # logic for repeats is server side mostly or different method.
-    
     :try_end
     .catch Ljava/lang/Exception; {:try_start .. :try_end} :catch_30
 
@@ -130,8 +154,10 @@
 
     :catch_30
     move-exception v0
-    # print stack trace?
-    # Default to false (show) if error parsing
+    # Log exception
+    const-string v3, "ConfigDebug"
+    const-string v4, "Error parsing distance"
+    invoke-static {v3, v4, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
     :goto_3e
     const/4 v0, 0x0
     return v0

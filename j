@@ -2989,16 +2989,9 @@
     
     # Check isOffering lock
     sget-boolean v0, Lf01/Config;->isOffering:Z
-    if-eqz v0, :cond_skip_offer
-    goto :cond_check_done
+    if-eqz v0, :cond_check_done
 
-    :cond_skip_offer
-    # Lock checked, logic moved to Runner
-    # const/4 v0, 0x1
-    # sput-boolean v0, Lf01/Config;->isOffering:Z
-
-    # Auto Open Map (Action from Lf01/m -> b0.z)
-    # v1 holds itemView
+    # Not Locked -> Auto Open Map
     invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
     
     :cond_check_done

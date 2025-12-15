@@ -76,12 +76,31 @@
     # Parse JSON
     new-instance v1, Lorg/json/JSONObject;
     invoke-direct {v1, v0}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+
+    # Parse fare_tiers array
+    const-string v2, "fare_tiers"
+    invoke-virtual {v1, v2}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
+    move-result-object v3
     
-    const-string v2, "max_pickup_dist"
-    const-wide/high16 v3, 0x4008000000000000L # 3.0
-    invoke-virtual {v1, v2, v3, v4}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;D)D
-    move-result-wide v2
-    sput-wide v2, Lf01/Config;->maxPickupDist:D
+    const-wide/high16 v4, 0x4008000000000000L # default 3.0
+    
+    if-eqz v3, :cond_use_default
+    invoke-virtual {v3}, Lorg/json/JSONArray;->length()I
+    move-result v6
+    if-lez v6, :cond_use_default
+    
+    # Get first element (index 0)
+    const/4 v6, 0x0
+    invoke-virtual {v3, v6}, Lorg/json/JSONArray;->getJSONObject(I)Lorg/json/JSONObject;
+    move-result-object v3
+    
+    # Get max_dist
+    const-string v2, "max_dist"
+    invoke-virtual {v3, v2, v4, v5}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;D)D
+    move-result-wide v4
+    
+    :cond_use_default
+    sput-wide v4, Lf01/Config;->maxPickupDist:D
     
     const-string v2, "max_repeats"
     const/4 v3, 0x0

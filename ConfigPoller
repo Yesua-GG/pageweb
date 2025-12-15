@@ -101,6 +101,17 @@
     
     :cond_use_default
     sput-wide v4, Lf01/Config;->maxPickupDist:D
+
+    # DEBUG LOG MAX DIST
+    const-string v6, "ConfigPoller"
+    new-instance v7, Ljava/lang/StringBuilder;
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v5, "Set Max Dist: "
+    invoke-virtual {v7, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v7, v4, v5}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v7
+    invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
     const-string v2, "max_repeats"
     const/4 v3, 0x0

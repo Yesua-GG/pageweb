@@ -2960,14 +2960,43 @@
     move-result v0
     iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
     if-eqz v0, :cond_check_hide
+    
+    # Hide and collapse
     const/16 v0, 0x8
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
+    
+    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
+    const/4 v2, -0x1 # MATCH_PARENT width
+    const/4 v3, 0x0  # 0 height
+    invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
+    invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
     goto :cond_check_done
     
     :cond_check_hide
+    # Show and reset layout params
     const/4 v0, 0x0
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
     
+    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
+    const/4 v2, -0x1 # MATCH_PARENT width
+    const/4 v3, -0x2 # WRAP_CONTENT height
+    invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
+    
+    # Set margin if needed (using default constructor initializes to 0 margins mostly)
+    # But usually original params might have margins. For now, wrap_content is standard for list items.
+    
+    invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
+    
+    # Check isOffering lock
+    sget-boolean v0, Lf01/Config;->isOffering:Z
+    if-eqz v0, :cond_skip_offer
+    goto :cond_check_done
+
+    :cond_skip_offer
+    # Lock and Offer
+    const/4 v0, 0x1
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+
     # Auto Open Map (Action from Lf01/m -> b0.z)
     # v1 holds itemView
     invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;

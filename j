@@ -2968,9 +2968,9 @@
     const/4 v0, 0x0
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
     
-    # Auto Open Map (Action from Lf01/q -> b0.L)
-    const/4 v0, 0x0 # null view
-    invoke-static {p0, v0}, Lf01/b0;->L(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
+    # Auto Open Map (Action from Lf01/m -> b0.z)
+    # v1 holds itemView
+    invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
     
     :cond_check_done
 

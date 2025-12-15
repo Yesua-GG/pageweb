@@ -1,0 +1,91 @@
+.class public Lf01/ConfigPoller;
+.super Ljava/lang/Object;
+.implements Ljava/lang/Runnable;
+
+.method public constructor <init>()V
+    .registers 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    return-void
+.end method
+
+.method public run()V
+    .registers 9
+
+    :loop_start
+    # Sleep 30s
+    const-wide/16 v0, 0x7530
+    :try_start_0
+    invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
+    :try_end_0
+    .catch Ljava/lang/InterruptedException; {:try_start_0 .. :try_end_0} :catch_0
+
+    goto :request_start
+
+    :catch_0
+    # If interrupted, maybe exit? Or just continue.
+    
+    :request_start
+    :try_start_net
+    new-instance v0, Ljava/net/URL;
+    const-string v1, "http://10.0.2.2:10000/config?format=json"
+    invoke-direct {v0, v1}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+    
+    invoke-virtual {v0}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
+    move-result-object v0
+    check-cast v0, Ljava/net/HttpURLConnection;
+    
+    const-string v1, "GET"
+    invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+    const/16 v1, 0x1388 # 5000ms timeout
+    invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+    invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+    
+    invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
+    move-result-object v0
+    
+    new-instance v1, Ljava/io/BufferedReader;
+    new-instance v2, Ljava/io/InputStreamReader;
+    invoke-direct {v2, v0}, Ljava/io/InputStreamReader;-><init>(Ljava/io/InputStream;)V
+    invoke-direct {v1, v2}, Ljava/io/BufferedReader;-><init>(Ljava/io/Reader;)V
+    
+    new-instance v0, Ljava/lang/StringBuilder;
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+    
+    :read_loop
+    invoke-virtual {v1}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
+    move-result-object v2
+    if-eqz v2, :read_done
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    goto :read_loop
+    
+    :read_done
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v0
+    
+    # Parse JSON
+    new-instance v1, Lorg/json/JSONObject;
+    invoke-direct {v1, v0}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+    
+    const-string v2, "max_pickup_dist"
+    const-wide/high16 v3, 0x4008000000000000L # 3.0
+    invoke-virtual {v1, v2, v3, v4}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;D)D
+    move-result-wide v2
+    sput-wide v2, Lf01/Config;->maxPickupDist:D
+    
+    const-string v2, "max_repeats"
+    const/4 v3, 0x0
+    invoke-virtual {v1, v2, v3}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+    move-result v2
+    sput v2, Lf01/Config;->maxRepeats:I
+    
+    :try_end_net
+    .catch Ljava/lang/Exception; {:try_start_net .. :try_end_net} :catch_net
+
+    goto :loop_start
+
+    :catch_net
+    # Log error? Or just silence.
+    goto :loop_start
+    
+    return-void
+.end method

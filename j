@@ -2989,9 +2989,22 @@
     
     # Check isOffering lock
     sget-boolean v0, Lf01/Config;->isOffering:Z
-    if-eqz v0, :cond_check_done
+    
+    # Log Lock State
+    const-string v4, "ConfigDebug"
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v6, "Check Lock: "
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {v4, v5}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    if-nez v0, :cond_check_done
 
     # Not Locked -> Auto Open Map
+    # v1 holds itemView
     invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
     
     :cond_check_done

@@ -2956,6 +2956,32 @@
 
     invoke-virtual {p1}, Lpz0/e;->s()Ljava/lang/String;
     move-result-object v0
+
+    # DEBUG LOGGING
+    const-string v4, "ConfigDebug"
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v3, "s(): "
+    invoke-virtual {v5, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {v4, v5}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    invoke-virtual {p1}, Lpz0/e;->j()Ljava/lang/String;
+    move-result-object v5
+    const-string v4, "ConfigDebug"
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "j(): "
+    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v3
+    invoke-static {v4, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    # End Debug
+
     invoke-static {v0}, Lf01/Config;->shouldHide(Ljava/lang/String;)Z
     move-result v0
     iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;

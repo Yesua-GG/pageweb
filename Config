@@ -1,0 +1,114 @@
+.class public Lf01/Config;
+.super Ljava/lang/Object;
+.source "Config.java"
+
+# static fields
+.field public static maxPickupDist:D
+.field public static maxRepeats:I
+.field public static isPolling:Z
+
+.method static constructor <clinit>()V
+    .registers 2
+
+    const-wide/high16 v0, 0x4008000000000000L  # 3.0
+    sput-wide v0, Lf01/Config;->maxPickupDist:D
+
+    const/4 v0, 0x0
+    sput v0, Lf01/Config;->maxRepeats:I
+
+    sput-boolean v0, Lf01/Config;->isPolling:Z
+
+    return-void
+.end method
+
+.method public constructor <init>()V
+    .registers 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    return-void
+.end method
+
+.method public static startPolling()V
+    .registers 2
+
+    # Check if already polling
+    sget-boolean v0, Lf01/Config;->isPolling:Z
+    if-eqz v0, :cond_5
+    return-void
+
+    :cond_5
+    const/4 v0, 0x1
+    sput-boolean v0, Lf01/Config;->isPolling:Z
+
+    # Create thread
+    new-instance v0, Ljava/lang/Thread;
+    new-instance v1, Lf01/ConfigPoller;
+    invoke-direct {v1}, Lf01/ConfigPoller;-><init>()V
+    invoke-direct {v0, v1}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
+    invoke-virtual {v0}, Ljava/lang/Thread;->start()V
+
+    return-void
+.end method
+
+.method public static shouldHide(Ljava/lang/String;)Z
+    .registers 6
+
+    # If string is null/empty, don't hide (safe default)
+    if-eqz p0, :cond_40
+    invoke-virtual {p0}, Ljava/lang/String;->length()I
+    move-result v0
+    if-nez v0, :cond_9
+    goto :goto_40
+
+    # Parse double from string (e.g. "3.5 km" -> 3.5)
+    # We replace " km" and trim, keeping only numbers and dot
+    :cond_9
+    :try_start
+    const-string v0, " km"
+    const-string v1, ""
+    invoke-virtual {p0, v0, v1}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+    move-result-object v0
+    
+    # Replace comma with dot just in case ("3,5")
+    const-string v1, ","
+    const-string v2, "."
+    invoke-virtual {v0, v1, v2}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/String;->trim()Ljava/lang/String;
+    move-result-object v0
+
+    invoke-static {v0}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
+    move-result-wide v0
+    
+    # Check if > maxPickupDist
+    sget-wide v2, Lf01/Config;->maxPickupDist:D
+    cmpl-double v4, v0, v2
+    if-lez v4, :cond_29
+    const/4 v0, 0x1 # True, hide it
+    return v0
+    
+    :cond_29
+    # Also check if maxPickupDist is 0 (disable feature?) -> No, assumed active.
+    # What about min distance? Not requested yet.
+    
+    # Check maxRepeats validation if needed (not passed in string though)
+    # logic for repeats is server side mostly or different method.
+    
+    :try_end
+    .catch Ljava/lang/Exception; {:try_start .. :try_end} :catch_30
+
+    goto :goto_3e
+
+    :catch_30
+    move-exception v0
+    # print stack trace?
+    # Default to false (show) if error parsing
+    :goto_3e
+    const/4 v0, 0x0
+    return v0
+
+    :cond_40
+    :goto_40
+    const/4 v0, 0x0
+    return v0
+.end method

@@ -1,13 +1,12 @@
 .class public Lf01/Config;
 .super Ljava/lang/Object;
-.source "Config.java"
-
-# static fields
+.video_debug_info
 .field public static maxPickupDist:D
 .field public static maxRepeats:I
 .field public static isPolling:Z
 .field public static isOffering:Z
 .field public static seenOrders:Ljava/util/HashMap;
+.field public static listAdapter:Ljava/lang/Object;
 
 .method static constructor <clinit>()V
     .registers 2
@@ -22,6 +21,8 @@
 
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
+    
+    sput-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
 
     sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     if-nez v0, :cond_init_map
@@ -139,6 +140,29 @@
     invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v1
     invoke-virtual {v0, p0, v1}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    
+    # REFRESH ADAPTER
+    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
+    if-eqz v0, :cond_no_adapter
+    
+    try_start_refresh
+    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
+    const-string v0, "ConfigDebug"
+    const-string v1, "Adapter notified"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    try_end_refresh
+    .catch Ljava/lang/Exception; {:try_start_refresh .. :try_end_refresh} :catch_refresh
+    
+    goto :cond_no_adapter
+    
+    :catch_refresh
+    move-exception v0
+    const-string v1, "ConfigDebug"
+    const-string v2, "Failed to notify adapter"
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :cond_no_adapter
     return-void
 .end method
 

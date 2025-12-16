@@ -2993,6 +2993,26 @@
     
     if-nez v0, :cond_check_done
 
+    invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;
+    move-result-object v0
+    
+    invoke-static {v0}, Lf01/Config;->isRepeated(Ljava/lang/String;)Z
+    move-result v0
+    
+    if-eqz v0, :cond_hide_repeated
+    
+    const/16 v0, 0x8
+    invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
+    
+    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
+    const/4 v2, -0x1
+    const/4 v3, 0x0
+    invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
+    invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
+    goto :cond_check_done
+    
+    :cond_hide_repeated
+
     # Atomic Lock: Set True immediately to prevent race conditions
     const/4 v0, 0x1
     sput-boolean v0, Lf01/Config;->isOffering:Z

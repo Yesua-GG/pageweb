@@ -11,16 +11,8 @@
 .method public run()V
     .registers 12
 
-    :loop_start
-    # Sleep 30s
-    const-wide/16 v0, 0x7530
-    :try_start_0
-    invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
-    :try_end_0
-    .catch Ljava/lang/InterruptedException; {:try_start_0 .. :try_end_0} :catch_0
-
-    :catch_0
-    # If interrupted, maybe exit? Or just continue.
+    # :loop_start REMOVED
+    # Sleep REMOVED
     
     :request_start
     :try_start_net
@@ -116,8 +108,8 @@
 
     const-wide/high16 v4, 0x4008000000000000L # default 3.0
     
-    # Get max_dest_dist from ROOT
-    const-string v2, "max_dest_dist"
+    # Get max_pickup_dist from ROOT
+    const-string v2, "max_pickup_dist"
     invoke-virtual {v1, v2, v4, v5}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;D)D
     move-result-wide v4
     
@@ -143,7 +135,11 @@
     :try_end_net
     .catch Ljava/lang/Exception; {:try_start_net .. :try_end_net} :catch_net
 
-    goto :loop_start
+    # Reset isPolling to allow future updates (On Demand)
+    const/4 v8, 0x0
+    sput-boolean v8, Lf01/Config;->isPolling:Z
+    
+    return-void
 
     :catch_net
     move-exception v0
@@ -158,7 +154,10 @@
     invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v7
     invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    goto :loop_start
     
+    # Reset isPolling even on error
+    const/4 v8, 0x0
+    sput-boolean v8, Lf01/Config;->isPolling:Z
+
     return-void
 .end method

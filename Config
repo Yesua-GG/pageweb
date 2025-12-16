@@ -22,7 +22,65 @@
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
 
+    sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    if-nez v0, :cond_init_map
+    new-instance v0, Ljava/util/HashMap;
+    invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+    sput-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    :cond_init_map
+
     return-void
+.end method
+
+.field public static seenOrders:Ljava/util/HashMap;
+
+.method public static isRepeated(Ljava/lang/String;)Z
+    .registers 6
+
+    # If maxRepeats is 0, disable limit
+    sget v0, Lf01/Config;->maxRepeats:I
+    const/4 v4, 0x0
+    if-nez v0, :cond_check_start
+    return v4
+
+    :cond_check_start
+    sget-object v1, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    if-nez v1, :cond_create_map
+    new-instance v1, Ljava/util/HashMap;
+    invoke-direct {v1}, Ljava/util/HashMap;-><init>()V
+    sput-object v1, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    :cond_create_map
+    
+    sget-object v1, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    invoke-virtual {v1, p0}, Ljava/util/HashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v2
+    check-cast v2, Ljava/lang/Integer;
+
+    const/4 v3, 0x1
+    if-nez v2, :cond_count_0
+    
+    # First time
+    invoke-static {v3}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v2
+    invoke-virtual {v1, p0, v2}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    return v4 # 1 <= max (assuming max >= 1)
+
+    :cond_count_0
+    # Increment
+    invoke-virtual {v2}, Ljava/lang/Integer;->intValue()I
+    move-result v2
+    add-int/lit8 v2, v2, 0x1
+    
+    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v3
+    invoke-virtual {v1, p0, v3}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    
+    if-le v2, v0, :cond_over
+    const/4 v0, 0x1
+    return v0
+    
+    :cond_over
+    return v4
 .end method
 
 .method public constructor <init>()V

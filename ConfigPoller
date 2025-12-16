@@ -9,7 +9,7 @@
 .end method
 
 .method public run()V
-    .registers 9
+    .registers 12
 
     :loop_start
     # Sleep 30s
@@ -19,15 +19,52 @@
     :try_end_0
     .catch Ljava/lang/InterruptedException; {:try_start_0 .. :try_end_0} :catch_0
 
-    goto :request_start
-
     :catch_0
     # If interrupted, maybe exit? Or just continue.
     
     :request_start
     :try_start_net
+    
+    # FETCH ANDROID ID VIA REFLECTION
+    const-string v1, "unknown_id"
+    :try_id_start
+    const-string v2, "android.app.ActivityThread"
+    invoke-static {v2}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+    move-result-object v2
+    const-string v3, "currentApplication"
+    const/4 v4, 0x0
+    new-array v5, v4, [Ljava/lang/Class;
+    invoke-virtual {v2, v3, v5}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+    move-result-object v2
+    const/4 v3, 0x0
+    new-array v4, v4, [Ljava/lang/Object;
+    invoke-virtual {v2, v3, v4}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v2
+    check-cast v2, Landroid/content/Context;
+    
+    if-eqz v2, :cond_id_found
+    invoke-virtual {v2}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+    move-result-object v2
+    const-string v3, "android_id"
+    invoke-static {v2, v3}, Landroid/provider/Settings$Secure;->getString(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    if-eqz v2, :cond_id_found
+    move-object v1, v2
+    :cond_id_found
+    :try_id_end
+    .catch Ljava/lang/Exception; {:try_id_start .. :try_id_end} :catch_id
+
+    :catch_id
+    # Construct URL with ID
+    new-instance v0, Ljava/lang/StringBuilder;
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "https://asistente-web-r2qs.onrender.com/config?format=json&user_id="
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+
     new-instance v0, Ljava/net/URL;
-    const-string v1, "https://asistente-web-r2qs.onrender.com/config?format=json"
     invoke-direct {v0, v1}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
     
     invoke-virtual {v0}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
@@ -62,7 +99,7 @@
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v0
     
-    # LOGGING
+    # LOGGING RESPONSE
     const-string v6, "ConfigPoller"
     new-instance v7, Ljava/lang/StringBuilder;
     invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
@@ -77,29 +114,13 @@
     new-instance v1, Lorg/json/JSONObject;
     invoke-direct {v1, v0}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
 
-    # Parse fare_tiers array
-    const-string v2, "fare_tiers"
-    invoke-virtual {v1, v2}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
-    move-result-object v3
-    
     const-wide/high16 v4, 0x4008000000000000L # default 3.0
     
-    if-eqz v3, :cond_use_default
-    invoke-virtual {v3}, Lorg/json/JSONArray;->length()I
-    move-result v6
-    if-lez v6, :cond_use_default
-    
-    # Get first element (index 0)
-    const/4 v6, 0x0
-    invoke-virtual {v3, v6}, Lorg/json/JSONArray;->getJSONObject(I)Lorg/json/JSONObject;
-    move-result-object v3
-    
-    # Get max_dist
-    const-string v2, "max_dist"
-    invoke-virtual {v3, v2, v4, v5}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;D)D
+    # Get max_dest_dist from ROOT
+    const-string v2, "max_dest_dist"
+    invoke-virtual {v1, v2, v4, v5}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;D)D
     move-result-wide v4
     
-    :cond_use_default
     sput-wide v4, Lf01/Config;->maxPickupDist:D
 
     # DEBUG LOG MAX DIST

@@ -37,13 +37,6 @@
 .method public static isRepeated(Ljava/lang/String;)Z
     .registers 6
 
-    # If maxRepeats is 0, disable limit
-    sget v0, Lf01/Config;->maxRepeats:I
-    const/4 v4, 0x0
-    if-nez v0, :cond_check_start
-    return v4
-
-    :cond_check_start
     sget-object v1, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     if-nez v1, :cond_create_map
     new-instance v1, Ljava/util/HashMap;
@@ -57,24 +50,39 @@
     check-cast v2, Ljava/lang/Integer;
 
     const/4 v3, 0x1
+    const/4 v4, 0x0
+    
     if-nez v2, :cond_count_0
     
     # First time
     invoke-static {v3}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v2
     invoke-virtual {v1, p0, v2}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-    return v4 # 1 <= max (assuming max >= 1)
+    return v4 
 
     :cond_count_0
     # Increment
     invoke-virtual {v2}, Ljava/lang/Integer;->intValue()I
     move-result v2
+    
+    # Check BAN first (High value) -> 90000
+    const v5, 0x15F90
+    if-le v2, v5, :cond_is_banned
+    return v3
+    
+    :cond_is_banned
     add-int/lit8 v2, v2, 0x1
     
     invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-    move-result-object v3
-    invoke-virtual {v1, p0, v3}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v5
+    invoke-virtual {v1, p0, v5}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
     
+    # Check Max Repeats
+    sget v0, Lf01/Config;->maxRepeats:I
+    if-nez v0, :cond_check_limit
+    return v4
+    
+    :cond_check_limit
     if-le v2, v0, :cond_over
     const/4 v0, 0x1
     return v0

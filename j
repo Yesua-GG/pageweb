@@ -2964,7 +2964,7 @@
     iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
     if-eqz v0, :cond_show_dist
     
-    # DISTANCE HIDE
+    # DISTANCE HIDE: GONE, Size 0, and RETURN
     const/16 v0, 0x8
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
     new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
@@ -2972,7 +2972,7 @@
     const/4 v3, 0x0
     invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
     invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    goto :cond_check_done
+    return-void
     
     :cond_show_dist
     # DISTANCE SHOW (Reset params)
@@ -2992,7 +2992,7 @@
     
     if-eqz v0, :cond_offer_logic
     
-    # REPEAT HIDE
+    # REPEAT HIDE: GONE, Size 0, and RETURN
     const/16 v0, 0x8
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
     new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
@@ -3000,18 +3000,19 @@
     const/4 v3, 0x0
     invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
     invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    goto :cond_check_done
+    return-void
     
     :cond_offer_logic
     # OFFER LOGIC
     sget-boolean v0, Lf01/Config;->isOffering:Z
-    if-nez v0, :cond_check_done
+    if-nez v0, :cond_binder
     
     const/4 v0, 0x1
     sput-boolean v0, Lf01/Config;->isOffering:Z
     invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
     
-    :cond_check_done
+    :cond_binder
+    # Continue to Binding for Valid Orders
     invoke-direct {p0, p1}, Lf01/b0;->j0(Lpz0/e;)V
 
     .line 4

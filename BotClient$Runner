@@ -502,6 +502,10 @@
 
     new-instance v4, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;
 
+    # UNLOCK OFFERING - REJECT
+    const/4 v8, 0x0
+    sput-boolean v8, Lf01/Config;->isOffering:Z
+
     iget-object v5, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
 
     iget-object v6, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->viewModel:Ly41/w0;
@@ -585,7 +589,12 @@
     .catch Ljava/lang/Exception; {:try_start_18b .. :try_end_226} :catch_226
 
     :catch_226
+    :catch_226
     move-exception v2
+    
+    # UNLOCK OFFERING - ERROR
+    const/4 v8, 0x0
+    sput-boolean v8, Lf01/Config;->isOffering:Z
 
     invoke-virtual {v2}, Ljava/lang/Exception;->printStackTrace()V
 

@@ -1,3 +1,5 @@
+# classes16.dex
+
 .class public Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;
 .super Ljava/lang/Object;
 .source "BotClient.java"
@@ -36,107 +38,47 @@
 
 # virtual methods
 .method public run()V
-    .registers 5
+    .registers 6
 
     .line 1
-    const-string v0, "BotClient"
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
 
-    const-string v1, "Rejecter run called"
+    if-eqz v0, :cond_19
 
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
+    
+    # Force BAN locally using Client ID
+    invoke-static {v1}, Lf01/Config;->banOrder(Ljava/lang/String;)V
 
-    .line 2
-    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->orderId:Ljava/lang/String;
+    invoke-virtual {v0, v1}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
 
-    .line 3
-    if-eqz v0, :cond_c0
+    invoke-virtual {v0}, Ly41/w0;->getOrderStore()Lo62/j0;
 
-    invoke-virtual {v0}, Ljava/lang/String;->length()I
+    move-result-object v0
 
-    move-result v1
+    if-eqz v0, :cond_19
 
-    if-nez v1, :cond_c
+    sget-object v1, Lu41/o0;->a:Lu41/o0;
 
-    goto/16 :goto_c0
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
-    .line 5
-    :cond_c
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->viewModel:Ly41/w0;
+    sget-object v1, Lu41/y;->a:Lu41/y;
 
-    .line 7
-    if-eqz v1, :cond_40
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
-    .line 9
-    invoke-virtual {v1, v0}, Ly41/w0;->dispatchHideOrder(Ljava/lang/String;)V
+    :cond_19
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
 
-    .line 10
-    invoke-virtual {v1}, Ly41/w0;->getOrderStore()Lo62/j0;
+    if-eqz v0, :cond_26
 
-    move-result-object v1
+    invoke-virtual {v0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
 
-    if-eqz v1, :cond_40
+    move-result-object v0
 
-    .line 12
-    sget-object v2, Lu41/o0;->a:Lu41/o0;
+    if-eqz v0, :cond_26
 
-    invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
+    invoke-virtual {v0}, Landroid/app/Activity;->onBackPressed()V
 
-    .line 13
-    sget-object v2, Lu41/y;->a:Lu41/y;
-
-    invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
-
-    .line 20
-    :cond_40
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-
-    if-eqz v1, :cond_c0
-
-    .line 22
-    invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
-
-    move-result-object v1
-
-    if-eqz v1, :cond_c0
-
-    .line 24
-    new-instance v2, Ljava/lang/StringBuilder;
-
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v3, "Dispatching Hide UI for ID: "
-
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v2
-
-    const-string v3, "BotClient"
-
-    invoke-static {v3, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    .line 26
-    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter$1;
-
-    invoke-direct {v2, p0, v1, v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter$1;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;Landroid/app/Activity;Ljava/lang/String;)V
-
-    invoke-virtual {v1, v2}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
-
-    .line 28
-    const-string v2, "BotClient"
-
-    const-string v3, "Closing activity..."
-
-    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    .line 29
-    invoke-virtual {v1}, Landroid/app/Activity;->onBackPressed()V
-
-    .line 100
-    :cond_c0
-    :goto_c0
+    :cond_26
     return-void
 .end method

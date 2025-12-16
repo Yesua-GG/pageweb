@@ -7,6 +7,7 @@
 .field public static maxRepeats:I
 .field public static isPolling:Z
 .field public static isOffering:Z
+.field public static seenOrders:Ljava/util/HashMap;
 
 .method static constructor <clinit>()V
     .registers 2
@@ -32,11 +33,13 @@
     return-void
 .end method
 
-.field public static seenOrders:Ljava/util/HashMap;
-
 .method public static isRepeated(Ljava/lang/String;)Z
-    .registers 6
+    .registers 8
 
+    # Registers:
+    # v0..v6 = Locals
+    # p0 = Parameter (ID String) -> Aliases to v7 in .registers 8 context (wait, 8 registers implies v0-v7. p0 is v7)
+    
     sget-object v1, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     if-nez v1, :cond_create_map
     new-instance v1, Ljava/util/HashMap;
@@ -66,37 +69,40 @@
     move-result v2
     
     # Check BAN first (High value) -> 90000
-    const v5, 0x15F90
-    if-le v2, v5, :cond_is_banned
-    return v3
+    const v6, 0x15F90
+    if-le v2, v6, :cond_is_banned
+    # Is Banned -> Return True (Hidden)
+    return v3 
     
     :cond_is_banned
+    # Not Banned yet, Increment
     add-int/lit8 v2, v2, 0x1
     
+    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v5
     invoke-virtual {v1, p0, v5}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
     
     # LOG CHECK
-    const-string v3, "ConfigDebug"
-    new-instance v4, Ljava/lang/StringBuilder;
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v5, "Check ID: "
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v4, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    const-string v5, " Count: "
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    const-string v5, " Max: "
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    sget v5, Lf01/Config;->maxRepeats:I
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v4
-    invoke-static {v3, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    const-string v5, "ConfigDebug"
+    new-instance v6, Ljava/lang/StringBuilder;
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v0, "Check ID: "
+    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v0, " Count: "
+    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    const-string v0, " Max: "
+    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    sget v0, Lf01/Config;->maxRepeats:I
+    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v6
+    invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     # Check Max Repeats
     sget v0, Lf01/Config;->maxRepeats:I
     if-nez v0, :cond_check_limit
-    const/4 v4, 0x0
     return v4
     
     :cond_check_limit
@@ -105,7 +111,6 @@
     return v0
     
     :cond_over
-    const/4 v4, 0x0
     return v4
 .end method
 
@@ -220,16 +225,16 @@
     const-string v2, ""
     invoke-virtual {v0, v1, v2}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
     move-result-object v0
-
+    
     # Replace comma with dot
     const-string v1, ","
     const-string v2, "."
     invoke-virtual {v0, v1, v2}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
     move-result-object v0
-
+    
     invoke-virtual {v0}, Ljava/lang/String;->trim()Ljava/lang/String;
     move-result-object v0
-
+    
     invoke-static {v0}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
     move-result-wide v0
     
@@ -265,9 +270,9 @@
     :cond_29
     :try_end
     .catch Ljava/lang/Exception; {:try_start .. :try_end} :catch_30
-
+    
     goto :goto_3e
-
+    
     :catch_30
     move-exception v0
     # Log exception
@@ -277,7 +282,7 @@
     :goto_3e
     const/4 v0, 0x0
     return v0
-
+    
     :cond_40
     :goto_40
     const/4 v0, 0x0

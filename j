@@ -2955,37 +2955,27 @@
 .method private final k0(Lpz0/e;)V
     .registers 12
 
-    # 1. Check Distance Hide
+    # Distance Check
     invoke-virtual {p1}, Lpz0/e;->j()Ljava/lang/String;
     move-result-object v0
     invoke-static {v0}, Lf01/Config;->shouldHide(Ljava/lang/String;)Z
     move-result v0
-    if-nez v0, :cond_must_hide
     
-    # 2. Check Repeat/Ban Hide
-    # We must check this even if distance is OK
-    :cond_check_ban
-    invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;
-    move-result-object v0
-    invoke-static {v0}, Lf01/Config;->isRepeated(Ljava/lang/String;)Z
-    move-result v0
-    if-eqz v0, :cond_show_view
-    
-    :cond_must_hide
-    # SHARED HIDE LOGIC
     iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
+    if-eqz v0, :cond_show_dist
+    
+    # DISTANCE HIDE
     const/16 v0, 0x8
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
     new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
-    const/4 v2, -0x1 
+    const/4 v2, -0x1
     const/4 v3, 0x0
     invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
     invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    return-void # Exit immediately if hidden
+    goto :cond_check_done
     
-    :cond_show_view
-    # SHARED SHOW LOGIC
-    iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
+    :cond_show_dist
+    # DISTANCE SHOW (Reset params)
     const/4 v0, 0x0
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
     new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
@@ -2994,20 +2984,34 @@
     invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
     invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
     
-    # AUTO OPEN LOGIC (Only if shown)
-    sget-boolean v0, Lf01/Config;->isOffering:Z
-    if-eqz v0, :cond_locked
-    return-void
+    # REPEAT CHECK
+    invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lf01/Config;->isRepeated(Ljava/lang/String;)Z
+    move-result v0
     
-    :cond_locked
-    # Not locked -> Lock & Offer
+    if-eqz v0, :cond_offer_logic
+    
+    # REPEAT HIDE
+    const/16 v0, 0x8
+    invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
+    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
+    const/4 v2, -0x1
+    const/4 v3, 0x0
+    invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
+    invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
+    goto :cond_check_done
+    
+    :cond_offer_logic
+    # OFFER LOGIC
+    sget-boolean v0, Lf01/Config;->isOffering:Z
+    if-nez v0, :cond_check_done
+    
     const/4 v0, 0x1
     sput-boolean v0, Lf01/Config;->isOffering:Z
     invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
-    return-void
-
-
-    .line 1
+    
+    :cond_check_done
     invoke-direct {p0, p1}, Lf01/b0;->j0(Lpz0/e;)V
 
     .line 4
@@ -4959,4 +4963,3 @@
     :cond_58
     return-void
 .end method
-

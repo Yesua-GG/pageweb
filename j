@@ -2960,7 +2960,7 @@
     move-result-object v0
     invoke-static {v0}, Lf01/Config;->shouldHide(Ljava/lang/String;)Z
     move-result v0
-    if-eqz v0, :cond_must_hide
+    if-nez v0, :cond_must_hide
     
     # 2. Check Repeat/Ban Hide
     # We must check this even if distance is OK
@@ -4959,3 +4959,4 @@
     :cond_58
     return-void
 .end method
+

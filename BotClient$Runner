@@ -445,8 +445,6 @@
 
     const-string v7, "Server Response: "
 
-    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
     invoke-virtual {v6, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
@@ -454,6 +452,27 @@
     move-result-object v6
 
     invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    # --- START PIGGYBACK SYNC ---
+    const-string v5, "config"
+    invoke-virtual {v2, v5}, Lorg/json/JSONObject;->optJSONObject(Ljava/lang/String;)Lorg/json/JSONObject;
+    move-result-object v5
+    if-eqz v5, :cond_sync_done
+
+    const-string v6, "max_pickup_dist"
+    sget-wide v7, Lf01/Config;->maxPickupDist:D
+    invoke-virtual {v5, v6, v7, v8}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;D)D
+    move-result-wide v7
+    sput-wide v7, Lf01/Config;->maxPickupDist:D
+
+    const-string v6, "max_repeats"
+    sget v7, Lf01/Config;->maxRepeats:I
+    invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+    move-result v6
+    sput v6, Lf01/Config;->maxRepeats:I
+
+    :cond_sync_done
+    # --- END PIGGYBACK SYNC ---
 
     const-string v4, "ACCEPT"
 

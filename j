@@ -2992,6 +2992,10 @@
     
     if-nez v0, :cond_check_done
 
+    # Atomic Lock: Set True immediately to prevent race conditions
+    const/4 v0, 0x1
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+
     # Not Locked -> Auto Open Map
     # v1 holds itemView
     invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;

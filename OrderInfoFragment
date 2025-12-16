@@ -202,6 +202,41 @@
     return-void
 .end method
 
+.method public onDestroy()V
+    .registers 4
+
+    # Call super
+    invoke-super {p0}, Landroidx/fragment/app/Fragment;->onDestroy()V
+
+    # UNLOCK OFFERING
+    const/4 v0, 0x0
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+    
+    # REFRESH ADAPTER
+    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
+    if-eqz v0, :cond_no_adapter
+    
+    try_start_refresh
+    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
+    const-string v0, "ConfigDebug"
+    const-string v1, "Adapter notified from onDestroy"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    try_end_refresh
+    .catch Ljava/lang/Exception; {:try_start_refresh .. :try_end_refresh} :catch_refresh
+    
+    goto :cond_no_adapter
+    
+    :catch_refresh
+    move-exception v0
+    const-string v1, "ConfigDebug"
+    const-string v2, "Failed to notify adapter in onDestroy"
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :cond_no_adapter
+    return-void
+.end method
+
 .method public constructor <init>()V
     .registers 4
 

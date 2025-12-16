@@ -509,11 +509,10 @@
 
     if-eqz v4, :cond_1ec
 
-    # Extract ID and BAN
     const-string v4, "order_id"
     invoke-virtual {v2, v4}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v4
-    invoke-static {v4}, Lf01/Config;->banOrder(Ljava/lang/String;)V
+    # invoke-static {v4}, Lf01/Config;->banOrder(Ljava/lang/String;)V # REMOVED - Safe ban in Rejecter (MainThread)
 
     new-instance v3, Landroid/os/Handler;
 

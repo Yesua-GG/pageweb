@@ -2955,73 +2955,57 @@
 .method private final k0(Lpz0/e;)V
     .registers 12
 
+    # 1. Check Distance Hide
     invoke-virtual {p1}, Lpz0/e;->j()Ljava/lang/String;
     move-result-object v0
     invoke-static {v0}, Lf01/Config;->shouldHide(Ljava/lang/String;)Z
     move-result v0
-    iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
-    if-eqz v0, :cond_check_hide
+    if-eqz v0, :cond_must_hide
     
-    # Hide and collapse
-    const/16 v0, 0x8
-    invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
-    
-    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
-    const/4 v2, -0x1 # MATCH_PARENT width
-    const/4 v3, 0x0  # 0 height
-    invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
-    invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    goto :cond_check_done
-    
-    :cond_check_hide
-    # Show and reset layout params
-    const/4 v0, 0x0
-    invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
-    
-    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
-    const/4 v2, -0x1 # MATCH_PARENT width
-    const/4 v3, -0x2 # WRAP_CONTENT height
-    invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
-    
-    # Set margin if needed (using default constructor initializes to 0 margins mostly)
-    # But usually original params might have margins. For now, wrap_content is standard for list items.
-    
-    invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    
-    # Check isOffering lock
-    sget-boolean v0, Lf01/Config;->isOffering:Z
-    
-    if-nez v0, :cond_check_done
-
+    # 2. Check Repeat/Ban Hide
+    # We must check this even if distance is OK
+    :cond_check_ban
     invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;
     move-result-object v0
-    
     invoke-static {v0}, Lf01/Config;->isRepeated(Ljava/lang/String;)Z
     move-result v0
+    if-eqz v0, :cond_show_view
     
-    if-eqz v0, :cond_hide_repeated
-    
+    :cond_must_hide
+    # SHARED HIDE LOGIC
+    iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
     const/16 v0, 0x8
     invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
-    
     new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
-    const/4 v2, -0x1
+    const/4 v2, -0x1 
     const/4 v3, 0x0
     invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
     invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    goto :cond_check_done
+    return-void # Exit immediately if hidden
     
-    :cond_hide_repeated
-
-    # Atomic Lock: Set True immediately to prevent race conditions
+    :cond_show_view
+    # SHARED SHOW LOGIC
+    iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
+    const/4 v0, 0x0
+    invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
+    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
+    const/4 v2, -0x1
+    const/4 v3, -0x2
+    invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
+    invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
+    
+    # AUTO OPEN LOGIC (Only if shown)
+    sget-boolean v0, Lf01/Config;->isOffering:Z
+    if-eqz v0, :cond_locked
+    return-void
+    
+    :cond_locked
+    # Not locked -> Lock & Offer
     const/4 v0, 0x1
     sput-boolean v0, Lf01/Config;->isOffering:Z
-
-    # Not Locked -> Auto Open Map
-    # v1 holds itemView
     invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
-    
-    :cond_check_done
+    return-void
+
 
     .line 1
     invoke-direct {p0, p1}, Lf01/b0;->j0(Lpz0/e;)V

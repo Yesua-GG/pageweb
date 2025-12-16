@@ -2952,8 +2952,20 @@
     return-void
 .end method
 
-.method private final k0(Lpz0/e;)V
+    .method private final k0(Lpz0/e;)V
     .registers 12
+
+    # Capture Adapter for Config
+    iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
+    invoke-virtual {v1}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
+    move-result-object v1
+    instance-of v2, v1, Landroidx/recyclerview/widget/RecyclerView;
+    if-eqz v2, :cond_no_recycler
+    check-cast v1, Landroidx/recyclerview/widget/RecyclerView;
+    invoke-virtual {v1}, Landroidx/recyclerview/widget/RecyclerView;->getAdapter()Landroidx/recyclerview/widget/RecyclerView$h;
+    move-result-object v1
+    sput-object v1, Lf01/Config;->listAdapter:Ljava/lang/Object;
+    :cond_no_recycler
 
     # Distance Check
     invoke-virtual {p1}, Lpz0/e;->j()Ljava/lang/String;

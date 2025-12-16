@@ -1036,8 +1036,9 @@
 
     .line 291
     invoke-static/range {p1 .. p6}, Lj72/o;->I(Landroid/view/View;JLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-
-    invoke-static {}, Lf01/Config;->startPolling()V
+    
+    # Removed startPolling to reduce thread spam. Piggyback handles sync.
+    # invoke-static {}, Lf01/Config;->startPolling()V
 
     .line 294
     return-void

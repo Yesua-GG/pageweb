@@ -42,12 +42,10 @@
 
     .line 1
     .line 1
-    const-wide/16 v0, 0x32
-
-    :try_start_2
-    invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
-    :try_end_5
-    .catch Ljava/lang/InterruptedException; {:try_start_2 .. :try_end_5} :catch_5
+    .line 1
+    # Removed sleep for speed
+    # const-wide/16 v0, 0x32
+    # invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
 
     :catch_5
     new-instance v0, Ljava/lang/StringBuilder;

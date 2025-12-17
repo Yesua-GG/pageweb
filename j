@@ -2958,13 +2958,13 @@
     # Capture Adapter for Config
     iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
     invoke-virtual {v1}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
-    move-result-object v1
-    instance-of v2, v1, Landroidx/recyclerview/widget/RecyclerView;
-    if-eqz v2, :cond_no_recycler
-    check-cast v1, Landroidx/recyclerview/widget/RecyclerView;
-    invoke-virtual {v1}, Landroidx/recyclerview/widget/RecyclerView;->getAdapter()Landroidx/recyclerview/widget/RecyclerView$h;
-    move-result-object v1
-    sput-object v1, Lf01/Config;->listAdapter:Ljava/lang/Object;
+    move-result-object v2
+    instance-of v3, v2, Landroidx/recyclerview/widget/RecyclerView;
+    if-eqz v3, :cond_no_recycler
+    check-cast v2, Landroidx/recyclerview/widget/RecyclerView;
+    invoke-virtual {v2}, Landroidx/recyclerview/widget/RecyclerView;->getAdapter()Landroidx/recyclerview/widget/RecyclerView$h;
+    move-result-object v3
+    sput-object v3, Lf01/Config;->listAdapter:Ljava/lang/Object;
     :cond_no_recycler
 
     # 1. BIND VIEW DATA FIRST (Fixes loading delay)

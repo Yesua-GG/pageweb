@@ -587,8 +587,13 @@
     const-string v3, "price"
 
     invoke-virtual {v2, v3}, Lorg/json/JSONObject;->optDouble(Ljava/lang/String;)D
-
+    
     move-result-wide v3
+    
+    # Set LOCK and BIDDING flag
+    const/4 v6, 0x1
+    sput-boolean v6, Lf01/Config;->isOffering:Z
+    sput-boolean v6, Lf01/Config;->isBidding:Z
 
     iget-object v6, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
 

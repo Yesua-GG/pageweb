@@ -145,17 +145,8 @@
     invoke-virtual {v0, p0, v1}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
     
     # REFRESH ADAPTER
-    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
-    if-eqz v0, :cond_no_adapter
     
-    try_start_refresh
-    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
-    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
-    const-string v0, "ConfigDebug"
-    const-string v1, "Adapter notified"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    try_end_refresh
-    .catch Ljava/lang/Exception; {:try_start_refresh .. :try_end_refresh} :catch_refresh
+    # REFRESH ADAPTER REMOVED (Conflicted with App Logic)
     
     goto :cond_no_adapter
     

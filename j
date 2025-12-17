@@ -2966,6 +2966,14 @@
     move-result-object v1
     sput-object v1, Lf01/Config;->listAdapter:Ljava/lang/Object;
     :cond_no_recycler
+    
+    # VISIBILITY CHECK: Is view actually shown?
+    iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
+    invoke-virtual {v1}, Landroid/view/View;->isShown()Z
+    move-result v0
+    if-nez v0, :cond_check_start
+    return-void
+    :cond_check_start
 
     # Distance Check
     invoke-virtual {p1}, Lpz0/e;->j()Ljava/lang/String;

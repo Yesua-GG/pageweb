@@ -2970,29 +2970,10 @@
     # 1. BIND VIEW DATA FIRST (Fixes loading delay)
     invoke-direct {p0, p1}, Lf01/b0;->j0(Lpz0/e;)V
 
-    # WAIT FOR ADDRESS DATA (Prevent partial show)
-    invoke-virtual {p1}, Lpz0/e;->v()Lfw1/a;
-    move-result-object v0
-    if-nez v0, :cond_has_addr
-    invoke-virtual {p1}, Lpz0/e;->f()Lfw1/a;
-    move-result-object v0
-    if-eqz v0, :cond_hide_incomplete
-    
     :cond_has_addr
     # Has Data -> Continue to checks
     goto :cond_check_dist
     
-    :cond_hide_incomplete
-    # No Address -> Hide and Wait
-    const/16 v0, 0x8
-    invoke-virtual {v1, v0}, Landroid/view/View;->setVisibility(I)V
-    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
-    const/4 v2, -0x1
-    const/4 v3, 0x0
-    invoke-direct {v0, v2, v3}, Landroidx/recyclerview/widget/RecyclerView$LayoutParams;-><init>(II)V
-    invoke-virtual {v1, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
-    return-void
-
     :cond_check_dist
     # 2. DISTANCE CHECK
     invoke-virtual {p1}, Lpz0/e;->j()Ljava/lang/String;

@@ -1,10 +1,12 @@
 .class public Lf01/Config;
 .super Ljava/lang/Object;
-.video_debug_info
+
 .field public static maxPickupDist:D
 .field public static maxRepeats:I
 .field public static isPolling:Z
 .field public static isOffering:Z
+.field public static hasAdapter:Z
+.field public static isBidding:Z
 .field public static seenOrders:Ljava/util/HashMap;
 .field public static listAdapter:Ljava/lang/Object;
 
@@ -21,6 +23,7 @@
 
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
+    sput-boolean v0, Lf01/Config;->isBidding:Z
     
     sput-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
 

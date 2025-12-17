@@ -3028,16 +3028,7 @@
     return-void
     
     :cond_check_offer
-    # 4. VISIBILITY CHECK (Guard Click Only)
-    iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
-    invoke-virtual {v1}, Landroid/view/View;->isShown()Z
-    move-result v0
-    if-nez v0, :cond_offer_logic
-    # Background -> Return
-    return-void
-    
-    :cond_offer_logic
-    # 5. OFFER LOGIC
+    # 4. OFFER LOGIC (Instant - No isShown check)
     sget-boolean v0, Lf01/Config;->isOffering:Z
     if-nez v0, :cond_done
     

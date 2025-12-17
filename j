@@ -3019,8 +3019,8 @@
     iget-object v1, p0, Landroidx/recyclerview/widget/RecyclerView$f0;->itemView:Landroid/view/View;
     invoke-virtual {v1}, Landroid/view/View;->isShown()Z
     move-result v0
-    if-nez v0, :cond_binding
-    # Background -> Continue to binding but skip offer
+    if-eqz v0, :cond_binding
+    # Background (False/0) -> Continue to binding but skip offer
     goto :cond_binding
     
     :cond_offer_logic

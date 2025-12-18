@@ -8,6 +8,7 @@
 .field public static hasAdapter:Z
 .field public static isBidding:Z
 .field public static seenOrders:Ljava/util/HashMap;
+.field public static seenTimestamps:Ljava/util/HashMap;
 .field public static listAdapter:Ljava/lang/Object;
 
 .method static constructor <clinit>()V
@@ -34,6 +35,13 @@
     sput-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     :cond_init_map
 
+    sget-object v0, Lf01/Config;->seenTimestamps:Ljava/util/HashMap;
+    if-nez v0, :cond_init_time
+    new-instance v0, Ljava/util/HashMap;
+    invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+    sput-object v0, Lf01/Config;->seenTimestamps:Ljava/util/HashMap;
+    :cond_init_time
+
     return-void
 .end method
 
@@ -43,6 +51,10 @@
     # Registers:
     # v0..v6 = Locals
     # p0 = Parameter (ID String) -> Aliases to v7 in .registers 8 context (wait, 8 registers implies v0-v7. p0 is v7)
+    
+    # Define Constants first (Fix VerifyError)
+    const/4 v3, 0x1
+    const/4 v4, 0x0
     
     # Null Safety
     if-nez p0, :cond_safe
@@ -80,13 +92,50 @@
     
     :cond_check_max_logic
     sget v0, Lf01/Config;->maxRepeats:I
-    if-nez v0, :cond_inc_logic
-    # Max=0 (Unlimited): DO NOT increment, just return False (Show)
-    # Since we already checked Ban, and it's not banned, it's valid.
-    return v4 
+    if-nez v0, :cond_debounce_logic
+    return v4 # Max=0 (Unlimited) -> Show
     
-    :cond_inc_logic
-    # Max > 0: Increment and Check
+    :cond_debounce_logic
+    # DEBOUNCE LOGIC (2000ms)
+    # Ensure map exists
+    sget-object v5, Lf01/Config;->seenTimestamps:Ljava/util/HashMap;
+    if-nez v5, :cond_create_time_map
+    new-instance v5, Ljava/util/HashMap;
+    invoke-direct {v5}, Ljava/util/HashMap;-><init>()V
+    sput-object v5, Lf01/Config;->seenTimestamps:Ljava/util/HashMap;
+    :cond_create_time_map
+    
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v6
+    
+    sget-object v5, Lf01/Config;->seenTimestamps:Ljava/util/HashMap;
+    invoke-virtual {v5, p0}, Ljava/util/HashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v8
+    check-cast v8, Ljava/lang/Long;
+    
+    if-eqz v8, :cond_check_diff
+    invoke-virtual {v8}, Ljava/lang/Long;->longValue()J
+    move-result-wide v8
+    sub-long v8, v6, v8
+    const-wide/16 v10, 0x7d0 # 2000ms
+    cmp-long v12, v8, v10
+    if-gez v12, :cond_update_time
+    
+    # Too soon (<2000ms) -> Don't increment, just show current state
+    if-le v2, v0, :cond_debounce_over
+    return v3
+    :cond_debounce_over
+    return v4
+    
+    :cond_check_diff
+    # No timestamp -> Fall through to update
+    
+    :cond_update_time
+    # Time passed -> Increment & Update Time
+    invoke-static {v6, v7}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+    move-result-object v6
+    invoke-virtual {v5, p0, v6}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    
     add-int/lit8 v2, v2, 0x1
     invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v5

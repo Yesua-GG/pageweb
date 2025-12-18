@@ -46,7 +46,7 @@
 .end method
 
 .method public static isRepeated(Ljava/lang/String;)Z
-    .registers 32
+    .registers 16
 
     # Registers:
     # v0..v6 = Locals
@@ -92,60 +92,63 @@
     
     :cond_check_max_logic
     sget v0, Lf01/Config;->maxRepeats:I
-    if-nez v0, :cond_debounce_logic
+    if-nez v0, :cond_check_limit_read
     return v4 # Max=0 (Unlimited) -> Show
     
-    :cond_debounce_logic
-    # DEBOUNCE LOGIC (2000ms)
-    # Ensure map exists
-    sget-object v5, Lf01/Config;->seenTimestamps:Ljava/util/HashMap;
-    if-nez v5, :cond_create_time_map
-    new-instance v5, Ljava/util/HashMap;
-    invoke-direct {v5}, Ljava/util/HashMap;-><init>()V
-    sput-object v5, Lf01/Config;->seenTimestamps:Ljava/util/HashMap;
-    :cond_create_time_map
+    :cond_check_limit_read
+    # Just Check Limit (No Increment)
+    if-le v2, v0, :cond_over_limit_read
+    return v3 # True (Hidden)
     
-    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-    move-result-wide v6
-    
-    sget-object v5, Lf01/Config;->seenTimestamps:Ljava/util/HashMap;
-    invoke-virtual {v5, p0}, Ljava/util/HashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
-    move-result-object v8
-    check-cast v8, Ljava/lang/Long;
-    
-    if-eqz v8, :cond_check_diff
-    invoke-virtual {v8}, Ljava/lang/Long;->longValue()J
-    move-result-wide v8
-    sub-long v8, v6, v8
-    const-wide/16 v10, 0x7d0 # 2000ms
-    cmp-long v12, v8, v10
-    if-gez v12, :cond_update_time
-    
-    # Too soon (<2000ms) -> Don't increment, just show current state
-    if-le v2, v0, :cond_debounce_over
-    return v3
-    :cond_debounce_over
-    return v4
-    
-    :cond_check_diff
-    # No timestamp -> Fall through to update
-    
-    :cond_update_time
-    # Time passed -> Increment & Update Time
-    invoke-static {v6, v7}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
-    move-result-object v6
-    invoke-virtual {v5, p0, v6}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-    
-    add-int/lit8 v2, v2, 0x1
-    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-    move-result-object v5
-    invoke-virtual {v1, p0, v5}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-    
-    if-le v2, v0, :cond_over_limit
-    return v3 # True (Limit Exceeded)
-    
-    :cond_over_limit
+    :cond_over_limit_read
     return v4 # False (Show)
+.end method
+
+.method public static incrementRepeat(Ljava/lang/String;)V
+    .registers 5
+    
+    if-nez p0, :cond_inc_safe
+    return-void
+    :cond_inc_safe
+    
+    sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    if-nez v0, :cond_inc_map
+    new-instance v0, Ljava/util/HashMap;
+    invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+    sput-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    :cond_inc_map
+    
+    sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    invoke-virtual {v0, p0}, Ljava/util/HashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Ljava/lang/Integer;
+    
+    const/4 v2, 0x1
+    if-nez v1, :cond_inc_init
+    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v1
+    invoke-virtual {v0, p0, v1}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    return-void
+    
+    :cond_inc_init
+    invoke-virtual {v1}, Ljava/lang/Integer;->intValue()I
+    move-result v1
+    add-int/lit8 v1, v1, 0x1
+    invoke-static {v1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v1
+    invoke-virtual {v0, p0, v1}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    
+    const-string v0, "ConfigDebug"
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v3, "Order Selected & Incremented: "
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    
+    return-void
 .end method
 
 .method public static banOrder(Ljava/lang/String;)V

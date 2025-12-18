@@ -3034,6 +3034,12 @@
     
     const/4 v0, 0x1
     sput-boolean v0, Lf01/Config;->isOffering:Z
+    
+    # COUNT ON OPTION (Increment only when selecting)
+    invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lf01/Config;->incrementRepeat(Ljava/lang/String;)V
+    
     invoke-static {p0, v1}, Lf01/b0;->z(Lf01/b0;Landroid/view/View;)Lkotlin/Unit;
     
     :cond_done

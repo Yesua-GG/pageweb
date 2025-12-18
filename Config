@@ -46,7 +46,7 @@
 .end method
 
 .method public static isRepeated(Ljava/lang/String;)Z
-    .registers 8
+    .registers 32
 
     # Registers:
     # v0..v6 = Locals

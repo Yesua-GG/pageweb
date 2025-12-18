@@ -44,6 +44,11 @@
     # v0..v6 = Locals
     # p0 = Parameter (ID String) -> Aliases to v7 in .registers 8 context (wait, 8 registers implies v0-v7. p0 is v7)
     
+    # Null Safety
+    if-nez p0, :cond_safe
+    return v4 # False
+    :cond_safe
+
     sget-object v1, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     if-nez v1, :cond_create_map
     new-instance v1, Ljava/util/HashMap;
@@ -55,51 +60,40 @@
     invoke-virtual {v1, p0}, Ljava/util/HashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v2
     check-cast v2, Ljava/lang/Integer;
-
-    const/4 v3, 0x1
-    const/4 v4, 0x0
     
-    if-nez v2, :cond_count_0
+    # 1. First Time
+    if-nez v2, :cond_init_val
+    const/4 v0, 0x1
+    invoke-static {v0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v0
+    invoke-virtual {v1, p0, v0}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    return v4 # False
     
-    # First time
-    invoke-static {v3}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-    move-result-object v2
-    invoke-virtual {v1, p0, v2}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-    return v4 
-
-    :cond_count_0
-    # Increment
+    :cond_init_val
     invoke-virtual {v2}, Ljava/lang/Integer;->intValue()I
     move-result v2
     
-    # Check BAN first (High value) -> 90000
+    # 2. Check BAN (90000)
     const v6, 0x15F90
-    if-le v2, v6, :cond_is_banned
-    # Is Banned -> Return True (Hidden)
-    return v3 
+    if-le v2, v6, :cond_check_max_logic
+    return v3 # True (Banned)
     
-    :cond_is_banned
-    # Increment (v2 is current count)
+    :cond_check_max_logic
+    sget v0, Lf01/Config;->maxRepeats:I
+    if-nez v0, :cond_inc_logic
+    # Max=0 (Unlimited): DO NOT increment, just return False (Show)
+    # Since we already checked Ban, and it's not banned, it's valid.
+    return v4 
+    
+    :cond_inc_logic
+    # Max > 0: Increment and Check
     add-int/lit8 v2, v2, 0x1
-    
     invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v5
     invoke-virtual {v1, p0, v5}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
     
-    # Check BAN (90000)
-    const v6, 0x15F90
-    if-le v2, v6, :cond_check_max
-    return v3 # True (Hide)
-    
-    :cond_check_max
-    # Check Max Limit
-    sget v0, Lf01/Config;->maxRepeats:I
-    if-nez v0, :cond_unlimited
-    return v4 # False (Show if 0/Unlimited)
-    
-    :cond_unlimited
     if-le v2, v0, :cond_over_limit
-    return v3 # True (Cnt > Max)
+    return v3 # True (Limit Exceeded)
     
     :cond_over_limit
     return v4 # False (Show)

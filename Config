@@ -135,29 +135,12 @@
     
     # REFRESH ADAPTER REMOVED (Conflicted with App Logic)
     
-    goto :cond_notify_range
+    goto :cond_no_adapter
     
     :cond_notify_range
-    # SOFT REFRESH ADAPTER (Force re-bind without Hide-All)
-    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
-    if-eqz v0, :cond_no_adapter
-    
-    try_start_refresh
-    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
-    
-    # Get Count
-    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->getItemCount()I
-    move-result v1
-    
-    # Notify Range Changed (0 to Count)
-    const/4 v2, 0x0
-    invoke-virtual {v0, v2, v1}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyItemRangeChanged(II)V
-    
-    const-string v0, "ConfigDebug"
-    const-string v1, "Adapter soft refreshed"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    try_end_refresh
-    .catch Ljava/lang/Exception; {:try_start_refresh .. :try_end_refresh} :catch_refresh
+    # SOFT REFRESH REMOVED (Caused Lag)
+    # Map update is sufficient for Logic Safety.
+    # App native update handles Visuals.
     
     goto :cond_no_adapter
     
@@ -317,4 +300,3 @@
     const/4 v0, 0x0
     return v0
 .end method
-

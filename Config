@@ -79,43 +79,30 @@
     return v3 
     
     :cond_is_banned
-    # Not Banned yet, Increment
+    # Increment (v2 is current count)
     add-int/lit8 v2, v2, 0x1
     
     invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v5
     invoke-virtual {v1, p0, v5}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
     
-    # LOG CHECK
-    const-string v5, "ConfigDebug"
-    new-instance v6, Ljava/lang/StringBuilder;
-    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v0, "Check ID: "
-    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v6, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    const-string v0, " Count: "
-    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v6, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    const-string v0, " Max: "
-    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    sget v0, Lf01/Config;->maxRepeats:I
-    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v6
-    invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    # Check Max Repeats
-    sget v0, Lf01/Config;->maxRepeats:I
-    if-nez v0, :cond_check_limit
-    return v4
+    # Check BAN (90000)
+    const v6, 0x15F90
+    if-le v2, v6, :cond_check_max
+    return v3 # True (Hide)
     
-    :cond_check_limit
-    if-le v2, v0, :cond_over
-    const/4 v0, 0x1
-    return v0
+    :cond_check_max
+    # Check Max Limit
+    sget v0, Lf01/Config;->maxRepeats:I
+    if-nez v0, :cond_unlimited
+    return v4 # False (Show if 0/Unlimited)
     
-    :cond_over
-    return v4
+    :cond_unlimited
+    if-le v2, v0, :cond_over_limit
+    return v3 # True (Cnt > Max)
+    
+    :cond_over_limit
+    return v4 # False (Show)
 .end method
 
 .method public static banOrder(Ljava/lang/String;)V
@@ -330,3 +317,4 @@
     const/4 v0, 0x0
     return v0
 .end method
+

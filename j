@@ -3029,11 +3029,26 @@
     
     :cond_check_offer
     # 4. OFFER LOGIC (Instant - No isShown check)
+    
+    # WATCHDOG CHECK (Auto-Unlock if Stuck > 3000ms)
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v5
+    sget-wide v7, Lf01/Config;->lastOfferTime:J
+    sub-long v7, v5, v7
+    const-wide/16 v9, 0xbb8 # 3000ms
+    cmp-long v0, v7, v9
+    if-lez v0, :cond_check_lock
+    const/4 v0, 0x0
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+    
+    :cond_check_lock
     sget-boolean v0, Lf01/Config;->isOffering:Z
     if-nez v0, :cond_done
     
+    # LOCK & UPDATE TIME
     const/4 v0, 0x1
     sput-boolean v0, Lf01/Config;->isOffering:Z
+    sput-wide v5, Lf01/Config;->lastOfferTime:J
     
     # COUNT ON OPTION (Increment only when selecting)
     invoke-virtual {p1}, Lpz0/e;->o()Ljava/lang/String;

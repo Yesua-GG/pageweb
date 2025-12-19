@@ -29,8 +29,8 @@
 
     sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     if-nez v0, :cond_init_map
-    new-instance v0, Ljava/util/HashMap;
-    invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+    new-instance v0, Ljava/util/LinkedHashMap;
+    invoke-direct {v0}, Ljava/util/LinkedHashMap;-><init>()V
     sput-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     :cond_init_map
 
@@ -47,8 +47,8 @@
 
     sget-object v1, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     if-nez v1, :cond_create_map
-    new-instance v1, Ljava/util/HashMap;
-    invoke-direct {v1}, Ljava/util/HashMap;-><init>()V
+    new-instance v1, Ljava/util/LinkedHashMap;
+    invoke-direct {v1}, Ljava/util/LinkedHashMap;-><init>()V
     sput-object v1, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     :cond_create_map
     
@@ -111,6 +111,7 @@
     invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v1
     invoke-virtual {v0, p0, v1}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {}, Lf01/Config;->enforceLimit()V
     
     # REFRESH ADAPTER
     
@@ -287,8 +288,8 @@
 
     sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     if-nez v0, :cond_init
-    new-instance v0, Ljava/util/HashMap;
-    invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+    new-instance v0, Ljava/util/LinkedHashMap;
+    invoke-direct {v0}, Ljava/util/LinkedHashMap;-><init>()V
     sput-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     :cond_init
 
@@ -303,6 +304,7 @@
     invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v1
     invoke-virtual {v0, p0, v1}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {}, Lf01/Config;->enforceLimit()V
     goto :cond_log
     
     :cond_curr
@@ -319,6 +321,7 @@
     invoke-static {v1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v3
     invoke-virtual {v0, p0, v3}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {}, Lf01/Config;->enforceLimit()V
     
     :cond_log
     const-string v0, "ConfigDebug"
@@ -331,5 +334,41 @@
     move-result-object v2
     invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
+    return-void
+.end method
+
+.method public static enforceLimit()V
+    .registers 4
+
+    # Check size > 10
+    sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    if-nez v0, :cond_skip_limit
+    return-void
+    
+    :cond_skip_limit
+    invoke-virtual {v0}, Ljava/util/HashMap;->size()I
+    move-result v1
+    
+    const/16 v2, 0xa
+    if-le v1, v2, :cond_limit_ok
+
+    # Remove Oldest (First iter item in LinkedHashMap)
+    invoke-virtual {v0}, Ljava/util/HashMap;->keySet()Ljava/util/Set;
+    move-result-object v1
+    invoke-interface {v1}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+    move-result-object v1
+    
+    # Get first key
+    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v1 # Key
+    
+    # Remove
+    invoke-virtual {v0, v1}, Ljava/util/HashMap;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+    
+    const-string v0, "ConfigDebug"
+    const-string v2, "Map limit exceeded, removed oldest"
+    invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    
+    :cond_limit_ok
     return-void
 .end method

@@ -209,15 +209,10 @@
     invoke-super {p0}, Landroidx/fragment/app/Fragment;->onDestroy()V
     
     # CHECK IS BIDDING
-    sget-boolean v0, Lf01/Config;->isBidding:Z
-    if-eqz v0, :cond_skip_unlock
-    # If bidding, DO NOT UNLOCK. Dialog will handle it.
-    return-void
-    
-    :cond_skip_unlock
-    # UNLOCK OFFERING
+    # UNLOCK OFFERING AND BIDDING
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
+    sput-boolean v0, Lf01/Config;->isBidding:Z
     
     # REFRESH ADAPTER
     sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;

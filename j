@@ -3029,9 +3029,24 @@
     
     :cond_check_offer
     # 4. OFFER LOGIC (Instant - No isShown check)
+    const-string v0, "ConfigDebug"
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v4, "Item Bind. isOffering: "
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    sget-boolean v4, Lf01/Config;->isOffering:Z
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v3
+    invoke-static {v0, v3}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
     sget-boolean v0, Lf01/Config;->isOffering:Z
     if-nez v0, :cond_done
-    
+
+    const-string v0, "ConfigDebug"
+    const-string v3, "Selecting Order (Setting isOffering=True)"
+    invoke-static {v0, v3}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
     const/4 v0, 0x1
     sput-boolean v0, Lf01/Config;->isOffering:Z
     

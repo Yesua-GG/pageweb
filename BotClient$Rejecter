@@ -66,6 +66,10 @@
 
     invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
+    const/4 v4, 0x0
+    sput-boolean v4, Lf01/Config;->isOffering:Z
+    sput-boolean v4, Lf01/Config;->isBidding:Z
+
     :cond_19
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
 

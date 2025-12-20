@@ -210,6 +210,10 @@
     
     # CHECK IS BIDDING
     # UNLOCK OFFERING AND BIDDING
+    const-string v0, "ConfigDebug"
+    const-string v1, "OrderInfoFragment onDestroy: Resetting isOffering/isBidding to False"
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
     sput-boolean v0, Lf01/Config;->isBidding:Z

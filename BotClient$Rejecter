@@ -66,6 +66,10 @@
 
     invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
+    const-string v4, "ConfigDebug"
+    const-string v5, "BotClient Rejecter: Resetting isOffering/isBidding to False"
+    invoke-static {v4, v5}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
     const/4 v4, 0x0
     sput-boolean v4, Lf01/Config;->isOffering:Z
     sput-boolean v4, Lf01/Config;->isBidding:Z

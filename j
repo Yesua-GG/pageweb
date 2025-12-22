@@ -3029,6 +3029,21 @@
     
     :cond_check_offer
     # 4. OFFER LOGIC (Instant - No isShown check)
+    
+    # COOLDOWN CHECK
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v5
+    sget-wide v7, Lf01/Config;->lastClosureTime:J
+    sub-long/2addr v5, v7
+    const-wide/16 v7, 0x7d0
+    cmp-long v5, v5, v7
+    if-gez v5, :cond_done
+
+    const-string v5, "ConfigDebug"
+    const-string v6, "Cooldown Active. Skipping."
+    invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    goto :cond_done
+
     const-string v0, "ConfigDebug"
     new-instance v3, Ljava/lang/StringBuilder;
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V

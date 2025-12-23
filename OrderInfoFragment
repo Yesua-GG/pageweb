@@ -205,6 +205,9 @@
 .method public onDestroy()V
     .registers 4
 
+    # Call super
+    invoke-super {p0}, Lcu1/h;->onDestroy()V
+
     # UPDATE CLOSURE TIME
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
     move-result-wide v0

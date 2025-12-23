@@ -3037,13 +3037,14 @@
     sub-long/2addr v5, v7
     const-wide/16 v7, 0x7d0
     cmp-long v5, v5, v7
-    if-gez v5, :cond_done
+    if-gez v5, :cond_ready
 
     const-string v5, "ConfigDebug"
     const-string v6, "Cooldown Active. Skipping."
     invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     goto :cond_done
 
+    :cond_ready
     const-string v0, "ConfigDebug"
     new-instance v3, Ljava/lang/StringBuilder;
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V

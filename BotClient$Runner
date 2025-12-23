@@ -411,6 +411,57 @@
     const-string v1, "}"
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    # --- START INJECTION: App Data (Distance/Time) ---
+    const-string v1, ", \"app_dist_a\": "
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
+    move-result-object v1
+    
+    if-eqz v1, :cond_app_data_a_null
+    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
+    move-result v2
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    
+    const-string v2, ", \"app_time_a\": "
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDuration()I
+    move-result v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    goto :goto_app_data_a_done
+    
+    :cond_app_data_a_null
+    const/4 v1, 0x0
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    
+    :goto_app_data_a_done
+    const-string v1, ", \"app_dist_b\": "
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v1}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
+    move-result-object v1
+    
+    if-eqz v1, :cond_app_data_b_null
+    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
+    move-result v2
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    
+    const-string v2, ", \"app_time_b\": "
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDuration()I
+    move-result v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    goto :goto_app_data_b_done
+    
+    :cond_app_data_b_null
+    const/4 v1, 0x0
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    
+    :goto_app_data_b_done
+    # --- END INJECTION ---
 
     const-string v1, "}"
 

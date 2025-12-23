@@ -7,6 +7,7 @@
 .field public static isOffering:Z
 .field public static hasAdapter:Z
 .field public static isBidding:Z
+.field public static lastClosureTime:J
 .field public static seenOrders:Ljava/util/HashMap;
 .field public static listAdapter:Ljava/lang/Object;
 
@@ -24,6 +25,9 @@
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
     sput-boolean v0, Lf01/Config;->isBidding:Z
+    
+    const-wide/16 v0, 0x0
+    sput-wide v0, Lf01/Config;->lastClosureTime:J
     
     sput-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
 

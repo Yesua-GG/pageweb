@@ -29,6 +29,7 @@
     const-wide/16 v0, 0x0
     sput-wide v0, Lf01/Config;->lastClosureTime:J
     
+    const/4 v0, 0x0
     sput-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
 
     sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;

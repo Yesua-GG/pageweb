@@ -43,9 +43,12 @@
     .line 1
     .line 1
     .line 1
-    # Removed sleep for speed
-    # const-wide/16 v0, 0x32
-    # invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v12
+
+    const-string v0, "ConfigDebug"
+    const-string v1, "Runner Logic Started"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     :catch_5
     new-instance v0, Ljava/lang/StringBuilder;
@@ -157,7 +160,7 @@
 
     invoke-virtual {v0, v1, v2}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
-    const-string v1, ",\"dist_a\":"
+    const-string v1, ",\"app_dist_a\":"
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -204,7 +207,7 @@
     :cond_96
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    const-string v1, ",\"dist_b\":"
+    const-string v1, ",\"app_dist_b\":"
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -470,6 +473,22 @@
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v0
+
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v10
+    
+    sub-long v1, v10, v12
+    const-string v3, "ConfigDebug"
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v5, "JSON Build Time (Client Prep): "
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, v1, v2}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+    const-string v1, "ms"
+    invoke-virtual {v4, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v3, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     invoke-static {v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->sendOrder(Ljava/lang/String;)Ljava/lang/String;
 

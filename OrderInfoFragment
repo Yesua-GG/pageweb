@@ -499,28 +499,25 @@
     .line 7
     invoke-virtual {v0, p1}, Lsinet/startup/inDriver/city/driver/common/ui/UserInfoView;->H(Z)V
 
-    # Inject: Update isOffering based on loading state (p1 is boolean isLoading)
+    # Update isOffering based on loading state
+    # User Request: Use the TextView/Skeleton visibility.
+    # Since p1 controls the Skeleton visibility, p1 IS the source of truth for visibility.
     sput-boolean p1, Lf01/Config;->isOffering:Z
-    
-    if-eqz p1, :cond_update_time
-    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-    move-result-wide v0
-    sput-wide v0, Lf01/Config;->lastOfferingTime:J
-    :cond_update_time
     
     const-string v0, "ConfigDebug"
     new-instance v1, Ljava/lang/StringBuilder;
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v2, "OrderInfoFragment: Loading state changed to "
+    const-string v2, "OrderInfoFragment: Skeleton Visibility Changed. Loading="
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
-    const-string v2, " -> isOffering updated"
+    const-string v2, " -> isOffering="
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
     invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v1
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Refresh Adapter to ensure UI reflects isOffering change immediately
+    # Refresh Adapter
     sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
     if-eqz v0, :cond_adapter_refreshed
     check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;

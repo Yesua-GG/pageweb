@@ -499,14 +499,16 @@
     .line 7
     invoke-virtual {v0, p1}, Lsinet/startup/inDriver/city/driver/common/ui/UserInfoView;->H(Z)V
 
-    # Inject: Update isOffering based on loading state (p1 is boolean isLoading)
-    sput-boolean p1, Lf01/Config;->isOffering:Z
+    # Inject: Update isOffering ONLY if loading starts.
+    # Do NOT reset to false here. Wait for onDestroyView.
+    if-eqz p1, :cond_set_offering
+    const/4 v0, 0x1
+    sput-boolean v0, Lf01/Config;->isOffering:Z
     
-    if-eqz p1, :cond_update_time
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
     move-result-wide v0
     sput-wide v0, Lf01/Config;->lastOfferingTime:J
-    :cond_update_time
+    :cond_set_offering
     
     const-string v0, "ConfigDebug"
     new-instance v1, Ljava/lang/StringBuilder;

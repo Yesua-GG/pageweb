@@ -213,14 +213,10 @@
     move-result-wide v0
     sput-wide v0, Lf01/Config;->lastClosureTime:J
 
-    # UNLOCK OFFERING AND BIDDING (Always)
-    const-string v0, "ConfigDebug"
-    const-string v1, "OrderInfoFragment onDestroy: Resetting isOffering/isBidding to False"
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
-    sput-boolean v0, Lf01/Config;->isBidding:Z
+    # Logic removed as per user request
+    # const/4 v0, 0x0
+    # sput-boolean v0, Lf01/Config;->isOffering:Z
+    # sput-boolean v0, Lf01/Config;->isBidding:Z
     
     # REFRESH ADAPTER
     sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
@@ -4078,4 +4074,3 @@
     :cond_68
     return-void
 .end method
-

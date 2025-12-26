@@ -3034,33 +3034,12 @@
     sget-boolean v0, Lf01/Config;->isOffering:Z
     if-eqz v0, :cond_blocked_offering
     
-    # Check Watchdog Timeout (8s)
-    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-    move-result-wide v5
-    sget-wide v7, Lf01/Config;->lastOfferingTime:J
-    sub-long/2addr v5, v7
-    const-wide/16 v7, 0x1f40  # 8000ms
-    cmp-long v5, v5, v7
-    if-lez v5, :cond_watchdog_reset
-    
-    const-string v0, "ConfigDebug"
-    const-string v5, "Watchdog: Offering Timeout (>8s). Forcing Reset."
-    invoke-static {v0, v5}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
-    
-    # Allow execution to proceed (fall through to Cooldown check basically)
-    goto :cond_blocked_offering_end
-    
-    :cond_watchdog_reset
     const-string v0, "ConfigDebug"
     const-string v5, "Item Bind BLOCKED: Already Offering (isOffering=true)"
     invoke-static {v0, v5}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
     goto :cond_done
     
     :cond_blocked_offering
-    :cond_blocked_offering_end
 
     # COOLDOWN CHECK
 

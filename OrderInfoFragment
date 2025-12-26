@@ -203,24 +203,47 @@
 .end method
 
 .method public onDestroyView()V
-    .registers 3
+    .registers 4
 
     invoke-super {p0}, Lcu1/h;->onDestroyView()V
 
-    const-string v0, "ConfigDebug"
-    const-string v1, "OrderInfoFragment onDestroyView: View destroyed -> Resetting isOffering"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->isRemoving()Z
+    move-result v0
 
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
+    const-string v1, "ConfigDebug"
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v3, "OrderInfoFragment onDestroyView. isRemoving: "
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    if-eqz v0, :cond_removing
+    # Only reset if actually removing the fragment (Screen Start Closing)
+    const-string v1, "ConfigDebug"
+    const-string v2, "OrderInfoFragment onDestroyView: isRemoving=true -> Resetting isOffering"
+    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    const/4 v1, 0x0
+    sput-boolean v1, Lf01/Config;->isOffering:Z
 
     # Refresh Adapter
-    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
-    if-eqz v0, :cond_view_destroyed_refresh
-    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
-    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
+    sget-object v1, Lf01/Config;->listAdapter:Ljava/lang/Object;
+    if-eqz v1, :cond_view_destroyed_refresh
+    check-cast v1, Landroidx/recyclerview/widget/RecyclerView$h;
+    invoke-virtual {v1}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
     :cond_view_destroyed_refresh
+    
+    goto :cond_exit
 
+    :cond_removing
+    const-string v1, "ConfigDebug"
+    const-string v2, "OrderInfoFragment onDestroyView: isRemoving=false -> Keeping isOffering state"
+    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    :cond_exit
     return-void
 .end method
 

@@ -203,47 +203,71 @@
 .end method
 
 .method public onDestroyView()V
-    .registers 4
+    .registers 5
 
     invoke-super {p0}, Lcu1/h;->onDestroyView()V
 
-    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->isRemoving()Z
-    move-result v0
-
-    const-string v1, "ConfigDebug"
-    new-instance v2, Ljava/lang/StringBuilder;
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v3, "OrderInfoFragment onDestroyView. isRemoving: "
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v2
-    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    if-eqz v0, :cond_removing
-    # Only reset if actually removing the fragment (Screen Start Closing)
-    const-string v1, "ConfigDebug"
-    const-string v2, "OrderInfoFragment onDestroyView: isRemoving=true -> Resetting isOffering"
-    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    const/4 v1, 0x0
-    sput-boolean v1, Lf01/Config;->isOffering:Z
-
-    # Refresh Adapter
-    sget-object v1, Lf01/Config;->listAdapter:Ljava/lang/Object;
-    if-eqz v1, :cond_view_destroyed_refresh
-    check-cast v1, Landroidx/recyclerview/widget/RecyclerView$h;
-    invoke-virtual {v1}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
-    :cond_view_destroyed_refresh
+    # 1. Get Loading State from VM
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+    move-result-object v0
     
-    goto :cond_exit
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+    move-result-object v0
+    
+    invoke-interface {v0}, Lix/s0;->getValue()Ljava/lang/Object;
+    move-result-object v0
+    check-cast v0, Ly41/y0;
+    
+    # w() returns isOrderPushLoading
+    invoke-virtual {v0}, Ly41/y0;->w()Z
+    move-result v0
+    
+    # 2. Get isRemoving
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->isRemoving()Z
+    move-result v1
+    
+    # Log Logic
+    const-string v2, "ConfigDebug"
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v4, "onDestroyView Check. removing="
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
+    const-string v4, " loading="
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v3
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    :cond_removing
-    const-string v1, "ConfigDebug"
-    const-string v2, "OrderInfoFragment onDestroyView: isRemoving=false -> Keeping isOffering state"
-    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    :cond_exit
+    # IF (isRemoving OR !isLoading) -> RESET
+    # Logic: if (isRemoving is true) reset. if (isLoading is false) reset.
+    # Inverted: if (!isRemoving AND isLoading) used to be the "don't reset" case.
+    
+    if-nez v1, :cond_do_reset
+    if-eqz v0, :cond_do_reset
+    
+    # Case: NOT Adjusting, and STILL Loading -> Keep Blocking
+    const-string v2, "ConfigDebug"
+    const-string v3, "onDestroyView: View recreation + Loading -> KEEPING LOCK"
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+    
+    :cond_do_reset
+    const-string v2, "ConfigDebug"
+    const-string v3, "onDestroyView: Screen Close or Load Finish -> UNLOCKING"
+    invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    
+    const/4 v2, 0x0
+    sput-boolean v2, Lf01/Config;->isOffering:Z
+    
+    # Refresh Adapter
+    sget-object v2, Lf01/Config;->listAdapter:Ljava/lang/Object;
+    if-eqz v2, :cond_refresh
+    check-cast v2, Landroidx/recyclerview/widget/RecyclerView$h;
+    invoke-virtual {v2}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
+    :cond_refresh
+    
     return-void
 .end method
 
@@ -477,6 +501,13 @@
 
     # Inject: Update isOffering based on loading state (p1 is boolean isLoading)
     sput-boolean p1, Lf01/Config;->isOffering:Z
+    
+    if-eqz p1, :cond_update_time
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v0
+    sput-wide v0, Lf01/Config;->lastOfferingTime:J
+    :cond_update_time
+    
     const-string v0, "ConfigDebug"
     new-instance v1, Ljava/lang/StringBuilder;
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V

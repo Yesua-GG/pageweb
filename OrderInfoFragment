@@ -202,6 +202,28 @@
     return-void
 .end method
 
+.method public onDestroyView()V
+    .registers 3
+
+    invoke-super {p0}, Lcu1/h;->onDestroyView()V
+
+    const-string v0, "ConfigDebug"
+    const-string v1, "OrderInfoFragment onDestroyView: View destroyed -> Resetting isOffering"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    const/4 v0, 0x0
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+
+    # Refresh Adapter
+    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
+    if-eqz v0, :cond_view_destroyed_refresh
+    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
+    :cond_view_destroyed_refresh
+
+    return-void
+.end method
+
 .method public onDestroy()V
     .registers 4
 

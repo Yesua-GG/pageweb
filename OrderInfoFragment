@@ -213,22 +213,38 @@
     move-result-wide v0
     sput-wide v0, Lf01/Config;->lastClosureTime:J
 
-    # Logic removed as per user request
-    # const/4 v0, 0x0
-    # sput-boolean v0, Lf01/Config;->isOffering:Z
-    # sput-boolean v0, Lf01/Config;->isBidding:Z
+    # Logic restored with isRemoving check to handle explicit screen closure
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->isRemoving()Z
+    move-result v0
+
+    if-eqz v0, :cond_not_removing
+    const-string v0, "ConfigDebug"
+    const-string v1, "OrderInfoFragment onDestroy: Screen closing (isRemoving=true) -> Resetting isOffering"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    const/4 v0, 0x0
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+    # sput-boolean v0, Lf01/Config;->isBidding:Z # Keep bidding logic disabled/removed as requested or irrelevant for now
+    
+    # Refresh Adapter
+    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
+    if-eqz v0, :cond_not_removing
+    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
+
+    :cond_not_removing
     
     # REFRESH ADAPTER
     sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
     if-eqz v0, :cond_no_adapter
     
-    try_start_refresh
+    :try_start_refresh
     check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
     invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
     const-string v0, "ConfigDebug"
     const-string v1, "Adapter notified from onDestroy"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    try_end_refresh
+    :try_end_refresh
     .catch Ljava/lang/Exception; {:try_start_refresh .. :try_end_refresh} :catch_refresh
     
     goto :cond_no_adapter

@@ -3030,6 +3030,17 @@
     :cond_check_offer
     # 4. OFFER LOGIC (Instant - No isShown check)
     
+    # PRIORITY CHECK: If already offering, ABORT IMMEDIATELY
+    sget-boolean v0, Lf01/Config;->isOffering:Z
+    if-eqz v0, :cond_blocked_offering
+    
+    const-string v0, "ConfigDebug"
+    const-string v5, "Item Bind BLOCKED: Already Offering (isOffering=true)"
+    invoke-static {v0, v5}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
+    goto :cond_done
+    
+    :cond_blocked_offering
+
     # COOLDOWN CHECK
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
     move-result-wide v5

@@ -4129,6 +4129,22 @@
     return-void
 .end method
 
+.method public onStop()V
+    .registers 3
+
+    # Injected by Antigravity: Reset isOffering on Stop
+    const-string v0, "OrderInfoFragment"
+    const-string v1, "onStop: isOffering = false"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    const/4 v0, 0x0
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+    # End Injection
+
+    invoke-super {p0}, Lcu1/h;->onStop()V
+    return-void
+.end method
+
 .method public onDestroy()V
     .registers 2
 

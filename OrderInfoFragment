@@ -1140,10 +1140,10 @@
     invoke-virtual {p1}, Luh0/d;->c()I
 
     .line 55
-    move-result v4
+    move-result v5
 
     .line 56
-    invoke-virtual {v1, v2, v3, v0, v4}, Lwh0/g;->a(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/ImageView;I)V
+    invoke-virtual {v1, v2, v3, v0, v5}, Lwh0/g;->a(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/ImageView;I)V
 
     .line 59
     return-void

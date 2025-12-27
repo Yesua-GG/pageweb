@@ -1,101 +1,187 @@
-# classes4.dex
+# classes15.dex
 
-.class public final Lpo3/j;
-.super Lb72/f;
+.class public final Lsinet/startup/inDriver/city/driver/ride/main/ui/e;
+.super Luu1/i;
 .source "SourceFile"
-
-# interfaces
-.implements Lcu1/i;
 
 
 # annotations
 .annotation system Ldalvik/annotation/MemberClasses;
     value = {
-        Lpo3/j$a;,
-        Lpo3/j$b;
+        Lsinet/startup/inDriver/city/driver/ride/main/ui/e$f;,
+        Lsinet/startup/inDriver/city/driver/ride/main/ui/e$g;
+    }
+.end annotation
+
+.annotation system Ldalvik/annotation/Signature;
+    value = {
+        "Luu1/i<",
+        "Lv71/a3;",
+        ">;"
     }
 .end annotation
 
 .annotation runtime Lkotlin/Metadata;
     d1 = {
-        "\u0000\\\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\b\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0013\n\u0002\u0018\u0002\n\u0002\b\u0007\n\u0002\u0010\b\n\u0002\b\f\u0018\u0000 H2\u00020\u00012\u00020\u0002:\u0001IB\u0007¢\u0006\u0004\b\u0003\u0010\u0004J\u000f\u0010\u0006\u001a\u00020\u0005H\u0002¢\u0006\u0004\b\u0006\u0010\u0004J\u000f\u0010\u0007\u001a\u00020\u0005H\u0002¢\u0006\u0004\b\u0007\u0010\u0004J\u0019\u0010\u000b\u001a\u00020\n2\b\u0010\t\u001a\u0004\u0018\u00010\bH\u0002¢\u0006\u0004\b\u000b\u0010\fJ\u0017\u0010\u000f\u001a\u00020\b2\u0006\u0010\u000e\u001a\u00020\rH\u0002¢\u0006\u0004\b\u000f\u0010\u0010J\u000f\u0010\u0011\u001a\u00020\rH\u0002¢\u0006\u0004\b\u0011\u0010\u0012J\u0017\u0010\u0014\u001a\u00020\u00052\u0006\u0010\u0013\u001a\u00020\nH\u0002¢\u0006\u0004\b\u0014\u0010\u0015J!\u0010\u001a\u001a\u00020\u00052\u0006\u0010\u0017\u001a\u00020\u00162\b\u0010\u0019\u001a\u0004\u0018\u00010\u0018H\u0016¢\u0006\u0004\b\u001a\u0010\u001bR\u001b\u0010!\u001a\u00020\u001c8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b\u001d\u0010\u001e\u001a\u0004\b\u001f\u0010 R\u001b\u0010\'\u001a\u00020\"8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b#\u0010$\u001a\u0004\b%\u0010&R\u0018\u0010*\u001a\u0004\u0018\u00010\b8\u0002@\u0002X\u0082\u000e¢\u0006\u0006\n\u0004\b(\u0010)R\u001b\u0010.\u001a\u00020\n8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b+\u0010\u001e\u001a\u0004\b,\u0010-R\u001b\u00101\u001a\u00020\r8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b/\u0010\u001e\u001a\u0004\b0\u0010\u0012R\u0018\u00103\u001a\u0004\u0018\u00010\b8\u0002@\u0002X\u0082\u000e¢\u0006\u0006\n\u0004\b2\u0010)R\u0018\u00105\u001a\u0004\u0018\u00010\b8\u0002@\u0002X\u0082\u000e¢\u0006\u0006\n\u0004\b4\u0010)R\u001b\u0010:\u001a\u0002068BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b7\u0010\u001e\u001a\u0004\b8\u00109R\u001b\u0010=\u001a\u00020\n8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b;\u0010\u001e\u001a\u0004\b<\u0010-R\u001a\u0010C\u001a\u00020>8\u0016X\u0096\u0004¢\u0006\f\n\u0004\b?\u0010@\u001a\u0004\bA\u0010BR\u001a\u0010G\u001a\u00020\n8\u0016X\u0096D¢\u0006\f\n\u0004\bD\u0010E\u001a\u0004\bF\u0010-¨\u0006J"
+        "\u0000¤\u0001\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0010\u0002\n\u0002\b\u0005\n\u0002\u0010\b\n\u0002\b\u000b\n\u0002\u0010\u000b\n\u0002\bP\n\u0002\u0018\u0002\n\u0002\b\r\b\u0001\u0018\u0000 \u0098\u00012\b\u0012\u0004\u0012\u00020\u00020\u0001:\u0004\u0099\u0001\u009a\u0001B±\u0001\b\u0007\u0012\b\b\u0001\u0010\u0004\u001a\u00020\u0003\u0012\b\b\u0001\u0010\u0005\u001a\u00020\u0003\u0012\u0006\u0010\u0007\u001a\u00020\u0006\u0012\u001c\u0010\r\u001a\u0018\u0012\u0004\u0012\u00020\t\u0012\u0004\u0012\u00020\n\u0012\u0004\u0012\u00020\u000b0\bj\u0002`\f\u0012\u0006\u0010\u000f\u001a\u00020\u000e\u0012\u0006\u0010\u0011\u001a\u00020\u0010\u0012\u0006\u0010\u0013\u001a\u00020\u0012\u0012\u0006\u0010\u0015\u001a\u00020\u0014\u0012\u0006\u0010\u0017\u001a\u00020\u0016\u0012\u0006\u0010\u0019\u001a\u00020\u0018\u0012\f\u0010\u001c\u001a\b\u0012\u0004\u0012\u00020\u001b0\u001a\u0012\u0006\u0010\u001e\u001a\u00020\u001d\u0012\u0006\u0010 \u001a\u00020\u001f\u0012\u0006\u0010\"\u001a\u00020!\u0012\u0006\u0010$\u001a\u00020#\u0012\u0006\u0010&\u001a\u00020%\u0012\u0006\u0010(\u001a\u00020\'¢\u0006\u0004\b)\u0010*J\r\u0010,\u001a\u00020+¢\u0006\u0004\b,\u0010-J\r\u0010.\u001a\u00020+¢\u0006\u0004\b.\u0010-J\r\u0010/\u001a\u00020+¢\u0006\u0004\b/\u0010-J\r\u00100\u001a\u00020+¢\u0006\u0004\b0\u0010-J?\u00107\u001a\u00020+2\b\b\u0001\u00102\u001a\u0002012\b\b\u0001\u00103\u001a\u0002012\b\b\u0001\u00104\u001a\u0002012\b\b\u0001\u00105\u001a\u0002012\b\b\u0001\u00106\u001a\u000201¢\u0006\u0004\b7\u00108J\u0017\u0010:\u001a\u00020+2\b\b\u0001\u00109\u001a\u000201¢\u0006\u0004\b:\u0010;J\r\u0010<\u001a\u00020+¢\u0006\u0004\b<\u0010-J\u001f\u0010@\u001a\u00020+2\u0006\u0010>\u001a\u00020=2\b\b\u0002\u0010?\u001a\u00020=¢\u0006\u0004\b@\u0010AJ\u001d\u0010D\u001a\u00020+2\u0006\u0010B\u001a\u00020=2\u0006\u0010C\u001a\u00020\u0003¢\u0006\u0004\bD\u0010EJ\r\u0010F\u001a\u00020+¢\u0006\u0004\bF\u0010-J\r\u0010G\u001a\u00020+¢\u0006\u0004\bG\u0010-J\r\u0010H\u001a\u00020+¢\u0006\u0004\bH\u0010-J\r\u0010I\u001a\u00020+¢\u0006\u0004\bI\u0010-J\r\u0010J\u001a\u00020+¢\u0006\u0004\bJ\u0010-J\r\u0010K\u001a\u00020+¢\u0006\u0004\bK\u0010-J\r\u0010L\u001a\u00020+¢\u0006\u0004\bL\u0010-J\r\u0010M\u001a\u00020+¢\u0006\u0004\bM\u0010-J\u001d\u0010P\u001a\u00020+2\u0006\u0010N\u001a\u00020\u00032\u0006\u0010O\u001a\u00020\u0003¢\u0006\u0004\bP\u0010QJ\u0015\u0010R\u001a\u00020+2\u0006\u0010C\u001a\u00020\u0003¢\u0006\u0004\bR\u0010SJ\r\u0010T\u001a\u00020+¢\u0006\u0004\bT\u0010-J\u0015\u0010V\u001a\u00020+2\u0006\u0010U\u001a\u00020\u0003¢\u0006\u0004\bV\u0010SJ\u0015\u0010W\u001a\u00020+2\u0006\u0010U\u001a\u00020\u0003¢\u0006\u0004\bW\u0010SJ\u0015\u0010Y\u001a\u00020+2\u0006\u0010X\u001a\u00020=¢\u0006\u0004\bY\u0010ZJ\r\u0010[\u001a\u00020+¢\u0006\u0004\b[\u0010-J\u0015\u0010]\u001a\u00020+2\u0006\u0010\\\u001a\u00020\u0003¢\u0006\u0004\b]\u0010SJ\r\u0010^\u001a\u00020+¢\u0006\u0004\b^\u0010-J\r\u0010_\u001a\u00020+¢\u0006\u0004\b_\u0010-J\r\u0010`\u001a\u00020+¢\u0006\u0004\b`\u0010-J\r\u0010a\u001a\u00020+¢\u0006\u0004\ba\u0010-J\r\u0010b\u001a\u00020+¢\u0006\u0004\bb\u0010-J\u000f\u0010c\u001a\u00020+H\u0014¢\u0006\u0004\bc\u0010-J\u0015\u0010e\u001a\u00020+2\u0006\u0010d\u001a\u000201¢\u0006\u0004\be\u0010;J\u0015\u0010g\u001a\u00020+2\u0006\u0010f\u001a\u00020=¢\u0006\u0004\bg\u0010ZJ\r\u0010h\u001a\u00020+¢\u0006\u0004\bh\u0010-J\r\u0010i\u001a\u00020+¢\u0006\u0004\bi\u0010-J\r\u0010j\u001a\u00020+¢\u0006\u0004\bj\u0010-J\u000f\u0010k\u001a\u00020+H\u0002¢\u0006\u0004\bk\u0010-J\u000f\u0010l\u001a\u00020+H\u0002¢\u0006\u0004\bl\u0010-J\u000f\u0010m\u001a\u00020+H\u0002¢\u0006\u0004\bm\u0010-R\u001a\u0010\u0005\u001a\u00020\u00038\u0002X\u0083\u0004¢\u0006\f\n\u0004\bn\u0010o\u0012\u0004\bp\u0010-R*\u0010\r\u001a\u0018\u0012\u0004\u0012\u00020\t\u0012\u0004\u0012\u00020\n\u0012\u0004\u0012\u00020\u000b0\bj\u0002`\f8\u0002X\u0082\u0004¢\u0006\u0006\n\u0004\bq\u0010rR\u0014\u0010\u000f\u001a\u00020\u000e8\u0002X\u0082\u0004¢\u0006\u0006\n\u0004\bs\u0010tR\u0014\u0010\u0011\u001a\u00020\u00108\u0002X\u0082\u0004¢\u0006\u0006\n\u0004\bu\u0010vR\u0014\u0010\u0013\u001a\u00020\u00128\u0002X\u0082\u0004¢\u0006\u0006\n\u0004\bw\u0010xR\u0014\u0010\u0015\u001a\u00020\u00148\u0002X\u0082\u0004¢\u0006\u0006\n\u0004\by\u0010zR\u0014\u0010\u0019\u001a\u00020\u00188\u0002X\u0082\u0004¢\u0006\u0006\n\u0004\b{\u0010|R\u001a\u0010\u001c\u001a\b\u0012\u0004\u0012\u00020\u001b0\u001a8\u0002X\u0082\u0004¢\u0006\u0006\n\u0004\b}\u0010~R\u0015\u0010\u001e\u001a\u00020\u001d8\u0002X\u0082\u0004¢\u0006\u0007\n\u0005\b\u007f\u0010\u0080\u0001R\u0016\u0010 \u001a\u00020\u001f8\u0002X\u0082\u0004¢\u0006\b\n\u0006\b\u0081\u0001\u0010\u0082\u0001R\u0016\u0010\"\u001a\u00020!8\u0002X\u0082\u0004¢\u0006\b\n\u0006\b\u0083\u0001\u0010\u0084\u0001R\u0016\u0010$\u001a\u00020#8\u0002X\u0082\u0004¢\u0006\b\n\u0006\b\u0085\u0001\u0010\u0086\u0001R\u0016\u0010&\u001a\u00020%8\u0002X\u0082\u0004¢\u0006\b\n\u0006\b\u0087\u0001\u0010\u0088\u0001R\u0016\u0010(\u001a\u00020\'8\u0002X\u0082\u0004¢\u0006\b\n\u0006\b\u0089\u0001\u0010\u008a\u0001R\u0019\u0010\u008d\u0001\u001a\u00020=8\u0002@\u0002X\u0082\u000e¢\u0006\b\n\u0006\b\u008b\u0001\u0010\u008c\u0001R!\u0010\u0093\u0001\u001a\u00030\u008e\u00018BX\u0082\u0084\u0002¢\u0006\u0010\n\u0006\b\u008f\u0001\u0010\u0090\u0001\u001a\u0006\b\u0091\u0001\u0010\u0092\u0001R\u0018\u0010\u0095\u0001\u001a\u00020\u00038\u0002@\u0002X\u0082\u000e¢\u0006\u0007\n\u0005\b\u0094\u0001\u0010oR\u0018\u0010\u0097\u0001\u001a\u00020\u00038\u0002@\u0002X\u0082\u000e¢\u0006\u0007\n\u0005\b\u0096\u0001\u0010o¨\u0006\u009b\u0001"
     }
     d2 = {
-        "Lpo3/j;",
-        "Lb72/f;",
-        "Lcu1/i;",
+        "Lsinet/startup/inDriver/city/driver/ride/main/ui/e;",
+        "Luu1/i;",
+        "Lv71/a3;",
+        "",
+        "conveyorRideId",
+        "rideId",
+        "Lv71/i2;",
+        "viewStateMapper",
+        "Lo62/j0;",
+        "Lr71/s2;",
+        "Lo62/a;",
+        "Luu1/l;",
+        "Lsinet/startup/inDriver/city/driver/ride/main/store/RideStore;",
+        "store",
+        "Lku1/c;",
+        "resourceManager",
+        "Lvu1/c;",
+        "doubleTapExitInteractor",
+        "Lbs1/c;",
+        "telemetryLoggerFactory",
+        "Lq71/c;",
+        "driverRideAnalyticsInteractor",
+        "Loz3/i;",
+        "vocFacade",
+        "Lz12/b;",
+        "featureTogglesRepository",
+        "Lp62/a;",
+        "Lph0/g;",
+        "interStore",
+        "Lwu1/d;",
+        "flowRouter",
+        "Lq71/f;",
+        "onboardingInteractor",
+        "Lvj3/f;",
+        "navigatorChooserStoreInteractor",
+        "Lsj3/i;",
+        "navigatorChooserStoreRepository",
+        "Lek5/c;",
+        "supportChatScreenProvider",
+        "Lpz2/a;",
+        "antifraudEventManager",
         "<init>",
+        "(Ljava/lang/String;Ljava/lang/String;Lv71/i2;Lo62/j0;Lku1/c;Lvu1/c;Lbs1/c;Lq71/c;Loz3/i;Lz12/b;Lp62/a;Lwu1/d;Lq71/f;Lvj3/f;Lsj3/i;Lek5/c;Lpz2/a;)V",
+        "",
+        "e2",
         "()V",
+        "F2",
+        "G2",
+        "v2",
         "",
-        "P6",
-        "K6",
-        "Ljava/math/BigDecimal;",
-        "price",
+        "horizontalPadding",
+        "bottomPadding",
+        "topPadding",
+        "horizontalLogoPadding",
+        "bottomLogoPadding",
+        "C2",
+        "(IIIII)V",
+        "peekHeight",
+        "p2",
+        "(I)V",
+        "E2",
         "",
-        "z6",
-        "(Ljava/math/BigDecimal;)Z",
-        "",
+        "sourceDynamicButton",
+        "expanded",
+        "r2",
+        "(ZZ)V",
+        "shouldShowShareRide",
+        "deeplink",
+        "P2",
+        "(ZLjava/lang/String;)V",
+        "q2",
+        "onBackPressed",
+        "N2",
+        "Q2",
+        "w2",
+        "S2",
+        "V2",
+        "U2",
+        "phoneNumber",
         "text",
-        "J6",
-        "(Ljava/lang/String;)Ljava/math/BigDecimal;",
-        "H6",
-        "()Ljava/lang/String;",
-        "isError",
-        "T6",
+        "t2",
+        "(Ljava/lang/String;Ljava/lang/String;)V",
+        "B2",
+        "(Ljava/lang/String;)V",
+        "y2",
+        "screenName",
+        "I2",
+        "x2",
+        "isChecked",
+        "m2",
         "(Z)V",
-        "Landroid/view/View;",
-        "view",
-        "Landroid/os/Bundle;",
-        "savedInstanceState",
-        "onViewCreated",
-        "(Landroid/view/View;Landroid/os/Bundle;)V",
-        "Lpo3/k;",
-        "Z0",
-        "Lfw/m;",
-        "I6",
-        "()Lpo3/k;",
-        "params",
-        "Loo3/a;",
-        "a1",
-        "Lkotlin/properties/d;",
-        "D6",
-        "()Loo3/a;",
-        "binding",
-        "b1",
-        "Ljava/math/BigDecimal;",
-        "selectedPrice",
-        "c1",
-        "N6",
-        "()Z",
-        "isCurrencySymbolOnTheLeftSide",
-        "d1",
-        "E6",
-        "currencySymbol",
-        "e1",
-        "minPrice",
-        "f1",
-        "maxPrice",
-        "Lpo3/l;",
-        "g1",
-        "F6",
-        "()Lpo3/l;",
-        "driverRole",
-        "h1",
-        "G6",
-        "floatPriceEnabled",
-        "",
-        "i1",
-        "I",
-        "b6",
-        "()I",
-        "layoutRes",
-        "j1",
+        "R2",
+        "actionUrl",
+        "H2",
+        "z2",
+        "L2",
+        "u2",
+        "M2",
+        "O2",
+        "onCleared",
+        "selectedDestinationIndex",
+        "A2",
+        "isNavigationOnboardingSuccessful",
+        "D2",
+        "T2",
+        "J2",
+        "K2",
+        "d2",
+        "l2",
+        "g2",
+        "i0",
+        "Ljava/lang/String;",
+        "getRideId$annotations",
+        "j0",
+        "Lo62/j0;",
+        "k0",
+        "Lku1/c;",
+        "l0",
+        "Lvu1/c;",
+        "m0",
+        "Lbs1/c;",
+        "n0",
+        "Lq71/c;",
+        "o0",
+        "Lz12/b;",
+        "p0",
+        "Lp62/a;",
+        "q0",
+        "Lwu1/d;",
+        "r0",
+        "Lq71/f;",
+        "s0",
+        "Lvj3/f;",
+        "t0",
+        "Lsj3/i;",
+        "u0",
+        "Lek5/c;",
+        "v0",
+        "Lpz2/a;",
+        "w0",
         "Z",
-        "a6",
-        "hasKeyboardSupport",
+        "isUILoggerStopCalled",
+        "Les1/d0;",
+        "x0",
+        "Lfw/m;",
+        "f2",
+        "()Les1/d0;",
+        "telemetryUiLogger",
+        "y0",
+        "lastStatusForTelemetry",
+        "z0",
+        "lastOrderId",
         "Companion",
-        "a",
-        "payment-driver_release"
+        "f",
+        "g",
+        "main_release"
     }
     k = 0x1
     mv = {
@@ -108,902 +194,1245 @@
 
 .annotation build Lkotlin/jvm/internal/SourceDebugExtension;
     value = {
-        "SMAP\nCustomPriceDialogFragment.kt\nKotlin\n*S Kotlin\n*F\n+ 1 CustomPriceDialogFragment.kt\nsinet/startup/inDriver/feature/payment_driver/ui/custom_price/CustomPriceDialogFragment\n+ 2 FragmentExtensions.kt\nsinet/startup/inDriver/core/common/extensions/FragmentExtensionsKt\n+ 3 ViewBindingExtensions.kt\nsinet/startup/inDriver/core/common/extensions/ViewBindingExtensionsKt\n+ 4 TextView.kt\nandroidx/core/widget/TextViewKt\n+ 5 BundleExtensions.kt\nsinet/startup/inDriver/core/common/extensions/BundleExtensionsKt\n*L\n1#1,228:1\n92#2,9:229\n32#3,2:238\n39#4:240\n55#4,12:241\n84#4,3:253\n6#5,5:256\n*S KotlinDebug\n*F\n+ 1 CustomPriceDialogFragment.kt\nsinet/startup/inDriver/feature/payment_driver/ui/custom_price/CustomPriceDialogFragment\n*L\n47#1:229,9\n48#1:238,2\n94#1:240\n94#1:241,12\n94#1:253,3\n75#1:256,5\n*E\n"
+        "SMAP\nRideViewModel.kt\nKotlin\n*S Kotlin\n*F\n+ 1 RideViewModel.kt\nsinet/startup/inDriver/city/driver/ride/main/ui/RideViewModel\n+ 2 Uri.kt\nandroidx/core/net/UriKt\n*L\n1#1,438:1\n29#2:439\n*S KotlinDebug\n*F\n+ 1 RideViewModel.kt\nsinet/startup/inDriver/city/driver/ride/main/ui/RideViewModel\n*L\n334#1:439\n*E\n"
     }
 .end annotation
 
 
 # static fields
-.field public static final Companion:Lpo3/j$a;
-    .annotation build Lorg/jetbrains/annotations/NotNull;
-    .end annotation
-.end field
+.field public static final A0:I
 
-.field static final synthetic k1:[Lkotlin/reflect/KProperty;
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "[",
-            "Lkotlin/reflect/KProperty<",
-            "Ljava/lang/Object;",
-            ">;"
-        }
+.field public static final Companion:Lsinet/startup/inDriver/city/driver/ride/main/ui/e$f;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
 .end field
 
 
 # instance fields
-.field private final Z0:Lfw/m;
+.field private final i0:Ljava/lang/String;
     .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
 .end field
 
-.field private final a1:Lkotlin/properties/d;
+.field private final j0:Lo62/j0;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "Lo62/j0<",
+            "Lr71/s2;",
+            "Lo62/a;",
+            "Luu1/l;",
+            ">;"
+        }
+    .end annotation
+
     .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
 .end field
 
-.field private b1:Ljava/math/BigDecimal;
-    .annotation build Lorg/jetbrains/annotations/Nullable;
-    .end annotation
-.end field
-
-.field private final c1:Lfw/m;
+.field private final k0:Lku1/c;
     .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
 .end field
 
-.field private final d1:Lfw/m;
+.field private final l0:Lvu1/c;
     .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
 .end field
 
-.field private e1:Ljava/math/BigDecimal;
-    .annotation build Lorg/jetbrains/annotations/Nullable;
-    .end annotation
-.end field
-
-.field private f1:Ljava/math/BigDecimal;
-    .annotation build Lorg/jetbrains/annotations/Nullable;
-    .end annotation
-.end field
-
-.field private final g1:Lfw/m;
+.field private final m0:Lbs1/c;
     .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
 .end field
 
-.field private final h1:Lfw/m;
+.field private final n0:Lq71/c;
     .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
 .end field
 
-.field private final i1:I
+.field private final o0:Lz12/b;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
 
-.field private final j1:Z
+.field private final p0:Lp62/a;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "Lp62/a<",
+            "Lph0/g;",
+            ">;"
+        }
+    .end annotation
+
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final q0:Lwu1/d;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final r0:Lq71/f;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final s0:Lvj3/f;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final t0:Lsj3/i;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final u0:Lek5/c;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final v0:Lpz2/a;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private w0:Z
+
+.field private final x0:Lfw/m;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private y0:Ljava/lang/String;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private z0:Ljava/lang/String;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
 
 
 # direct methods
 .method static constructor <clinit>()V
-    .registers 5
+    .registers 2
 
-    .line 1
-    new-instance v0, Lkotlin/jvm/internal/PropertyReference1Impl;
+    new-instance v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$f;
 
-    .line 3
-    const-class v1, Lpo3/j;
-
-    .line 5
-    const-string v2, "binding"
-
-    .line 7
-    const-string v3, "getBinding()Lsinet/startup/inDriver/feature/payment_driver/databinding/FeaturesPaymentDriverFragmentCustomPriceBinding;"
-
-    .line 9
-    const/4 v4, 0x0
-
-    .line 10
-    invoke-direct {v0, v1, v2, v3, v4}, Lkotlin/jvm/internal/PropertyReference1Impl;-><init>(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;I)V
-
-    .line 13
-    invoke-static {v0}, Lkotlin/jvm/internal/Reflection;->property1(Lkotlin/jvm/internal/PropertyReference1;)Lkotlin/reflect/KProperty1;
-
-    .line 16
-    move-result-object v0
-
-    .line 17
-    const/4 v1, 0x1
-
-    .line 18
-    new-array v1, v1, [Lkotlin/reflect/KProperty;
-
-    .line 20
-    aput-object v0, v1, v4
-
-    .line 22
-    sput-object v1, Lpo3/j;->k1:[Lkotlin/reflect/KProperty;
-
-    .line 24
-    new-instance v0, Lpo3/j$a;
-
-    .line 26
     const/4 v1, 0x0
 
-    .line 27
-    invoke-direct {v0, v1}, Lpo3/j$a;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+    invoke-direct {v0, v1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$f;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 
-    .line 30
-    sput-object v0, Lpo3/j;->Companion:Lpo3/j$a;
+    sput-object v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->Companion:Lsinet/startup/inDriver/city/driver/ride/main/ui/e$f;
 
-    .line 32
+    const/16 v0, 0x8
+
+    sput v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->A0:I
+
     return-void
 .end method
 
-.method public onDestroy()V
-    .registers 4
+.method public constructor <init>(Ljava/lang/String;Ljava/lang/String;Lv71/i2;Lo62/j0;Lku1/c;Lvu1/c;Lbs1/c;Lq71/c;Loz3/i;Lz12/b;Lp62/a;Lwu1/d;Lq71/f;Lvj3/f;Lsj3/i;Lek5/c;Lpz2/a;)V
+    .registers 51
 
-    # Call super
-    invoke-super {p0}, Landroidx/fragment/app/Fragment;->onDestroy()V
-
-    # UNLOCK OFFERING/BIDDING - Dialog Closed
+    # Injected by Antigravity
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
-    sput-boolean v0, Lf01/Config;->isBidding:Z
-
-    # REFRESH ADAPTER
-    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
-    if-eqz v0, :cond_no_adapter
-    
-    try_start_refresh
-    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
-    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
-    const-string v0, "ConfigDebug"
-    const-string v1, "Adapter notified from Dialog onDestroy"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    try_end_refresh
-    .catch Ljava/lang/Exception; {:try_start_refresh .. :try_end_refresh} :catch_refresh
-    
-    goto :cond_no_adapter
-    
-    :catch_refresh
-    move-exception v0
-    const-string v1, "ConfigDebug"
-    const-string v2, "Failed to notify adapter in Dialog onDestroy"
-    invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-
-    :cond_no_adapter
-    return-void
-.end method
-
-.method public constructor <init>()V
-    .registers 4
-
-    .line 1
-    invoke-direct {p0}, Lb72/f;-><init>()V
-
-    .line 4
-    new-instance v0, Lpo3/j$d;
-
-    .line 6
-    const-string v1, "ARG_CUSTOM_PRICE_PARAMS"
-
-    .line 8
-    invoke-direct {v0, p0, v1}, Lpo3/j$d;-><init>(Landroidx/fragment/app/Fragment;Ljava/lang/String;)V
-
-    .line 11
-    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
-
-    .line 14
-    move-result-object v0
-
-    .line 15
-    iput-object v0, p0, Lpo3/j;->Z0:Lfw/m;
-
-    .line 17
-    new-instance v0, Lnu1/r2;
-
-    .line 19
-    const-class v1, Loo3/a;
-
-    .line 21
-    invoke-static {v1}, Lkotlin/jvm/internal/Reflection;->getOrCreateKotlinClass(Ljava/lang/Class;)Lkotlin/reflect/KClass;
-
-    .line 24
-    move-result-object v1
-
-    .line 25
-    const/4 v2, 0x0
-
-    .line 26
-    invoke-direct {v0, p0, v1, v2}, Lnu1/r2;-><init>(Landroidx/fragment/app/Fragment;Lkotlin/reflect/KClass;Ljava/lang/Integer;)V
-
-    .line 29
-    iput-object v0, p0, Lpo3/j;->a1:Lkotlin/properties/d;
-
-    .line 31
-    new-instance v0, Lpo3/d;
-
-    .line 33
-    invoke-direct {v0, p0}, Lpo3/d;-><init>(Lpo3/j;)V
-
-    .line 36
-    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
-
-    .line 39
-    move-result-object v0
-
-    .line 40
-    iput-object v0, p0, Lpo3/j;->c1:Lfw/m;
-
-    .line 42
-    new-instance v0, Lpo3/e;
-
-    .line 44
-    invoke-direct {v0, p0}, Lpo3/e;-><init>(Lpo3/j;)V
-
-    .line 47
-    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
-
-    .line 50
-    move-result-object v0
-
-    .line 51
-    iput-object v0, p0, Lpo3/j;->d1:Lfw/m;
-
-    .line 53
-    new-instance v0, Lpo3/f;
-
-    .line 55
-    invoke-direct {v0, p0}, Lpo3/f;-><init>(Lpo3/j;)V
-
-    .line 58
-    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
-
-    .line 61
-    move-result-object v0
-
-    .line 62
-    iput-object v0, p0, Lpo3/j;->g1:Lfw/m;
-
-    .line 64
-    new-instance v0, Lpo3/g;
-
-    .line 66
-    invoke-direct {v0, p0}, Lpo3/g;-><init>(Lpo3/j;)V
-
-    .line 69
-    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
-
-    .line 72
-    move-result-object v0
-
-    .line 73
-    iput-object v0, p0, Lpo3/j;->h1:Lfw/m;
-
-    .line 75
-    sget v0, Lno3/b;->a:I
-
-    .line 77
-    iput v0, p0, Lpo3/j;->i1:I
-
-    .line 79
-    const/4 v0, 0x1
-
-    .line 80
-    iput-boolean v0, p0, Lpo3/j;->j1:Z
-
-    .line 82
-    return-void
-.end method
-
-.method private static final A6(Lpo3/j;)Ljava/lang/String;
-    .registers 1
+    # End Injection
+    .param p1  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p2  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p3  # Lv71/i2;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p4  # Lo62/j0;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p5  # Lku1/c;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p6  # Lvu1/c;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p7  # Lbs1/c;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p8  # Lq71/c;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p9  # Loz3/i;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p10  # Lz12/b;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p11  # Lp62/a;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p12  # Lwu1/d;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p13  # Lq71/f;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p14  # Lvj3/f;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p15  # Lsj3/i;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p16  # Lek5/c;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p17  # Lpz2/a;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/lang/String;",
+            "Ljava/lang/String;",
+            "Lv71/i2;",
+            "Lo62/j0<",
+            "Lr71/s2;",
+            "Lo62/a;",
+            "Luu1/l;",
+            ">;",
+            "Lku1/c;",
+            "Lvu1/c;",
+            "Lbs1/c;",
+            "Lq71/c;",
+            "Loz3/i;",
+            "Lz12/b;",
+            "Lp62/a<",
+            "Lph0/g;",
+            ">;",
+            "Lwu1/d;",
+            "Lq71/f;",
+            "Lvj3/f;",
+            "Lsj3/i;",
+            "Lek5/c;",
+            "Lpz2/a;",
+            ")V"
+        }
+    .end annotation
 
     .line 1
-    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
-
-    .line 4
-    move-result-object p0
-
-    .line 5
-    invoke-virtual {p0}, Lpo3/k;->a()Ljava/lang/String;
-
-    .line 8
-    move-result-object p0
-
-    .line 9
-    return-object p0
-.end method
-
-.method private static final B6(Lpo3/j;)Lpo3/l;
-    .registers 1
-
-    .line 1
-    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
-
-    .line 4
-    move-result-object p0
-
-    .line 5
-    invoke-virtual {p0}, Lpo3/k;->b()Lpo3/l;
-
-    .line 8
-    move-result-object p0
-
-    .line 9
-    return-object p0
-.end method
-
-.method private static final C6(Lpo3/j;)Z
-    .registers 1
-
-    .line 1
-    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
-
-    .line 4
-    move-result-object p0
-
-    .line 5
-    invoke-virtual {p0}, Lpo3/k;->c()Z
-
-    .line 8
-    move-result p0
-
-    .line 9
-    return p0
-.end method
-
-.method private final D6()Loo3/a;
-    .registers 4
-
-    .line 1
-    iget-object v0, p0, Lpo3/j;->a1:Lkotlin/properties/d;
+    move-object/from16 v0, p0
 
     .line 3
-    sget-object v1, Lpo3/j;->k1:[Lkotlin/reflect/KProperty;
+    move-object/from16 v1, p4
 
     .line 5
-    const/4 v2, 0x0
-
-    .line 6
-    aget-object v1, v1, v2
-
-    .line 8
-    invoke-interface {v0, p0, v1}, Lkotlin/properties/d;->getValue(Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
-
-    .line 11
-    move-result-object v0
-
-    .line 12
-    check-cast v0, Loo3/a;
-
-    .line 14
-    return-object v0
-.end method
-
-.method private final E6()Ljava/lang/String;
-    .registers 2
-
-    .line 1
-    iget-object v0, p0, Lpo3/j;->d1:Lfw/m;
-
-    .line 3
-    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
-
-    .line 6
-    move-result-object v0
+    new-instance v2, Lv71/a3;
 
     .line 7
-    check-cast v0, Ljava/lang/String;
-
-    .line 9
-    return-object v0
-.end method
-
-.method private final F6()Lpo3/l;
-    .registers 2
-
-    .line 1
-    iget-object v0, p0, Lpo3/j;->g1:Lfw/m;
-
-    .line 3
-    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
-
-    .line 6
-    move-result-object v0
-
-    .line 7
-    check-cast v0, Lpo3/l;
-
-    .line 9
-    return-object v0
-.end method
-
-.method private final G6()Z
-    .registers 2
-
-    .line 1
-    iget-object v0, p0, Lpo3/j;->h1:Lfw/m;
-
-    .line 3
-    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
-
-    .line 6
-    move-result-object v0
-
-    .line 7
-    check-cast v0, Ljava/lang/Boolean;
-
-    .line 9
-    invoke-virtual {v0}, Ljava/lang/Boolean;->booleanValue()Z
-
-    .line 12
-    move-result v0
-
-    .line 13
-    return v0
-.end method
-
-.method private final H6()Ljava/lang/String;
-    .registers 4
-
-    .line 1
-    invoke-direct {p0}, Lpo3/j;->N6()Z
-
-    .line 4
-    move-result v0
-
-    .line 5
-    if-eqz v0, :cond_1c
-
-    .line 7
-    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+    const v30, 0x3ffffff
 
     .line 10
-    move-result-object v0
+    const/16 v31, 0x0
 
-    .line 11
-    iget-object v1, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+    .line 12
+    const/4 v3, 0x0
 
     .line 13
-    new-instance v2, Ljava/lang/StringBuilder;
+    const/4 v4, 0x0
+
+    .line 14
+    const/4 v5, 0x0
 
     .line 15
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const/4 v6, 0x0
+
+    .line 16
+    const/4 v7, 0x0
+
+    .line 17
+    const/4 v8, 0x0
 
     .line 18
-    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const/4 v9, 0x0
+
+    .line 19
+    const/4 v10, 0x0
+
+    .line 20
+    const/4 v11, 0x0
 
     .line 21
-    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    const-wide/16 v12, 0x0
+
+    .line 23
+    const/4 v14, 0x0
 
     .line 24
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    const/4 v15, 0x0
+
+    .line 25
+    const/16 v16, 0x0
 
     .line 27
-    move-result-object v0
-
-    .line 28
-    goto :goto_31
+    const/16 v17, 0x0
 
     .line 29
-    :cond_1c
-    iget-object v0, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+    const/16 v18, 0x0
 
     .line 31
-    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
+    const/16 v19, 0x0
 
-    .line 34
-    move-result-object v1
+    .line 33
+    const/16 v20, 0x0
 
     .line 35
-    new-instance v2, Ljava/lang/StringBuilder;
+    const/16 v21, 0x0
 
     .line 37
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const/16 v22, 0x0
 
-    .line 40
-    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    .line 39
+    const/16 v23, 0x0
+
+    .line 41
+    const/16 v24, 0x0
 
     .line 43
-    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const/16 v25, 0x0
 
-    .line 46
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    .line 45
+    const/16 v26, 0x0
+
+    .line 47
+    const/16 v27, 0x0
 
     .line 49
-    move-result-object v0
+    const/16 v28, 0x0
 
-    .line 50
-    :goto_31
-    invoke-direct {p0}, Lpo3/j;->F6()Lpo3/l;
+    .line 51
+    const/16 v29, 0x0
 
     .line 53
-    move-result-object v1
-
-    .line 54
-    sget-object v2, Lpo3/j$b;->a:[I
+    invoke-direct/range {v2 .. v31}, Lv71/a3;-><init>(ILjava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Lx71/h;ZZLx71/d;JZLjava/lang/String;ZLjava/lang/String;Lx71/g;ZLx71/c;Lx71/b;Lx71/i;ZZLx71/j;Lp71/d;Lp71/c;Lx71/f;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 
     .line 56
-    invoke-virtual {v1}, Ljava/lang/Enum;->ordinal()I
+    invoke-direct {v0, v2}, Luu1/i;-><init>(Luu1/n;)V
 
     .line 59
-    move-result v1
+    move-object/from16 v2, p2
 
-    .line 60
-    aget v1, v2, v1
-
-    .line 62
-    const/4 v2, 0x1
+    .line 61
+    iput-object v2, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->i0:Ljava/lang/String;
 
     .line 63
-    if-eq v1, v2, :cond_54
+    iput-object v1, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
 
     .line 65
-    const/4 v2, 0x2
+    move-object/from16 v2, p5
 
-    .line 66
-    if-ne v1, v2, :cond_4e
+    .line 67
+    iput-object v2, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->k0:Lku1/c;
 
-    .line 68
-    sget v1, Lno3/c;->a:I
+    .line 69
+    move-object/from16 v2, p6
 
-    .line 70
-    filled-new-array {v0}, [Ljava/lang/Object;
+    .line 71
+    iput-object v2, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->l0:Lvu1/c;
 
     .line 73
-    move-result-object v0
+    move-object/from16 v2, p7
 
-    .line 74
-    invoke-virtual {p0, v1, v0}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
+    .line 75
+    iput-object v2, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->m0:Lbs1/c;
 
     .line 77
-    move-result-object v0
-
-    .line 78
-    return-object v0
+    move-object/from16 v2, p8
 
     .line 79
-    :cond_4e
-    new-instance v0, Lkotlin/NoWhenBranchMatchedException;
+    iput-object v2, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->n0:Lq71/c;
 
     .line 81
-    invoke-direct {v0}, Lkotlin/NoWhenBranchMatchedException;-><init>()V
+    move-object/from16 v2, p10
 
-    .line 84
-    throw v0
+    .line 83
+    iput-object v2, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
 
     .line 85
-    :cond_54
-    sget v1, Lno3/c;->e:I
+    move-object/from16 v3, p11
 
     .line 87
-    filled-new-array {v0}, [Ljava/lang/Object;
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->p0:Lp62/a;
 
-    .line 90
-    move-result-object v0
+    .line 89
+    move-object/from16 v3, p12
 
     .line 91
-    invoke-virtual {p0, v1, v0}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->q0:Lwu1/d;
 
-    .line 94
-    move-result-object v0
+    .line 93
+    move-object/from16 v3, p13
 
     .line 95
-    return-object v0
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->r0:Lq71/f;
+
+    .line 97
+    move-object/from16 v3, p14
+
+    .line 99
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->s0:Lvj3/f;
+
+    .line 101
+    move-object/from16 v3, p15
+
+    .line 103
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->t0:Lsj3/i;
+
+    .line 105
+    move-object/from16 v3, p16
+
+    .line 107
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->u0:Lek5/c;
+
+    .line 109
+    move-object/from16 v3, p17
+
+    .line 111
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->v0:Lpz2/a;
+
+    .line 113
+    new-instance v3, Lv71/r2;
+
+    .line 115
+    invoke-direct {v3, v0}, Lv71/r2;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+
+    .line 118
+    invoke-static {v3}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
+
+    .line 121
+    move-result-object v3
+
+    .line 122
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->x0:Lfw/m;
+
+    .line 124
+    sget-object v3, Lkotlin/jvm/internal/StringCompanionObject;->INSTANCE:Lkotlin/jvm/internal/StringCompanionObject;
+
+    .line 126
+    invoke-static {v3}, Lnu1/k2;->d(Lkotlin/jvm/internal/StringCompanionObject;)Ljava/lang/String;
+
+    .line 129
+    move-result-object v4
+
+    .line 130
+    iput-object v4, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->y0:Ljava/lang/String;
+
+    .line 132
+    invoke-static {v3}, Lnu1/k2;->d(Lkotlin/jvm/internal/StringCompanionObject;)Ljava/lang/String;
+
+    .line 135
+    move-result-object v3
+
+    .line 136
+    iput-object v3, v0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->z0:Ljava/lang/String;
+
+    .line 138
+    invoke-virtual {v1}, Lo62/j0;->v()Lgu/b;
+
+    .line 141
+    move-result-object v3
+
+    .line 142
+    invoke-virtual {v0, v3}, Luu1/i;->y1(Lgu/b;)Lgu/b;
+
+    .line 145
+    invoke-virtual {v1}, Lo62/j0;->t()Ldu/q;
+
+    .line 148
+    move-result-object v3
+
+    .line 149
+    new-instance v4, Lv71/s2;
+
+    .line 151
+    invoke-direct {v4, v0}, Lv71/s2;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+
+    .line 154
+    new-instance v5, Lv71/t2;
+
+    .line 156
+    invoke-direct {v5, v4}, Lv71/t2;-><init>(Lkotlin/jvm/functions/Function1;)V
+
+    .line 159
+    invoke-virtual {v3, v5}, Ldu/q;->o0(Liu/g;)Ldu/q;
+
+    .line 162
+    move-result-object v3
+
+    .line 163
+    new-instance v4, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$a;
+
+    .line 165
+    move-object/from16 v5, p3
+
+    .line 167
+    invoke-direct {v4, v5}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$a;-><init>(Ljava/lang/Object;)V
+
+    .line 170
+    new-instance v5, Lv71/u2;
+
+    .line 172
+    invoke-direct {v5, v4}, Lv71/u2;-><init>(Lkotlin/jvm/functions/Function1;)V
+
+    .line 175
+    invoke-virtual {v3, v5}, Ldu/q;->f1(Liu/l;)Ldu/q;
+
+    .line 178
+    move-result-object v3
+
+    .line 179
+    invoke-static {}, Lfu/a;->c()Ldu/w;
+
+    .line 182
+    move-result-object v4
+
+    .line 183
+    invoke-virtual {v3, v4}, Ldu/q;->q1(Ldu/w;)Ldu/q;
+
+    .line 186
+    move-result-object v3
+
+    .line 187
+    new-instance v4, Lv71/v2;
+
+    .line 189
+    invoke-direct {v4, v0}, Lv71/v2;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+
+    .line 192
+    new-instance v5, Lv71/w2;
+
+    .line 194
+    invoke-direct {v5, v4}, Lv71/w2;-><init>(Lkotlin/jvm/functions/Function1;)V
+
+    .line 197
+    invoke-virtual {v3, v5}, Ldu/q;->T1(Liu/g;)Lgu/b;
+
+    .line 200
+    move-result-object v3
+
+    .line 201
+    invoke-virtual {v0, v3}, Luu1/i;->y1(Lgu/b;)Lgu/b;
+
+    .line 204
+    invoke-virtual {v1}, Lo62/j0;->r()Ldu/q;
+
+    .line 207
+    move-result-object v3
+
+    .line 208
+    invoke-static {}, Lfu/a;->c()Ldu/w;
+
+    .line 211
+    move-result-object v4
+
+    .line 212
+    invoke-virtual {v3, v4}, Ldu/q;->q1(Ldu/w;)Ldu/q;
+
+    .line 215
+    move-result-object v3
+
+    .line 216
+    new-instance v4, Lv71/x2;
+
+    .line 218
+    invoke-direct {v4, v0}, Lv71/x2;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+
+    .line 221
+    new-instance v5, Lv71/y2;
+
+    .line 223
+    invoke-direct {v5, v4}, Lv71/y2;-><init>(Lkotlin/jvm/functions/Function1;)V
+
+    .line 226
+    invoke-virtual {v3, v5}, Ldu/q;->T1(Liu/g;)Lgu/b;
+
+    .line 229
+    move-result-object v3
+
+    .line 230
+    invoke-virtual {v0, v3}, Luu1/i;->y1(Lgu/b;)Lgu/b;
+
+    .line 233
+    new-instance v3, Lr71/t4;
+
+    .line 235
+    move-object/from16 v4, p1
+
+    .line 237
+    invoke-direct {v3, v4}, Lr71/t4;-><init>(Ljava/lang/String;)V
+
+    .line 240
+    invoke-virtual {v1, v3}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 243
+    invoke-direct {v0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->d2()V
+
+    .line 246
+    sget-object v3, Lph0/g2;->a:Lph0/g2;
+
+    .line 248
+    invoke-static {v2}, Lnh0/b;->E(Lz12/b;)Z
+
+    .line 251
+    move-result v4
+
+    .line 252
+    const/4 v5, 0x0
+
+    .line 253
+    if-eqz v4, :cond_11b
+
+    .line 255
+    invoke-static {v0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 258
+    move-result-object v1
+
+    .line 259
+    new-instance v4, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$c;
+
+    .line 261
+    invoke-direct {v4, v0, v3, v5}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$c;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lph0/g2;Lkw/c;)V
+
+    .line 264
+    const/4 v3, 0x3
+
+    .line 265
+    const/4 v6, 0x0
+
+    .line 266
+    const/4 v7, 0x0
+
+    .line 267
+    const/4 v8, 0x0
+
+    .line 268
+    move-object/from16 p1, v1
+
+    .line 270
+    move/from16 p5, v3
+
+    .line 272
+    move-object/from16 p4, v4
+
+    .line 274
+    move-object/from16 p6, v6
+
+    .line 276
+    move-object/from16 p2, v7
+
+    .line 278
+    move-object/from16 p3, v8
+
+    .line 280
+    invoke-static/range {p1 .. p6}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 283
+    goto :goto_11e
+
+    .line 284
+    :cond_11b
+    invoke-virtual {v1, v3}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 287
+    :goto_11e
+    const/4 v1, 0x4
+
+    .line 288
+    const/4 v3, 0x0
+
+    .line 289
+    const-string v4, "voc.driver.ride"
+
+    .line 291
+    const/4 v6, 0x0
+
+    .line 292
+    move-object/from16 p1, p9
+
+    .line 294
+    move-object/from16 p3, v0
+
+    .line 296
+    move/from16 p5, v1
+
+    .line 298
+    move-object/from16 p6, v3
+
+    .line 300
+    move-object/from16 p2, v4
+
+    .line 302
+    move/from16 p4, v6
+
+    .line 304
+    invoke-static/range {p1 .. p6}, Loz3/i;->a(Loz3/i;Ljava/lang/String;Ljava/lang/Object;ZILjava/lang/Object;)V
+
+    .line 307
+    invoke-static {v2}, Lwj3/b;->b(Lz12/b;)Z
+
+    .line 310
+    move-result v1
+
+    .line 311
+    if-nez v1, :cond_154
+
+    .line 313
+    invoke-static {v0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 316
+    move-result-object v2
+
+    .line 317
+    new-instance v3, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$d;
+
+    .line 319
+    invoke-direct {v3, v0, v5}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$d;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lkw/c;)V
+
+    .line 322
+    const/4 v4, 0x3
+
+    .line 323
+    const/4 v6, 0x0
+
+    .line 324
+    const/4 v7, 0x0
+
+    .line 325
+    const/4 v8, 0x0
+
+    .line 326
+    move-object/from16 p1, v2
+
+    .line 328
+    move-object/from16 p4, v3
+
+    .line 330
+    move/from16 p5, v4
+
+    .line 332
+    move-object/from16 p6, v6
+
+    .line 334
+    move-object/from16 p2, v7
+
+    .line 336
+    move-object/from16 p3, v8
+
+    .line 338
+    invoke-static/range {p1 .. p6}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 341
+    :cond_154
+    invoke-static {v0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 344
+    move-result-object v2
+
+    .line 345
+    new-instance v3, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$e;
+
+    .line 347
+    invoke-direct {v3, v0, v1, v5}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$e;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;ZLkw/c;)V
+
+    .line 350
+    const/4 v1, 0x3
+
+    .line 351
+    const/4 v4, 0x0
+
+    .line 352
+    const/4 v5, 0x0
+
+    .line 353
+    const/4 v6, 0x0
+
+    .line 354
+    move/from16 p5, v1
+
+    .line 356
+    move-object/from16 p1, v2
+
+    .line 358
+    move-object/from16 p4, v3
+
+    .line 360
+    move-object/from16 p6, v4
+
+    .line 362
+    move-object/from16 p2, v5
+
+    .line 364
+    move-object/from16 p3, v6
+
+    .line 366
+    invoke-static/range {p1 .. p6}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 369
+    return-void
 .end method
 
-.method private final I6()Lpo3/k;
+.method public static synthetic C1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
     .registers 2
 
     .line 1
-    iget-object v0, p0, Lpo3/j;->Z0:Lfw/m;
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->W1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
 
-    .line 3
-    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
-
-    .line 6
-    move-result-object v0
-
-    .line 7
-    check-cast v0, Lpo3/k;
-
-    .line 9
-    return-object v0
+    return-void
 .end method
 
-.method private final J6(Ljava/lang/String;)Ljava/math/BigDecimal;
+.method public static synthetic D1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lr71/s2;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->Q1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lr71/s2;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic E1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->h2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Ljava/lang/String;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic F1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)Lv71/a3;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->S1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)Lv71/a3;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic G1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Les1/d0;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->W2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Les1/d0;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic H1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Luu1/l;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->V1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Luu1/l;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic I1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->k2(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+
+    return-void
+.end method
+
+.method public static synthetic J1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lv71/a3;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->T1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lv71/a3;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic K1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lkotlin/Unit;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic L1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->R1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+
+    return-void
+.end method
+
+.method public static synthetic M1(Ljava/lang/Throwable;)Lkotlin/Unit;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j2(Ljava/lang/Throwable;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic N1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->i2(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+
+    return-void
+.end method
+
+.method public static synthetic O1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lkotlin/Unit;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->n2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static synthetic P1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->U1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+
+    return-void
+.end method
+
+.method private static final Q1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lr71/s2;)Lkotlin/Unit;
+    .registers 3
+
+    .line 1
+    invoke-virtual {p1}, Lr71/s2;->K()Lhg0/p;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    invoke-virtual {v0}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    .line 8
+    move-result-object v0
+
+    .line 9
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->y0:Ljava/lang/String;
+
+    .line 11
+    invoke-virtual {p1}, Lr71/s2;->x()Ljava/lang/String;
+
+    .line 14
+    move-result-object p1
+
+    .line 15
+    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->z0:Ljava/lang/String;
+
+    .line 17
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 19
+    return-object p0
+.end method
+
+.method private static final R1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+    .registers 2
+
+    .line 1
+    invoke-interface {p0, p1}, Lkotlin/jvm/functions/Function1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 4
+    return-void
+.end method
+
+.method private static final S1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)Lv71/a3;
+    .registers 2
+
+    .line 1
+    invoke-interface {p0, p1}, Lkotlin/jvm/functions/Function1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    check-cast p0, Lv71/a3;
+
+    .line 7
+    return-object p0
+.end method
+
+.method private static final T1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lv71/a3;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-virtual {p0}, Luu1/i;->x1()Lix/e0;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-interface {p0, p1}, Lix/e0;->setValue(Ljava/lang/Object;)V
+
+    .line 8
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 10
+    return-object p0
+.end method
+
+.method private static final U1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+    .registers 2
+
+    .line 1
+    invoke-interface {p0, p1}, Lkotlin/jvm/functions/Function1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 4
+    return-void
+.end method
+
+.method private static final V1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Luu1/l;)Lkotlin/Unit;
     .registers 8
 
     .line 1
-    const/4 v4, 0x4
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
 
-    .line 2
-    const/4 v5, 0x0
-
-    .line 3
-    const-string v1, ","
+    .line 4
+    move-result-object v0
 
     .line 5
-    const-string v2, "."
+    new-instance v3, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$b;
 
     .line 7
-    const/4 v3, 0x0
+    const/4 v1, 0x0
 
     .line 8
-    move-object v0, p1
-
-    .line 9
-    invoke-static/range {v0 .. v5}, Lkotlin/text/StringsKt;->X(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Ljava/lang/String;
-
-    .line 12
-    move-result-object p1
-
-    .line 13
-    invoke-static {p1}, Lkotlin/text/StringsKt;->u(Ljava/lang/String;)Ljava/math/BigDecimal;
-
-    .line 16
-    move-result-object p1
-
-    .line 17
-    if-nez p1, :cond_14
-
-    .line 19
-    sget-object p1, Ljava/math/BigDecimal;->ZERO:Ljava/math/BigDecimal;
-
-    .line 21
-    :cond_14
-    invoke-static {p1}, Lcom/google/android/gms/internal/measurement/a;->a(Ljava/math/BigDecimal;)Ljava/math/BigDecimal;
-
-    .line 24
-    move-result-object v0
-
-    .line 25
-    invoke-virtual {v0}, Ljava/math/BigDecimal;->scale()I
-
-    .line 28
-    move-result v0
-
-    .line 29
-    if-lez v0, :cond_25
-
-    .line 31
-    const/4 v0, 0x2
-
-    .line 32
-    sget-object v1, Ljava/math/RoundingMode;->HALF_UP:Ljava/math/RoundingMode;
-
-    .line 34
-    invoke-virtual {p1, v0, v1}, Ljava/math/BigDecimal;->setScale(ILjava/math/RoundingMode;)Ljava/math/BigDecimal;
-
-    .line 37
-    move-result-object p1
-
-    .line 38
-    :cond_25
-    return-object p1
-.end method
-
-.method private final K6()V
-    .registers 7
-
-    .line 1
-    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
-
-    .line 4
-    move-result-object v0
-
-    .line 5
-    iget-object v0, v0, Loo3/a;->e:Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;
-
-    .line 7
-    new-instance v1, Lpo3/j$c;
-
-    .line 9
-    invoke-direct {v1, v0, p0}, Lpo3/j$c;-><init>(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;)V
-
-    .line 12
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->addTextChangedListener(Landroid/text/TextWatcher;)V
-
-    .line 15
-    new-instance v1, Lpo3/h;
-
-    .line 17
-    invoke-direct {v1, v0, p0}, Lpo3/h;-><init>(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;)V
-
-    .line 20
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setOnEditorActionListener(Landroid/widget/TextView$OnEditorActionListener;)V
-
-    .line 23
-    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
-
-    .line 26
-    move-result-object v1
-
-    .line 27
-    invoke-virtual {v0, v1}, Lsinet/startup/inDriver/core/ui/text_field_number/SymbolEditText;->setSymbol(Ljava/lang/String;)V
-
-    .line 30
-    invoke-direct {p0}, Lpo3/j;->N6()Z
-
-    .line 33
-    move-result v1
-
-    .line 34
-    const/4 v2, 0x2
-
-    .line 35
-    if-eqz v1, :cond_26
-
-    .line 37
-    move v1, v2
-
-    .line 38
-    goto :goto_27
-
-    .line 39
-    :cond_26
-    const/4 v1, 0x3
-
-    .line 40
-    :goto_27
-    invoke-virtual {v0, v1}, Lsinet/startup/inDriver/core/ui/text_field_number/SymbolEditText;->setSymbolAlignment(I)V
-
-    .line 43
-    invoke-direct {p0}, Lpo3/j;->G6()Z
-
-    .line 46
-    move-result v1
-
-    .line 47
-    const/4 v3, 0x0
-
-    .line 48
-    const/4 v4, 0x1
-
-    .line 49
-    if-eqz v1, :cond_4e
-
-    .line 51
-    new-instance v1, Lqu1/a;
-
-    .line 53
-    const-string v5, "0123456789.,"
-
-    .line 55
-    invoke-static {v5}, Landroid/text/method/DigitsKeyListener;->getInstance(Ljava/lang/String;)Landroid/text/method/DigitsKeyListener;
-
-    .line 58
-    move-result-object v5
-
-    .line 59
-    invoke-direct {v1, v5}, Lqu1/a;-><init>(Landroid/text/method/DigitsKeyListener;)V
-
-    .line 62
-    invoke-virtual {v0, v1}, Landroidx/appcompat/widget/AppCompatEditText;->setKeyListener(Landroid/text/method/KeyListener;)V
-
-    .line 65
-    new-instance v1, Lkv1/f;
-
-    .line 67
-    const/4 v5, 0x6
-
-    .line 68
-    invoke-direct {v1, v5, v2}, Lkv1/f;-><init>(II)V
-
-    .line 71
-    new-array v2, v4, [Landroid/text/InputFilter;
-
-    .line 73
-    aput-object v1, v2, v3
-
-    .line 75
-    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setFilters([Landroid/text/InputFilter;)V
-
-    .line 78
-    return-void
-
-    .line 79
-    :cond_4e
-    new-instance v1, Lkv1/k;
-
-    .line 81
-    const/4 v2, 0x0
-
-    .line 82
-    invoke-direct {v1, v3, v4, v2}, Lkv1/k;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
-
-    .line 85
-    new-array v2, v4, [Landroid/text/InputFilter;
-
-    .line 87
-    aput-object v1, v2, v3
-
-    .line 89
-    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setFilters([Landroid/text/InputFilter;)V
-
-    .line 92
-    return-void
-.end method
-
-.method private static final L6(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;Landroid/widget/TextView;ILandroid/view/KeyEvent;)Z
-    .registers 11
-
-    .line 1
-    if-eqz p4, :cond_a
-
-    .line 3
-    invoke-virtual {p4}, Landroid/view/KeyEvent;->getKeyCode()I
-
-    .line 6
-    move-result p2
-
-    .line 7
-    const/16 p4, 0x42
-
-    .line 9
-    if-eq p2, p4, :cond_d
+    invoke-direct {v3, p0, p1, v1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$b;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Luu1/l;Lkw/c;)V
 
     .line 11
-    :cond_a
-    const/4 p2, 0x6
+    const/4 v4, 0x3
 
     .line 12
-    if-ne p3, p2, :cond_1c
-
-    .line 14
-    :cond_d
-    new-instance v3, Lpo3/i;
-
-    .line 16
-    invoke-direct {v3, p1}, Lpo3/i;-><init>(Lpo3/j;)V
-
-    .line 19
-    const/4 v4, 0x1
-
-    .line 20
     const/4 v5, 0x0
 
-    .line 21
-    const-wide/16 v1, 0x0
+    .line 13
+    const/4 v2, 0x0
 
-    .line 23
-    move-object v0, p0
+    .line 14
+    invoke-static/range {v0 .. v5}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
 
-    .line 24
-    invoke-static/range {v0 .. v5}, Lnu1/k3;->k0(Ljava/lang/Object;JLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-
-    .line 27
-    const/4 p0, 0x1
-
-    .line 28
-    return p0
-
-    .line 29
-    :cond_1c
-    const/4 p0, 0x0
-
-    .line 30
-    return p0
-.end method
-
-.method private static final M6(Lpo3/j;Ljava/lang/Object;)Lkotlin/Unit;
-    .registers 2
-
-    .line 1
-    invoke-direct {p0}, Lpo3/j;->P6()V
-
-    .line 4
+    .line 17
     sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
 
-    .line 6
+    .line 19
     return-object p0
 .end method
 
-.method private final N6()Z
+.method private static final W1(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
     .registers 2
 
     .line 1
-    iget-object v0, p0, Lpo3/j;->c1:Lfw/m;
+    invoke-interface {p0, p1}, Lkotlin/jvm/functions/Function1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 4
+    return-void
+.end method
+
+.method private static final W2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Les1/d0;
+    .registers 2
+
+    .line 1
+    iget-object p0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->m0:Lbs1/c;
+
+    .line 3
+    sget-object v0, Lbs1/d;->UiEvents:Lbs1/d;
+
+    .line 5
+    invoke-interface {p0, v0}, Lbs1/c;->a(Lbs1/d;)Lbs1/b;
+
+    .line 8
+    move-result-object p0
+
+    .line 9
+    check-cast p0, Les1/d0;
+
+    .line 11
+    return-object p0
+.end method
+
+.method public static final synthetic X1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lp62/a;
+    .registers 1
+
+    .line 1
+    iget-object p0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->p0:Lp62/a;
+
+    .line 3
+    return-object p0
+.end method
+
+.method public static final synthetic Y1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lsj3/i;
+    .registers 1
+
+    .line 1
+    iget-object p0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->t0:Lsj3/i;
+
+    .line 3
+    return-object p0
+.end method
+
+.method public static final synthetic Z1(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lq71/f;
+    .registers 1
+
+    .line 1
+    iget-object p0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->r0:Lq71/f;
+
+    .line 3
+    return-object p0
+.end method
+
+.method public static final synthetic a2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lhx/g;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Luu1/i;->w1()Lhx/g;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static final synthetic b2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+    .registers 1
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->g2()V
+
+    .line 4
+    return-void
+.end method
+
+.method public static final synthetic c2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+    .registers 1
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->l2()V
+
+    .line 4
+    return-void
+.end method
+
+.method private final d2()V
+    .registers 9
+
+    .line 1
+    sget-object v0, Lph0/h2;->a:Lph0/h2;
+
+    .line 3
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
+
+    .line 5
+    invoke-static {v1}, Lnh0/b;->E(Lz12/b;)Z
+
+    .line 8
+    move-result v1
+
+    .line 9
+    if-eqz v1, :cond_1c
+
+    .line 11
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 14
+    move-result-object v2
+
+    .line 15
+    new-instance v5, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$h;
+
+    .line 17
+    const/4 v1, 0x0
+
+    .line 18
+    invoke-direct {v5, p0, v0, v1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$h;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lph0/h2;Lkw/c;)V
+
+    .line 21
+    const/4 v6, 0x3
+
+    .line 22
+    const/4 v7, 0x0
+
+    .line 23
+    const/4 v3, 0x0
+
+    .line 24
+    const/4 v4, 0x0
+
+    .line 25
+    invoke-static/range {v2 .. v7}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 28
+    return-void
+
+    .line 29
+    :cond_1c
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 31
+    invoke-virtual {v1, v0}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 34
+    return-void
+.end method
+
+.method private final f2()Les1/d0;
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->x0:Lfw/m;
 
     .line 3
     invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
@@ -1012,966 +1441,1420 @@
     move-result-object v0
 
     .line 7
-    check-cast v0, Ljava/lang/Boolean;
+    check-cast v0, Les1/d0;
 
     .line 9
-    invoke-virtual {v0}, Ljava/lang/Boolean;->booleanValue()Z
-
-    .line 12
-    move-result v0
-
-    .line 13
-    return v0
+    return-object v0
 .end method
 
-.method private static final O6(Lpo3/j;)Z
+.method private final g2()V
+    .registers 5
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->s0:Lvj3/f;
+
+    .line 3
+    invoke-virtual {v0}, Lvj3/f;->d()Ldu/i;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    invoke-virtual {v0}, Ldu/i;->u()Ldu/x;
+
+    .line 10
+    move-result-object v0
+
+    .line 11
+    new-instance v1, Lv71/m2;
+
+    .line 13
+    invoke-direct {v1, p0}, Lv71/m2;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+
+    .line 16
+    new-instance v2, Lv71/n2;
+
+    .line 18
+    invoke-direct {v2, v1}, Lv71/n2;-><init>(Lkotlin/jvm/functions/Function1;)V
+
+    .line 21
+    new-instance v1, Lv71/o2;
+
+    .line 23
+    invoke-direct {v1}, Lv71/o2;-><init>()V
+
+    .line 26
+    new-instance v3, Lv71/p2;
+
+    .line 28
+    invoke-direct {v3, v1}, Lv71/p2;-><init>(Lkotlin/jvm/functions/Function1;)V
+
+    .line 31
+    invoke-virtual {v0, v2, v3}, Ldu/x;->Z(Liu/g;Liu/g;)Lgu/b;
+
+    .line 34
+    move-result-object v0
+
+    .line 35
+    invoke-virtual {p0, v0}, Luu1/i;->y1(Lgu/b;)Lgu/b;
+
+    .line 38
+    return-void
+.end method
+
+.method private static final h2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 3
+
+    .line 1
+    const-string v0, "sinet.startup.inDriver"
+
+    .line 3
+    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->areEqual(Ljava/lang/Object;Ljava/lang/Object;)Z
+
+    .line 6
+    move-result p1
+
+    .line 7
+    if-eqz p1, :cond_b
+
+    .line 9
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->l2()V
+
+    .line 12
+    :cond_b
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 14
+    return-object p0
+.end method
+
+.method private static final i2(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+    .registers 2
+
+    .line 1
+    invoke-interface {p0, p1}, Lkotlin/jvm/functions/Function1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 4
+    return-void
+.end method
+
+.method private static final j2(Ljava/lang/Throwable;)Lkotlin/Unit;
     .registers 1
 
     .line 1
-    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
-
-    .line 4
-    move-result-object p0
-
-    .line 5
-    invoke-virtual {p0}, Lpo3/k;->f()Z
-
-    .line 8
-    move-result p0
-
-    .line 9
-    return p0
-.end method
-
-.method private final P6()V
-    .registers 3
-
-    .line 1
-    iget-object v0, p0, Lpo3/j;->b1:Ljava/math/BigDecimal;
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
 
     .line 3
-    invoke-direct {p0, v0}, Lpo3/j;->z6(Ljava/math/BigDecimal;)Z
+    return-object p0
+.end method
+
+.method private static final k2(Lkotlin/jvm/functions/Function1;Ljava/lang/Object;)V
+    .registers 2
+
+    .line 1
+    invoke-interface {p0, p1}, Lkotlin/jvm/functions/Function1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 4
+    return-void
+.end method
+
+.method private final l2()V
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->q0:Lwu1/d;
+
+    .line 3
+    new-instance v1, Lv71/c3;
+
+    .line 5
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->i0:Ljava/lang/String;
+
+    .line 7
+    invoke-direct {v1, v2}, Lv71/c3;-><init>(Ljava/lang/String;)V
+
+    .line 10
+    invoke-virtual {v0, v1}, Lx22/p;->h(Lw22/a;)V
+
+    .line 13
+    return-void
+.end method
+
+.method private static final n2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
+
+    .line 3
+    invoke-static {v0}, Lnh0/b;->E(Lz12/b;)Z
 
     .line 6
     move-result v0
 
     .line 7
-    if-eqz v0, :cond_1c
+    if-eqz v0, :cond_e
 
     .line 9
-    const-string v0, "ARG_OFFER_PRICES"
+    iget-object p0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->q0:Lwu1/d;
 
     .line 11
-    iget-object v1, p0, Lpo3/j;->b1:Ljava/math/BigDecimal;
-
-    .line 13
-    invoke-static {v0, v1}, Lfw/y;->a(Ljava/lang/Object;Ljava/lang/Object;)Lkotlin/Pair;
-
-    .line 16
-    move-result-object v0
-
-    .line 17
-    filled-new-array {v0}, [Lkotlin/Pair;
-
-    .line 20
-    move-result-object v0
-
-    .line 21
-    const-string v1, "CustomPriceDialogFragmentRESULT_OFFER_PRICE"
-
-    .line 23
-    invoke-static {p0, v1, v0}, Lnu1/a;->w(Landroidx/fragment/app/Fragment;Ljava/lang/String;[Lkotlin/Pair;)V
-
-    .line 26
-    invoke-virtual {p0}, Lcom/google/android/material/bottomsheet/b;->dismissAllowingStateLoss()V
-
-    .line 29
-    :cond_1c
-    return-void
-.end method
-
-.method private final P6_Force()V
-    .registers 3
-
-    .line 1
-    iget-object v0, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
-
-    .line 9
-    const-string v1, "ARG_OFFER_PRICES"
-
-    .line 13
-    invoke-static {v1, v0}, Lfw/y;->a(Ljava/lang/Object;Ljava/lang/Object;)Lkotlin/Pair;
-
-    .line 16
-    move-result-object v0
-
-    .line 17
-    filled-new-array {v0}, [Lkotlin/Pair;
-
-    .line 20
-    move-result-object v0
-
-    .line 21
-    const-string v1, "CustomPriceDialogFragmentRESULT_OFFER_PRICE"
-
-    .line 23
-    invoke-static {p0, v1, v0}, Lnu1/a;->w(Landroidx/fragment/app/Fragment;Ljava/lang/String;[Lkotlin/Pair;)V
-
-    .line 26
-    invoke-virtual {p0}, Lcom/google/android/material/bottomsheet/b;->dismissAllowingStateLoss()V
-
-    .line 29
-    return-void
-.end method
-
-.method private static final Q6(Lpo3/j;Landroid/view/View;)Lkotlin/Unit;
-    .registers 2
-
-    .line 1
-    invoke-direct {p0}, Lpo3/j;->P6()V
-
-    .line 4
-    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
-
-    .line 6
-    return-object p0
-.end method
-
-.method private static final R6(Lpo3/j;Landroid/view/View;)V
-    .registers 2
-
-    .line 1
-    invoke-virtual {p0}, Lcom/google/android/material/bottomsheet/b;->dismissAllowingStateLoss()V
-
-    .line 4
-    return-void
-.end method
-
-.method private static final S6(Lpo3/j;Landroid/os/Bundle;)Lkotlin/Unit;
-    .registers 5
-
-    .line 1
-    const-string v0, "ARG_PRICES"
-
-    .line 3
-    invoke-virtual {p1, v0}, Landroid/os/BaseBundle;->get(Ljava/lang/String;)Ljava/lang/Object;
-
-    .line 6
-    move-result-object v1
-
-    .line 7
-    if-eqz v1, :cond_52
-
-    .line 9
-    instance-of p1, v1, Lkotlin/Pair;
-
-    .line 11
-    if-nez p1, :cond_d
-
-    .line 13
-    const/4 v1, 0x0
+    invoke-virtual {p0}, Lx22/p;->f()V
 
     .line 14
-    :cond_d
-    check-cast v1, Lkotlin/Pair;
+    goto :goto_15
 
-    .line 16
-    if-eqz v1, :cond_31
+    .line 15
+    :cond_e
+    iget-object p0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
 
-    .line 18
-    invoke-virtual {v1}, Lkotlin/Pair;->j()Ljava/lang/Object;
+    .line 17
+    sget-object v0, Lmg0/d;->a:Lmg0/d;
 
-    .line 21
-    move-result-object p1
+    .line 19
+    invoke-virtual {p0, v0}, Lo62/j0;->n(Ljava/lang/Object;)V
 
     .line 22
-    check-cast p1, Ljava/math/BigDecimal;
-
-    .line 24
-    iput-object p1, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
-
-    .line 26
-    invoke-virtual {v1}, Lkotlin/Pair;->k()Ljava/lang/Object;
-
-    .line 29
-    move-result-object p1
-
-    .line 30
-    check-cast p1, Ljava/math/BigDecimal;
-
-    .line 32
-    iput-object p1, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
-
-    .line 34
-    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
-
-    .line 37
-    move-result-object p1
-
-    .line 38
-    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
-
-    .line 40
-    invoke-direct {p0}, Lpo3/j;->H6()Ljava/lang/String;
-
-    .line 43
-    move-result-object p0
-
-    .line 44
-    invoke-virtual {p1, p0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    .line 47
+    :goto_15
     sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
 
-    .line 49
+    .line 24
     return-object p0
-
-    .line 50
-    :cond_31
-    new-instance p0, Ljava/lang/ClassCastException;
-
-    .line 52
-    new-instance p1, Ljava/lang/StringBuilder;
-
-    .line 54
-    invoke-direct {p1}, Ljava/lang/StringBuilder;-><init>()V
-
-    .line 57
-    const-string v1, "Can\'t cast an argument with the key \""
-
-    .line 59
-    invoke-virtual {p1, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 62
-    invoke-virtual {p1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 65
-    const-string v0, "\" to "
-
-    .line 67
-    invoke-virtual {p1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 70
-    const-class v0, Lkotlin/Pair;
-
-    .line 72
-    invoke-virtual {p1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    .line 75
-    invoke-virtual {p1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    .line 78
-    move-result-object p1
-
-    .line 79
-    invoke-direct {p0, p1}, Ljava/lang/ClassCastException;-><init>(Ljava/lang/String;)V
-
-    .line 82
-    throw p0
-
-    .line 83
-    :cond_52
-    new-instance p0, Ljava/lang/IllegalArgumentException;
-
-    .line 85
-    new-instance v1, Ljava/lang/StringBuilder;
-
-    .line 87
-    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-
-    .line 90
-    const-string v2, "The Fragment "
-
-    .line 92
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 95
-    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    .line 98
-    const-string p1, " does not have an argument with the key \""
-
-    .line 100
-    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 103
-    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 106
-    const-string p1, "\""
-
-    .line 108
-    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 111
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    .line 114
-    move-result-object p1
-
-    .line 115
-    invoke-direct {p0, p1}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/String;)V
-
-    .line 118
-    throw p0
 .end method
 
-.method private final T6(Z)V
+.method private static final o2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)Lkotlin/Unit;
+    .registers 9
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->k0:Lku1/c;
+
+    .line 3
+    sget v1, Lyt1/k;->m2:I
+
+    .line 5
+    invoke-interface {v0, v1}, Lku1/c;->getString(I)Ljava/lang/String;
+
+    .line 8
+    move-result-object v0
+
+    .line 9
+    new-instance v1, Lph0/r2;
+
+    .line 11
+    invoke-direct {v1, v0}, Lph0/r2;-><init>(Ljava/lang/String;)V
+
+    .line 14
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
+
+    .line 16
+    invoke-static {v0}, Lnh0/b;->E(Lz12/b;)Z
+
+    .line 19
+    move-result v0
+
+    .line 20
+    if-eqz v0, :cond_27
+
+    .line 22
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 25
+    move-result-object v2
+
+    .line 26
+    new-instance v5, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$j;
+
+    .line 28
+    const/4 v0, 0x0
+
+    .line 29
+    invoke-direct {v5, p0, v1, v0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$j;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lph0/r2;Lkw/c;)V
+
+    .line 32
+    const/4 v6, 0x3
+
+    .line 33
+    const/4 v7, 0x0
+
+    .line 34
+    const/4 v3, 0x0
+
+    .line 35
+    const/4 v4, 0x0
+
+    .line 36
+    invoke-static/range {v2 .. v7}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 39
+    goto :goto_2c
+
+    .line 40
+    :cond_27
+    iget-object p0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 42
+    invoke-virtual {p0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 45
+    :goto_2c
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 47
+    return-object p0
+.end method
+
+.method public static synthetic s2(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;ZZILjava/lang/Object;)V
     .registers 5
 
     .line 1
-    if-eqz p1, :cond_5
+    and-int/lit8 p3, p3, 0x2
 
     .line 3
-    sget v0, Lx62/f;->Q:I
+    if-eqz p3, :cond_5
 
     .line 5
-    goto :goto_7
+    const/4 p2, 0x0
 
     .line 6
     :cond_5
-    sget v0, Lx62/f;->Q0:I
+    invoke-virtual {p0, p1, p2}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->r2(ZZ)V
 
-    .line 8
-    :goto_7
-    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
-
-    .line 11
-    move-result-object v1
-
-    .line 12
-    iget-object v2, v1, Loo3/a;->b:Landroid/widget/TextView;
-
-    .line 14
-    invoke-static {v2, v0}, Lnu1/k3;->i0(Landroid/widget/TextView;I)V
-
-    .line 17
-    iget-object v0, v1, Loo3/a;->e:Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;
-
-    .line 19
-    invoke-virtual {v0, p1}, Lsinet/startup/inDriver/core/ui/text_field_number/SymbolEditText;->setError(Z)V
-
-    .line 22
-    if-nez p1, :cond_20
-
-    .line 24
-    iget-object p1, v1, Loo3/a;->b:Landroid/widget/TextView;
-
-    .line 26
-    invoke-direct {p0}, Lpo3/j;->H6()Ljava/lang/String;
-
-    .line 29
-    move-result-object v0
-
-    .line 30
-    invoke-virtual {p1, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    .line 33
-    :cond_20
+    .line 9
     return-void
-.end method
-
-.method public static synthetic n6(Lpo3/j;Landroid/view/View;)V
-    .registers 2
-
-    .line 1
-    invoke-static {p0, p1}, Lpo3/j;->R6(Lpo3/j;Landroid/view/View;)V
-
-    return-void
-.end method
-
-.method public static synthetic o6(Lpo3/j;Ljava/lang/Object;)Lkotlin/Unit;
-    .registers 2
-
-    .line 1
-    invoke-static {p0, p1}, Lpo3/j;->M6(Lpo3/j;Ljava/lang/Object;)Lkotlin/Unit;
-
-    move-result-object p0
-
-    return-object p0
-.end method
-
-.method public static synthetic p6(Lpo3/j;)Lpo3/l;
-    .registers 1
-
-    .line 1
-    invoke-static {p0}, Lpo3/j;->B6(Lpo3/j;)Lpo3/l;
-
-    move-result-object p0
-
-    return-object p0
-.end method
-
-.method public static synthetic q6(Lpo3/j;Landroid/view/View;)Lkotlin/Unit;
-    .registers 2
-
-    .line 1
-    invoke-static {p0, p1}, Lpo3/j;->Q6(Lpo3/j;Landroid/view/View;)Lkotlin/Unit;
-
-    move-result-object p0
-
-    return-object p0
-.end method
-
-.method public static synthetic r6(Lpo3/j;)Z
-    .registers 1
-
-    .line 1
-    invoke-static {p0}, Lpo3/j;->C6(Lpo3/j;)Z
-
-    move-result p0
-
-    return p0
-.end method
-
-.method public static synthetic s6(Lpo3/j;)Z
-    .registers 1
-
-    .line 1
-    invoke-static {p0}, Lpo3/j;->O6(Lpo3/j;)Z
-
-    move-result p0
-
-    return p0
-.end method
-
-.method public static synthetic t6(Lpo3/j;Landroid/os/Bundle;)Lkotlin/Unit;
-    .registers 2
-
-    .line 1
-    invoke-static {p0, p1}, Lpo3/j;->S6(Lpo3/j;Landroid/os/Bundle;)Lkotlin/Unit;
-
-    move-result-object p0
-
-    return-object p0
-.end method
-
-.method public static synthetic u6(Lpo3/j;)Ljava/lang/String;
-    .registers 1
-
-    .line 1
-    invoke-static {p0}, Lpo3/j;->A6(Lpo3/j;)Ljava/lang/String;
-
-    move-result-object p0
-
-    return-object p0
-.end method
-
-.method public static synthetic v6(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;Landroid/widget/TextView;ILandroid/view/KeyEvent;)Z
-    .registers 5
-
-    .line 1
-    invoke-static {p0, p1, p2, p3, p4}, Lpo3/j;->L6(Lsinet/startup/inDriver/core/ui/text_field_number/TextFieldNumber;Lpo3/j;Landroid/widget/TextView;ILandroid/view/KeyEvent;)Z
-
-    move-result p0
-
-    return p0
-.end method
-
-.method public static final synthetic w6(Lpo3/j;Ljava/lang/String;)Ljava/math/BigDecimal;
-    .registers 2
-
-    .line 1
-    invoke-direct {p0, p1}, Lpo3/j;->J6(Ljava/lang/String;)Ljava/math/BigDecimal;
-
-    .line 4
-    move-result-object p0
-
-    .line 5
-    return-object p0
-.end method
-
-.method public static final synthetic x6(Lpo3/j;Ljava/math/BigDecimal;)V
-    .registers 2
-
-    .line 1
-    iput-object p1, p0, Lpo3/j;->b1:Ljava/math/BigDecimal;
-
-    .line 3
-    return-void
-.end method
-
-.method public static final synthetic y6(Lpo3/j;Z)V
-    .registers 2
-
-    .line 1
-    invoke-direct {p0, p1}, Lpo3/j;->T6(Z)V
-
-    .line 4
-    return-void
-.end method
-
-.method private final z6(Ljava/math/BigDecimal;)Z
-    .registers 8
-
-    .line 1
-    const/4 v0, 0x0
-
-    .line 2
-    const/4 v1, 0x1
-
-    .line 3
-    if-nez p1, :cond_17
-
-    .line 5
-    invoke-direct {p0, v1}, Lpo3/j;->T6(Z)V
-
-    .line 8
-    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
-
-    .line 11
-    move-result-object p1
-
-    .line 12
-    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
-
-    .line 14
-    sget v1, Lno3/c;->b:I
-
-    .line 16
-    invoke-virtual {p0, v1}, Landroidx/fragment/app/Fragment;->getString(I)Ljava/lang/String;
-
-    .line 19
-    move-result-object v1
-
-    .line 20
-    invoke-virtual {p1, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    .line 23
-    return v0
-
-    .line 24
-    :cond_17
-    iget-object v2, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
-
-    .line 26
-    invoke-virtual {p1, v2}, Ljava/math/BigDecimal;->compareTo(Ljava/math/BigDecimal;)I
-
-    .line 29
-    move-result v2
-
-    .line 30
-    if-gez v2, :cond_71
-
-    .line 32
-    invoke-direct {p0, v1}, Lpo3/j;->T6(Z)V
-
-    .line 35
-    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
-
-    .line 38
-    move-result-object p1
-
-    .line 39
-    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
-
-    .line 41
-    invoke-direct {p0}, Lpo3/j;->N6()Z
-
-    .line 44
-    move-result v1
-
-    .line 45
-    if-eqz v1, :cond_4e
-
-    .line 47
-    sget v1, Lno3/c;->d:I
-
-    .line 49
-    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
-
-    .line 52
-    move-result-object v2
-
-    .line 53
-    iget-object v3, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
-
-    .line 55
-    new-instance v4, Ljava/lang/StringBuilder;
-
-    .line 57
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-
-    .line 60
-    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 63
-    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    .line 66
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    .line 69
-    move-result-object v2
-
-    .line 70
-    filled-new-array {v2}, [Ljava/lang/Object;
-
-    .line 73
-    move-result-object v2
-
-    .line 74
-    invoke-virtual {p0, v1, v2}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
-
-    .line 77
-    move-result-object v1
-
-    .line 78
-    goto :goto_6d
-
-    .line 79
-    :cond_4e
-    sget v1, Lno3/c;->d:I
-
-    .line 81
-    iget-object v2, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
-
-    .line 83
-    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
-
-    .line 86
-    move-result-object v3
-
-    .line 87
-    new-instance v4, Ljava/lang/StringBuilder;
-
-    .line 89
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-
-    .line 92
-    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    .line 95
-    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 98
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    .line 101
-    move-result-object v2
-
-    .line 102
-    filled-new-array {v2}, [Ljava/lang/Object;
-
-    .line 105
-    move-result-object v2
-
-    .line 106
-    invoke-virtual {p0, v1, v2}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
-
-    .line 109
-    move-result-object v1
-
-    .line 110
-    :goto_6d
-    invoke-virtual {p1, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    .line 113
-    return v0
-
-    .line 114
-    :cond_71
-    iget-object v2, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
-
-    .line 116
-    if-eqz v2, :cond_d8
-
-    .line 118
-    invoke-virtual {p1, v2}, Ljava/math/BigDecimal;->compareTo(Ljava/math/BigDecimal;)I
-
-    .line 121
-    move-result p1
-
-    .line 122
-    if-lez p1, :cond_d8
-
-    .line 124
-    invoke-direct {p0, v1}, Lpo3/j;->T6(Z)V
-
-    .line 127
-    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
-
-    .line 130
-    move-result-object p1
-
-    .line 131
-    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
-
-    .line 133
-    invoke-direct {p0}, Lpo3/j;->N6()Z
-
-    .line 136
-    move-result v2
-
-    .line 137
-    if-eqz v2, :cond_aa
-
-    .line 139
-    sget v2, Lno3/c;->c:I
-
-    .line 141
-    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
-
-    .line 144
-    move-result-object v3
-
-    .line 145
-    iget-object v4, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
-
-    .line 147
-    new-instance v5, Ljava/lang/StringBuilder;
-
-    .line 149
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
-
-    .line 152
-    invoke-virtual {v5, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 155
-    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    .line 158
-    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    .line 161
-    move-result-object v3
-
-    .line 162
-    filled-new-array {v3}, [Ljava/lang/Object;
-
-    .line 165
-    move-result-object v3
-
-    .line 166
-    invoke-virtual {p0, v2, v3}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
-
-    .line 169
-    move-result-object v2
-
-    .line 170
-    goto :goto_c9
-
-    .line 171
-    :cond_aa
-    sget v2, Lno3/c;->c:I
-
-    .line 173
-    iget-object v3, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
-
-    .line 175
-    invoke-direct {p0}, Lpo3/j;->E6()Ljava/lang/String;
-
-    .line 178
-    move-result-object v4
-
-    .line 179
-    new-instance v5, Ljava/lang/StringBuilder;
-
-    .line 181
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
-
-    .line 184
-    invoke-virtual {v5, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    .line 187
-    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 190
-    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    .line 193
-    move-result-object v3
-
-    .line 194
-    filled-new-array {v3}, [Ljava/lang/Object;
-
-    .line 197
-    move-result-object v3
-
-    .line 198
-    invoke-virtual {p0, v2, v3}, Landroidx/fragment/app/Fragment;->getString(I[Ljava/lang/Object;)Ljava/lang/String;
-
-    .line 201
-    move-result-object v2
-
-    .line 202
-    :goto_c9
-    invoke-virtual {p1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    .line 205
-    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
-
-    .line 208
-    move-result-object p1
-
-    .line 209
-    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
-
-    .line 211
-    const/4 v2, 0x2
-
-    .line 212
-    const/4 v3, 0x0
-
-    .line 213
-    invoke-static {p1, v1, v3, v2, v3}, Lj72/o;->N(Landroid/view/View;ZLm82/j;ILjava/lang/Object;)V
-
-    .line 216
-    return v0
-
-    .line 217
-    :cond_d8
-    return v1
 .end method
 
 
 # virtual methods
-.method public a6()Z
-    .registers 2
+.method public final A2(I)V
+    .registers 4
 
     .line 1
-    iget-boolean v0, p0, Lpo3/j;->j1:Z
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
 
     .line 3
-    return v0
-.end method
+    new-instance v1, Lr71/a1;
 
-.method public b6()I
-    .registers 2
-
-    .line 1
-    iget v0, p0, Lpo3/j;->i1:I
-
-    .line 3
-    return v0
-.end method
-
-.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
-    .registers 9
-    .param p1  # Landroid/view/View;
-        .annotation build Lorg/jetbrains/annotations/NotNull;
-        .end annotation
-    .end param
-    .param p2  # Landroid/os/Bundle;
-        .annotation build Lorg/jetbrains/annotations/Nullable;
-        .end annotation
-    .end param
-
-    .line 1
-    invoke-super {p0, p1, p2}, Lb72/f;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
-
-    .line 4
-    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
-
-    .line 7
-    move-result-object p1
+    .line 5
+    invoke-direct {v1, p1}, Lr71/a1;-><init>(I)V
 
     .line 8
-    invoke-virtual {p1}, Lpo3/k;->e()Ljava/math/BigDecimal;
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
     .line 11
-    move-result-object p1
-
-    .line 12
-    iput-object p1, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->l2()V
 
     .line 14
-    invoke-direct {p0}, Lpo3/j;->I6()Lpo3/k;
-
-    .line 17
-    move-result-object p1
-
-    .line 18
-    invoke-virtual {p1}, Lpo3/k;->d()Ljava/math/BigDecimal;
-
-    .line 21
-    move-result-object p1
-
-    .line 22
-    iput-object p1, p0, Lpo3/j;->f1:Ljava/math/BigDecimal;
-
-    .line 24
-    invoke-direct {p0}, Lpo3/j;->D6()Loo3/a;
-
-    .line 27
-    move-result-object p1
-
-    .line 28
-    iget-object v0, p1, Loo3/a;->c:Landroid/widget/Button;
-
-    .line 30
-    new-instance v3, Lpo3/a;
-
-    .line 32
-    invoke-direct {v3, p0}, Lpo3/a;-><init>(Lpo3/j;)V
-
-    .line 35
-    const/4 v4, 0x1
-
-    .line 36
-    const/4 v5, 0x0
-
-    .line 37
-    const-wide/16 v1, 0x0
-
-    .line 39
-    invoke-static/range {v0 .. v5}, Lj72/o;->I(Landroid/view/View;JLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-
-    .line 42
-    invoke-virtual {p1}, Loo3/a;->a()Lsinet/startup/inDriver/core/ui/bottom_sheet/BottomSheetView;
-
-    .line 45
-    move-result-object p2
-
-    .line 46
-    new-instance v0, Lpo3/b;
-
-    .line 48
-    invoke-direct {v0, p0}, Lpo3/b;-><init>(Lpo3/j;)V
-
-    .line 51
-    invoke-virtual {p2, v0}, Lsinet/startup/inDriver/core/ui/bottom_sheet/BottomSheetView;->setOnCloseClickListener(Landroid/view/View$OnClickListener;)V
-
-    .line 54
-    iget-object p1, p1, Loo3/a;->b:Landroid/widget/TextView;
-
-    .line 56
-    invoke-direct {p0}, Lpo3/j;->H6()Ljava/lang/String;
-
-    .line 59
-    move-result-object p2
-
-    .line 60
-    invoke-virtual {p1, p2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    .line 63
-    invoke-direct {p0}, Lpo3/j;->K6()V
-
-    .line 66
-    new-instance p1, Lpo3/c;
-
-    .line 68
-    invoke-direct {p1, p0}, Lpo3/c;-><init>(Lpo3/j;)V
-
-    .line 71
-    const-string p2, "CustomPriceDialogFragmentRESULT_PRICES"
-
-    .line 73
-    invoke-static {p0, p2, p1}, Lnu1/a;->p(Landroidx/fragment/app/Fragment;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-
-    .line 76
     return-void
 .end method
 
-.method public final setPriceAndOffer(Ljava/math/BigDecimal;)V
-    .registers 2
+.method public final B2(Ljava/lang/String;)V
+    .registers 9
+    .param p1  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
 
     .line 1
-    iput-object p1, p0, Lpo3/j;->e1:Ljava/math/BigDecimal;
+    new-instance v0, Lph0/r;
 
     .line 3
-    invoke-direct {p0}, Lpo3/j;->P6_Force()V
+    invoke-direct {v0, p1}, Lph0/r;-><init>(Ljava/lang/String;)V
 
     .line 6
+    iget-object p1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
+
+    .line 8
+    invoke-static {p1}, Lnh0/b;->E(Lz12/b;)Z
+
+    .line 11
+    move-result p1
+
+    .line 12
+    if-eqz p1, :cond_1f
+
+    .line 14
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 17
+    move-result-object v1
+
+    .line 18
+    new-instance v4, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$k;
+
+    .line 20
+    const/4 p1, 0x0
+
+    .line 21
+    invoke-direct {v4, p0, v0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$k;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lph0/r;Lkw/c;)V
+
+    .line 24
+    const/4 v5, 0x3
+
+    .line 25
+    const/4 v6, 0x0
+
+    .line 26
+    const/4 v2, 0x0
+
+    .line 27
+    const/4 v3, 0x0
+
+    .line 28
+    invoke-static/range {v1 .. v6}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 31
+    return-void
+
+    .line 32
+    :cond_1f
+    iget-object p1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 34
+    invoke-virtual {p1, v0}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 37
+    return-void
+.end method
+
+.method public final C2(IIIII)V
+    .registers 13
+
+    .line 1
+    new-instance v0, Lc81/c;
+
+    .line 3
+    move v1, p1
+
+    .line 4
+    move v2, p2
+
+    .line 5
+    move v3, p3
+
+    .line 6
+    move v4, p4
+
+    .line 7
+    move v5, p5
+
+    .line 8
+    invoke-direct/range {v0 .. v5}, Lc81/c;-><init>(IIIII)V
+
+    .line 11
+    iget-object p1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
+
+    .line 13
+    invoke-static {p1}, Lnh0/b;->E(Lz12/b;)Z
+
+    .line 16
+    move-result p1
+
+    .line 17
+    if-eqz p1, :cond_24
+
+    .line 19
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 22
+    move-result-object v1
+
+    .line 23
+    new-instance v4, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$l;
+
+    .line 25
+    const/4 p1, 0x0
+
+    .line 26
+    invoke-direct {v4, p0, v0, p1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$l;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lc81/c;Lkw/c;)V
+
+    .line 29
+    const/4 v5, 0x3
+
+    .line 30
+    const/4 v6, 0x0
+
+    .line 31
+    const/4 v2, 0x0
+
+    .line 32
+    const/4 v3, 0x0
+
+    .line 33
+    invoke-static/range {v1 .. v6}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 36
+    return-void
+
+    .line 37
+    :cond_24
+    iget-object p1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 39
+    invoke-virtual {p1, v0}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 42
+    return-void
+.end method
+
+.method public final D2(Z)V
+    .registers 10
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/c1;
+
+    .line 5
+    invoke-direct {v1, p1}, Lr71/c1;-><init>(Z)V
+
+    .line 8
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 11
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 14
+    move-result-object v2
+
+    .line 15
+    new-instance v5, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$m;
+
+    .line 17
+    const/4 v0, 0x0
+
+    .line 18
+    invoke-direct {v5, p0, v0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$m;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lkw/c;)V
+
+    .line 21
+    const/4 v6, 0x3
+
+    .line 22
+    const/4 v7, 0x0
+
+    .line 23
+    const/4 v3, 0x0
+
+    .line 24
+    const/4 v4, 0x0
+
+    .line 25
+    invoke-static/range {v2 .. v7}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 28
+    if-eqz p1, :cond_21
+
+    .line 30
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->l2()V
+
+    .line 33
+    return-void
+
+    .line 34
+    :cond_21
+    iget-object p1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 36
+    new-instance v0, Lr71/f1;
+
+    .line 38
+    const/4 v1, 0x1
+
+    .line 39
+    invoke-direct {v0, v1}, Lr71/f1;-><init>(Z)V
+
+    .line 42
+    invoke-virtual {p1, v0}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 45
+    return-void
+.end method
+
+.method public final E2()V
+    .registers 6
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/f1;
+
+    .line 5
+    const/4 v2, 0x1
+
+    .line 6
+    const/4 v3, 0x0
+
+    .line 7
+    const/4 v4, 0x0
+
+    .line 8
+    invoke-direct {v1, v4, v2, v3}, Lr71/f1;-><init>(ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+    .line 11
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 14
+    return-void
+.end method
+
+.method public final F2()V
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/k1;
+
+    .line 5
+    sget-object v2, Lp71/f;->RIDE_SCREEN:Lp71/f;
+
+    .line 7
+    invoke-direct {v1, v2}, Lr71/k1;-><init>(Lp71/f;)V
+
+    .line 10
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 13
+    return-void
+.end method
+
+.method public final G2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/n1;->a:Lr71/n1;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final H2(Ljava/lang/String;)V
+    .registers 9
+    .param p1  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->q0:Lwu1/d;
+
+    .line 3
+    new-instance v1, Lxu1/c;
+
+    .line 5
+    invoke-static {p1}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
+
+    .line 8
+    move-result-object v2
+
+    .line 9
+    const/4 v5, 0x6
+
+    .line 10
+    const/4 v6, 0x0
+
+    .line 11
+    const/4 v3, 0x0
+
+    .line 12
+    const/4 v4, 0x0
+
+    .line 13
+    invoke-direct/range {v1 .. v6}, Lxu1/c;-><init>(Landroid/net/Uri;ILjava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+    .line 16
+    invoke-virtual {v0, v1}, Lx22/p;->h(Lw22/a;)V
+
+    .line 19
+    return-void
+.end method
+
+.method public final I2(Ljava/lang/String;)V
+    .registers 3
+    .param p1  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->f2()Les1/d0;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    invoke-interface {v0, p1}, Les1/d0;->b(Ljava/lang/String;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final J2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/g;->a:Lr71/g;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final K2()V
+    .registers 10
+
+    .line 1
+    sget-object v0, Lph0/e2;->a:Lph0/e2;
+
+    .line 3
+    sget-object v1, Lph0/k0;->a:Lph0/k0;
+
+    .line 5
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
+
+    .line 7
+    invoke-static {v2}, Lnh0/b;->E(Lz12/b;)Z
+
+    .line 10
+    move-result v2
+
+    .line 11
+    if-eqz v2, :cond_1e
+
+    .line 13
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 16
+    move-result-object v3
+
+    .line 17
+    new-instance v6, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$n;
+
+    .line 19
+    const/4 v2, 0x0
+
+    .line 20
+    invoke-direct {v6, p0, v0, v1, v2}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$n;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Lph0/e2;Lph0/k0;Lkw/c;)V
+
+    .line 23
+    const/4 v7, 0x3
+
+    .line 24
+    const/4 v8, 0x0
+
+    .line 25
+    const/4 v4, 0x0
+
+    .line 26
+    const/4 v5, 0x0
+
+    .line 27
+    invoke-static/range {v3 .. v8}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 30
+    return-void
+
+    .line 31
+    :cond_1e
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 33
+    invoke-virtual {v2, v0}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 36
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 38
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 41
+    return-void
+.end method
+
+.method public final L2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/x1;->a:Lr71/x1;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final M2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/i;->a:Lr71/i;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final N2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/c2;->a:Lr71/c2;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final O2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/d0;->a:Lr71/d0;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final P2(ZLjava/lang/String;)V
+    .registers 5
+    .param p2  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/d2;
+
+    .line 5
+    invoke-direct {v1, p1, p2}, Lr71/d2;-><init>(ZLjava/lang/String;)V
+
+    .line 8
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 11
+    return-void
+.end method
+
+.method public final Q2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/g2;->a:Lr71/g2;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final R2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/e2;->a:Lr71/e2;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final S2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/k2;->a:Lr71/k2;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final T2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Ls71/l;->a:Ls71/l;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final U2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/h2;->a:Lr71/h2;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final V2()V
+    .registers 13
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->q0:Lwu1/d;
+
+    .line 3
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->u0:Lek5/c;
+
+    .line 5
+    sget-object v2, Lsv1/e;->BACK:Lsv1/e;
+
+    .line 7
+    iget-object v4, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->i0:Ljava/lang/String;
+
+    .line 9
+    sget-object v3, Lek5/a;->RIDE_NO:Lek5/a;
+
+    .line 11
+    invoke-virtual {v3}, Lek5/a;->h()Ljava/lang/String;
+
+    .line 14
+    move-result-object v5
+
+    .line 15
+    const/16 v10, 0xf2
+
+    .line 17
+    const/4 v11, 0x0
+
+    .line 18
+    const/4 v3, 0x0
+
+    .line 19
+    const/4 v6, 0x0
+
+    .line 20
+    const/4 v7, 0x0
+
+    .line 21
+    const/4 v8, 0x0
+
+    .line 22
+    const/4 v9, 0x0
+
+    .line 23
+    invoke-static/range {v1 .. v11}, Lek5/c;->b(Lek5/c;Lsv1/e;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Boolean;ZILjava/lang/Object;)Lw22/a;
+
+    .line 26
+    move-result-object v1
+
+    .line 27
+    invoke-virtual {v0, v1}, Lx22/p;->h(Lw22/a;)V
+
+    .line 30
+    return-void
+.end method
+
+.method public final e2()V
+    .registers 9
+
+    .line 1
+    sget-object v0, Ld61/a;->a:Ld61/a;
+
+    .line 3
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
+
+    .line 5
+    invoke-static {v1}, Lnh0/b;->E(Lz12/b;)Z
+
+    .line 8
+    move-result v1
+
+    .line 9
+    if-eqz v1, :cond_1c
+
+    .line 11
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+
+    .line 14
+    move-result-object v2
+
+    .line 15
+    new-instance v5, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$i;
+
+    .line 17
+    const/4 v1, 0x0
+
+    .line 18
+    invoke-direct {v5, p0, v0, v1}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e$i;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;Ld61/a;Lkw/c;)V
+
+    .line 21
+    const/4 v6, 0x3
+
+    .line 22
+    const/4 v7, 0x0
+
+    .line 23
+    const/4 v3, 0x0
+
+    .line 24
+    const/4 v4, 0x0
+
+    .line 25
+    invoke-static/range {v2 .. v7}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
+
+    .line 28
+    return-void
+
+    .line 29
+    :cond_1c
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 31
+    invoke-virtual {v1, v0}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 34
+    return-void
+.end method
+
+.method public final m2(Z)V
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/w1;
+
+    .line 5
+    invoke-direct {v1, p1}, Lr71/w1;-><init>(Z)V
+
+    .line 8
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 11
+    return-void
+.end method
+
+.method public final onBackPressed()V
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->l0:Lvu1/c;
+
+    .line 3
+    new-instance v1, Lv71/l2;
+
+    .line 5
+    invoke-direct {v1, p0}, Lv71/l2;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+
+    .line 8
+    new-instance v2, Lv71/q2;
+
+    .line 10
+    invoke-direct {v2, p0}, Lv71/q2;-><init>(Lsinet/startup/inDriver/city/driver/ride/main/ui/e;)V
+
+    .line 13
+    invoke-virtual {v0, v1, v2}, Lvu1/c;->b(Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)V
+
+    .line 16
+    return-void
+.end method
+
+.method protected onCleared()V
+    .registers 5
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->n0:Lq71/c;
+
+    .line 3
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->i0:Ljava/lang/String;
+
+    .line 5
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->y0:Ljava/lang/String;
+
+    .line 7
+    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->z0:Ljava/lang/String;
+
+    .line 9
+    invoke-virtual {v0, v1, v2, v3}, Lq71/c;->b(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 12
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->o0:Lz12/b;
+
+    .line 14
+    invoke-static {v0}, Lnh0/b;->E(Lz12/b;)Z
+
+    .line 17
+    move-result v0
+
+    .line 18
+    if-nez v0, :cond_1a
+
+    .line 20
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 22
+    sget-object v1, Ld61/d;->a:Ld61/d;
+
+    .line 24
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 27
+    :cond_1a
+    invoke-super {p0}, Luu1/i;->onCleared()V
+
+    .line 30
+    sget-object v0, Lo71/d;->a:Lo71/d;
+
+    .line 32
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->i0:Ljava/lang/String;
+
+    .line 34
+    invoke-virtual {v0, v1}, Lo71/d;->b(Ljava/lang/String;)V
+
+    .line 37
+    return-void
+.end method
+
+.method public final p2(I)V
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/q1;
+
+    .line 5
+    invoke-direct {v1, p1}, Lr71/q1;-><init>(I)V
+
+    .line 8
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 11
+    return-void
+.end method
+
+.method public final q2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Ls71/i;->a:Ls71/i;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final r2(ZZ)V
+    .registers 6
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/b2;
+
+    .line 5
+    sget-object v2, Lp71/f;->RIDE_SCREEN:Lp71/f;
+
+    .line 7
+    invoke-direct {v1, p1, p2, v2}, Lr71/b2;-><init>(ZZLp71/f;)V
+
+    .line 10
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 13
+    return-void
+.end method
+
+.method public final t2(Ljava/lang/String;Ljava/lang/String;)V
+    .registers 5
+    .param p1  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p2  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/m0;
+
+    .line 5
+    invoke-direct {v1, p1, p2}, Lr71/m0;-><init>(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 8
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 11
+    return-void
+.end method
+
+.method public final u2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Ls71/f;->a:Ls71/f;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final v2()V
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    new-instance v1, Lr71/a0;
+
+    .line 5
+    sget-object v2, Lp71/f;->RIDE_SCREEN:Lp71/f;
+
+    .line 7
+    invoke-direct {v1, v2}, Lr71/a0;-><init>(Lp71/f;)V
+
+    .line 10
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 13
+    return-void
+.end method
+
+.method public final w2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->v0:Lpz2/a;
+
+    .line 3
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->i0:Ljava/lang/String;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lpz2/a;->g(Ljava/lang/Object;)V
+
+    .line 8
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 10
+    sget-object v1, Lr71/f0;->a:Lr71/f0;
+
+    .line 12
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 15
+    return-void
+.end method
+
+.method public final x2(Ljava/lang/String;)V
+    .registers 9
+    .param p1  # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    iget-boolean v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->w0:Z
+
+    .line 3
+    if-nez v0, :cond_19
+
+    .line 5
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->f2()Les1/d0;
+
+    .line 8
+    move-result-object v0
+
+    .line 9
+    new-instance v1, Lgs1/l;
+
+    .line 11
+    sget-object v3, Lgs1/n;->SUCCESS:Lgs1/n;
+
+    .line 13
+    const/4 v5, 0x4
+
+    .line 14
+    const/4 v6, 0x0
+
+    .line 15
+    const/4 v4, 0x0
+
+    .line 16
+    move-object v2, p1
+
+    .line 17
+    invoke-direct/range {v1 .. v6}, Lgs1/l;-><init>(Ljava/lang/String;Lgs1/n;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+    .line 20
+    invoke-interface {v0, v1}, Les1/d0;->Z0(Lgs1/l;)V
+
+    .line 23
+    const/4 p1, 0x1
+
+    .line 24
+    iput-boolean p1, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->w0:Z
+
+    .line 26
+    :cond_19
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->f2()Les1/d0;
+
+    .line 29
+    move-result-object p1
+
+    .line 30
+    new-instance v0, Lgs1/l;
+
+    .line 32
+    sget-object v2, Lgs1/n;->SUCCESS:Lgs1/n;
+
+    .line 34
+    const/4 v4, 0x4
+
+    .line 35
+    const/4 v5, 0x0
+
+    .line 36
+    const-string v1, "city_contractor_bid_accepted"
+
+    .line 38
+    const/4 v3, 0x0
+
+    .line 39
+    invoke-direct/range {v0 .. v5}, Lgs1/l;-><init>(Ljava/lang/String;Lgs1/n;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+    .line 42
+    invoke-interface {p1, v0}, Les1/d0;->Z0(Lgs1/l;)V
+
+    .line 45
+    sget-object p1, Lp52/g;->Companion:Lp52/g$a;
+
+    .line 47
+    invoke-virtual {p1}, Lp52/g$a;->a()Lp52/g;
+
+    .line 50
+    move-result-object p1
+
+    .line 51
+    if-eqz p1, :cond_3b
+
+    .line 53
+    const-string v0, "contractor::city::ride_ready"
+
+    .line 55
+    const/4 v1, 0x2
+
+    .line 56
+    const/4 v2, 0x0
+
+    .line 57
+    invoke-static {p1, v0, v2, v1, v2}, Lp52/h;->e(Lp52/h;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)V
+
+    .line 60
+    :cond_3b
+    return-void
+.end method
+
+.method public final y2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/n0;->a:Lr71/n0;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
+    return-void
+.end method
+
+.method public final z2()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/ride/main/ui/e;->j0:Lo62/j0;
+
+    .line 3
+    sget-object v1, Lr71/p0;->a:Lr71/p0;
+
+    .line 5
+    invoke-virtual {v0, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    .line 8
     return-void
 .end method

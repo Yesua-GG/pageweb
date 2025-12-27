@@ -300,9 +300,14 @@
     const-string v1, "Screen ACTIVE (onResume) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # FORCE ACTIVE (FALSE)
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
+    # START VISIBILITY WATCHER
+    new-instance v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$VisibilityWatcher;
+    invoke-direct {v0, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$VisibilityWatcher;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    invoke-virtual {v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$VisibilityWatcher;->run()V
+
+    const-string v0, "ConfigDebug"
+    const-string v1, "VisibilityWatcher Started in onResume"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     return-void
 .end method

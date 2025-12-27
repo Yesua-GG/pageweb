@@ -800,7 +800,13 @@
 
 # virtual methods
 .method public n(Ljava/lang/Object;)V
-    .registers 3
+    .registers 5 # Increased from 3 (effectively 5 due to parameter mapping standard)
+    # Wait, simple way: .registers 5
+    # p0 is param 0, p1 is param 1.
+    # v0, v1, v2 are locals.
+    # p0 maps to v3, p1 maps to v4.
+    .registers 5
+
     .param p1  # Ljava/lang/Object;
         .annotation build Lorg/jetbrains/annotations/NotNull;
         .end annotation
@@ -810,6 +816,15 @@
             "(TAction;)V"
         }
     .end annotation
+
+    # Injected by Antigravity: Log Action Class
+    invoke-virtual {p1}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v0
+    invoke-virtual {v0}, Ljava/lang/Class;->getSimpleName()Ljava/lang/String;
+    move-result-object v0
+    const-string v1, "OrderAction"
+    invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    # End Injection
 
     .line 1
     iget-object v0, p0, Lo62/j0;->g:Ldv/g;
@@ -1287,18 +1302,3 @@
     new-instance v5, Lo62/y;
 
     .line 238
-    invoke-direct {v5, v3}, Lo62/y;-><init>(Lkotlin/jvm/functions/Function1;)V
-
-    .line 241
-    invoke-virtual {v0, v4, v5}, Ldu/q;->U1(Liu/g;Liu/g;)Lgu/b;
-
-    .line 244
-    move-result-object v0
-
-    .line 245
-    invoke-virtual {v1, v0}, Lgu/a;->c(Lgu/b;)Z
-
-    .line 248
-    :cond_f7
-    return-object v1
-.end method

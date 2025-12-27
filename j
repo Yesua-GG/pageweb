@@ -1069,11 +1069,27 @@
 .end method
 
 .method public static synthetic B(Lf01/b0;)V
-    .registers 1
+    .registers 5
 
     .line 1
-    invoke-static {p0}, Lf01/b0;->z0(Lf01/b0;)V
+    # CHECK IF ITEM EXISTS
+    iget-object v0, p0, Lf01/b0;->l1:Lpz0/e;
 
+    if-eqz v0, :cond_loop_end
+
+    # RUN SELECTION LOGIC (k0)
+    invoke-direct {p0, v0}, Lf01/b0;->k0(Lpz0/e;)V
+
+    # RE-POST RUNNABLE (Loop)
+    iget-object v0, p0, Lf01/b0;->k1:Landroid/os/Handler;
+    if-eqz v0, :cond_loop_end
+
+    new-instance v1, Lf01/i;
+    invoke-direct {v1, p0}, Lf01/i;-><init>(Lf01/b0;)V
+    const-wide/16 v2, 0xc8  # 200ms delay
+    invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+
+    :cond_loop_end
     return-void
 .end method
 
@@ -4469,7 +4485,13 @@
 .method private final y0()V
     .registers 5
 
-    .line 1
+    # CLEANUP OLD HANDLER
+    iget-object v0, p0, Lf01/b0;->k1:Landroid/os/Handler;
+    if-eqz v0, :cond_skip_cleanup
+    const/4 v1, 0x0
+    invoke-virtual {v0, v1}, Landroid/os/Handler;->removeCallbacksAndMessages(Ljava/lang/Object;)V
+    :cond_skip_cleanup
+
     new-instance v0, Landroid/os/Handler;
 
     .line 3
@@ -4727,6 +4749,9 @@
 
     .line 71
     invoke-direct {p0, p2, p1}, Lf01/b0;->Z(Ljava/util/List;Lfw1/a;)V
+
+    # START AUTO-SELECTION LOOP
+    invoke-direct {p0}, Lf01/b0;->y0()V
 
     .line 74
     return-void

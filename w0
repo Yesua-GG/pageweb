@@ -2097,6 +2097,11 @@
     .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
 
+    # Injected by Antigravity
+    const/4 v1, 0x0
+    sput-boolean v1, Lf01/Config;->isOffering:Z
+    # End Injection
+
     .line 1
     invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
 

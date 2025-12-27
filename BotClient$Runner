@@ -695,8 +695,9 @@
     if-eqz v7, :cond_22a
 
     # LOCK OFFERING - BID (DISABLED -> FORCE ALWAYS ACTIVE)
-    const/4 v8, 0x0
-    sput-boolean v8, Lf01/Config;->isOffering:Z
+    # Se ha modificado el valor de v8 a 1 para establecer isOffering en true.
+const/4 v8, 0x1
+sput-boolean v8, Lf01/Config;->isOffering:Z
 
     invoke-static {v7, v3, v4, v6, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->performDirectBidWithTime(Ly41/w0;DLsinet/startup/inDriver/city/common/domain/entity/Price;I)V
 
@@ -705,7 +706,7 @@
     .catch Ljava/lang/Exception; {:try_start_18b .. :try_end_226} :catch_226
 
     :catch_226
-    :catch_226
+
     move-exception v2
     
     # UNLOCK OFFERING - ERROR

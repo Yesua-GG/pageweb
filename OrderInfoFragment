@@ -297,11 +297,11 @@
     invoke-super {p0}, Lcu1/h;->onResume()V
 
     const-string v0, "ConfigDebug"
-    const-string v1, "Screen ACTIVE (onResume) -> Bot ON"
+    const-string v1, "Screen ACTIVE (onResume) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # ACTIVAR BOT
-    const/4 v0, 0x1
+    # FORCE ACTIVE (FALSE)
+    const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
 
     return-void
@@ -310,16 +310,17 @@
 .method public onPause()V
     .registers 3
 
-    # Método para DETECTAR cuando la pantalla se oculta o cierra (prioridad alta)
+    .line 1
     invoke-super {p0}, Lcu1/h;->onPause()V
 
-    const-string v0, "ConfigDebug"
-    const-string v1, "Screen PAUSED (onPause) -> Bot OFF"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    # DESACTIVAR BOT INMEDIATAMENTE
+    .line 4
     const/4 v0, 0x0
+
     sput-boolean v0, Lf01/Config;->isOffering:Z
+
+    const-string v0, "ConfigDebug"
+    const-string v1, "Screen PAUSED (onPause) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     return-void
 .end method
@@ -331,10 +332,10 @@
     invoke-super {p0}, Lcu1/h;->onStop()V
 
     const-string v0, "ConfigDebug"
-    const-string v1, "Screen STOPPED (onStop) -> Bot OFF"
+    const-string v1, "Screen STOPPED (onStop) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # DESACTIVAR BOT
+    # FORCE ACTIVE (FALSE)
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
 
@@ -348,10 +349,10 @@
     invoke-super {p0}, Lcu1/h;->onDestroyView()V
 
     const-string v0, "ConfigDebug"
-    const-string v1, "View DESTROYED (onDestroyView) -> Bot OFF"
+    const-string v1, "View DESTROYED (onDestroyView) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # DESACTIVAR BOT
+    # FORCE ACTIVE (FALSE)
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
 
@@ -377,7 +378,7 @@
 
     .line 6
     const-string v0, "ConfigDebug"
-    const-string v1, "OrderInfoFragment: onDestroy called -> Force Resetting isOffering to FALSE"
+    const-string v1, "OrderInfoFragment: onDestroy called -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 9

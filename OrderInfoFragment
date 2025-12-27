@@ -1136,6 +1136,8 @@
     .line 48
     iget-object v3, v0, Lfh0/d;->f:Landroid/widget/TextView;
 
+    iget-object v6, v0, Lfh0/d;->j:Landroid/widget/ImageView;
+
     .line 50
     invoke-virtual {p1}, Luh0/d;->c()I
 
@@ -1143,7 +1145,7 @@
     move-result v5
 
     .line 56
-    invoke-virtual {v1, v2, v3, v0, v5}, Lwh0/g;->a(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/ImageView;I)V
+    invoke-virtual {v1, v2, v3, v6, v5}, Lwh0/g;->a(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/ImageView;I)V
 
     .line 59
     return-void

@@ -319,9 +319,7 @@
     invoke-super {p0}, Lcu1/h;->onPause()V
 
     .line 4
-    const/4 v0, 0x0
 
-    sput-boolean v0, Lf01/Config;->isOffering:Z
 
     const-string v0, "ConfigDebug"
     const-string v1, "Screen PAUSED (onPause) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
@@ -340,9 +338,7 @@
     const-string v1, "Screen STOPPED (onStop) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # FORCE ACTIVE (FALSE)
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
+
 
     return-void
 .end method
@@ -357,9 +353,7 @@
     const-string v1, "View DESTROYED (onDestroyView) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # FORCE ACTIVE (FALSE)
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
+
 
     # Refrescar adaptador para limpiar estado
     sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
@@ -387,8 +381,7 @@
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 9
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
+
 
     .line 12
     return-void
@@ -544,64 +537,7 @@
     invoke-virtual {p0, v1}, Landroid/view/View;->setVisibility(I)V
 
     .line 41
-    # --- INJECTION START: Visibility Check for 0x7f0a01e6 ---
-    invoke-virtual {v4}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
-    move-result-object v0
 
-    if-eqz v0, :cond_root_null
-
-    const v1, 0x7f0a01e6
-    invoke-virtual {v0, v1}, Landroid/view/View;->findViewById(I)Landroid/view/View;
-    move-result-object v0
-
-    if-eqz v0, :cond_view_not_found
-
-    # LOG FOUND
-    const-string v1, "ConfigDebug"
-    const-string v5, "View 0x7f0a01e6 FOUND in Hierarchy. Checking Visibility..."
-    invoke-static {v1, v5}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    invoke-virtual {v0}, Landroid/view/View;->getVisibility()I
-    move-result v0
-
-    if-nez v0, :cond_visible
-
-    # VISIBLE -> isOffering = TRUE
-    const/4 v0, 0x1
-    sput-boolean v0, Lf01/Config;->isOffering:Z
-    const-string v0, "ConfigDebug"
-    const-string v1, "View 0x7f0a01e6 status: VISIBLE (0) -> isOffering = TRUE"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    goto :goto_injection_end
-
-    :cond_visible
-    # NOT VISIBLE -> isOffering = FALSE
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
-    const-string v0, "ConfigDebug"
-    const-string v1, "View 0x7f0a01e6 status: HIDDEN/GONE -> isOffering = FALSE"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    goto :goto_injection_end
-
-    :cond_view_not_found
-    # VIEW ID NOT FOUND
-    const-string v0, "ConfigDebug"
-    const-string v1, "View 0x7f0a01e6 NOT FOUND (findViewById returned null) -> isOffering = FALSE"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
-    goto :goto_injection_end
-
-    :cond_root_null
-    # ROOT VIEW NULL
-    const-string v0, "ConfigDebug"
-    const-string v1, "Fragment Root View is NULL -> isOffering = FALSE"
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
-
-    :goto_injection_end
-    # --- INJECTION END ---
 
     sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
 

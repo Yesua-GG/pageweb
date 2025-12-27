@@ -1302,3 +1302,18 @@
     new-instance v5, Lo62/y;
 
     .line 238
+    invoke-direct {v5, v3}, Lo62/y;-><init>(Lkotlin/jvm/functions/Function1;)V
+
+    .line 241
+    invoke-virtual {v0, v4, v5}, Ldu/q;->U1(Liu/g;Liu/g;)Lgu/b;
+
+    .line 244
+    move-result-object v0
+
+    .line 245
+    invoke-virtual {v1, v0}, Lgu/a;->c(Lgu/b;)Z
+
+    .line 248
+    :cond_f7
+    return-object v1
+.end method

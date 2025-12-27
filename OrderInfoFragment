@@ -4128,3 +4128,15 @@
     :cond_68
     return-void
 .end method
+
+.method public onDestroy()V
+    .registers 2
+
+    # Injected by Antigravity
+    const/4 v0, 0x0
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+    # End Injection
+
+    invoke-super {p0}, Lcu1/h;->onDestroy()V
+    return-void
+.end method

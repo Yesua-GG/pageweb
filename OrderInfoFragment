@@ -128,6 +128,9 @@
     .end annotation
 .end field
 
+.field private visibilityHandler:Landroid/os/Handler;
+.field private visibilityRunnable:Ljava/lang/Runnable;
+
 .field private final W0:Lkotlin/properties/d;
     .annotation build Lorg/jetbrains/annotations/NotNull;
     .end annotation
@@ -297,12 +300,11 @@
     invoke-super {p0}, Lcu1/h;->onResume()V
 
     const-string v0, "ConfigDebug"
-    const-string v1, "Screen ACTIVE (onResume) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
+    const-string v1, "Screen ACTIVE (onResume) -> Starting Visibility Watcher (ID: 0x7f0a01e6)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # FORCE ACTIVE (FALSE)
-    const/4 v0, 0x0
-    sput-boolean v0, Lf01/Config;->isOffering:Z
+    # START WATCHER
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->startVisibilityWatcher()V
 
     return-void
 .end method
@@ -313,13 +315,16 @@
     .line 1
     invoke-super {p0}, Lcu1/h;->onPause()V
 
+    # STOP WATCHER
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->stopVisibilityWatcher()V
+
     .line 4
     const/4 v0, 0x0
 
     sput-boolean v0, Lf01/Config;->isOffering:Z
 
     const-string v0, "ConfigDebug"
-    const-string v1, "Screen PAUSED (onPause) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
+    const-string v1, "Screen PAUSED (onPause) -> Stopping Watcher, Force Bot Active (isOffering=false)"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     return-void
@@ -4124,5 +4129,97 @@
 
     .line 71
     :cond_68
+    return-void
+.end method
+
+# --- VISIBILITY WATCHER LOGIC ---
+
+.method public static synthetic lambda$visibility$0(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    .registers 5
+
+    .line 1
+    # Check View Visibility (ID: 0x7f0a01e6)
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
+    move-result-object v0
+
+    if-eqz v0, :cond_reschedule
+
+    const v1, 0x7f0a01e6
+    invoke-virtual {v0, v1}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v0
+
+    if-eqz v0, :cond_resume
+
+    invoke-virtual {v0}, Landroid/view/View;->getVisibility()I
+    move-result v0
+
+    if-nez v0, :cond_resume
+
+    # VISIBLE -> PAUSE BOT
+    const/4 v0, 0x1
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+    const-string v0, "ConfigDebug"
+    const-string v1, "Watcher: View Visible -> PAUSING BOT (isOffering=true)"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    goto :cond_reschedule
+
+    :cond_resume
+    # NOT VISIBLE -> RESUME BOT
+    const/4 v0, 0x0
+    sput-boolean v0, Lf01/Config;->isOffering:Z
+    # const-string v0, "ConfigDebug"
+    # const-string v1, "Watcher: View Hidden -> RESUMING BOT (isOffering=false)"
+    # invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    :cond_reschedule
+    # Reschedule
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityHandler:Landroid/os/Handler;
+    if-eqz v0, :cond_end
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityRunnable:Ljava/lang/Runnable;
+    if-eqz v1, :cond_end
+    const-wide/16 v2, 0xc8
+    invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+
+    :cond_end
+    return-void
+.end method
+
+.method private final startVisibilityWatcher()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityHandler:Landroid/os/Handler;
+    if-nez v0, :cond_e
+    new-instance v0, Landroid/os/Handler;
+    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
+    move-result-object v1
+    invoke-direct {v0, v1}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityHandler:Landroid/os/Handler;
+
+    :cond_e
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityRunnable:Ljava/lang/Runnable;
+    if-nez v0, :cond_19
+    new-instance v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$$ExternalSyntheticLambdaVisibility;
+    invoke-direct {v0, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$$ExternalSyntheticLambdaVisibility;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityRunnable:Ljava/lang/Runnable;
+
+    :cond_19
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->stopVisibilityWatcher()V
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityHandler:Landroid/os/Handler;
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityRunnable:Ljava/lang/Runnable;
+    invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
+    return-void
+.end method
+
+.method private final stopVisibilityWatcher()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityHandler:Landroid/os/Handler;
+    if-eqz v0, :cond_b
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityRunnable:Ljava/lang/Runnable;
+    if-eqz v1, :cond_b
+    invoke-virtual {v0, v1}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
+    :cond_b
     return-void
 .end method

@@ -367,21 +367,24 @@
 .method public onDestroy()V
     .registers 4
 
-    # Limpieza final del fragmento
+    .line 1
     invoke-super {p0}, Lcu1/h;->onDestroy()V
 
+    .line 3
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
     move-result-wide v0
     sput-wide v0, Lf01/Config;->lastClosureTime:J
 
+    .line 6
     const-string v0, "ConfigDebug"
-    const-string v1, "Fragment DESTROYED (onDestroy) -> Bot OFF"
+    const-string v1, "OrderInfoFragment: onDestroy called -> Force Resetting isOffering to FALSE"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # DESACTIVAR BOT (Redundancia final)
+    .line 9
     const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
 
+    .line 12
     return-void
 .end method
 
@@ -3118,7 +3121,7 @@
 .end method
 
 .method public static synthetic l6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
-    .registers 1
+    .registers 16
 
     .line 1
     invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->W6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;

@@ -817,10 +817,8 @@
         }
     .end annotation
 
-    # Injected by Antigravity: Log Action Class
-    invoke-virtual {p1}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
-    move-result-object v0
-    invoke-virtual {v0}, Ljava/lang/Class;->getSimpleName()Ljava/lang/String;
+    # Injected by Antigravity: Log Action Content
+    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
     move-result-object v0
     const-string v1, "OrderAction"
     invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I

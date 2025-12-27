@@ -24,6 +24,12 @@
     .param p1, "call"  # Lokhttp3/Call;
     .param p2, "e"  # Ljava/io/IOException;
 
+    const-string v0, "OrderInfoDebug_F01"
+
+    const-string v1, "onFailure CALLED"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     const-string v0, "OrderInfoDebug_Network"
 
     const-string v1, "Request Failed"
@@ -77,7 +83,9 @@
 
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
 
-    return-void
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
+    goto :goto_46
 
     :cond_21
     invoke-virtual {p2}, Lokhttp3/Response;->body()Lokhttp3/ResponseBody;

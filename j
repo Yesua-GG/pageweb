@@ -3073,10 +3073,10 @@
     if-nez v0, :cond_done
 
     const-string v0, "ConfigDebug"
-    const-string v3, "Selecting Order (Setting isOffering=True)"
+    const-string v3, "Selecting Order (FORCE ALWAYS ACTIVE -> isOffering=False)"
     invoke-static {v0, v3}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
 
-    const/4 v0, 0x1
+    const/4 v0, 0x0
     sput-boolean v0, Lf01/Config;->isOffering:Z
     
     # Save offering start time

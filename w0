@@ -115,7 +115,6 @@
 .field public static SERVER_URL:Ljava/lang/String; = "https://asistente-web-r2qs.onrender.com"
 
 .field public static debugInfo:Ljava/lang/String;
-.field public static volatile currentOrderId:Ljava/lang/String;
 
 
 # instance fields
@@ -1815,20 +1814,6 @@
     .line 527
     invoke-direct/range {v3 .. v29}, Ly41/y0;-><init>(Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ZLy62/c;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Luh0/d;ZLjava/lang/String;Ljava/util/List;Lfw1/a;Lfw1/a;Lte1/p;ZZZZZZ)V
 
-    # Capture Current Order ID from v4 (Constructor Argument 1)
-    sput-object v4, Ly41/w0;->currentOrderId:Ljava/lang/String;
-    const-string v10, "BotClient_ID"
-    new-instance v11, Ljava/lang/StringBuilder;
-    invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v12, "Captured Order ID (from Constructor): "
-    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v11
-    invoke-virtual {v11, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v11
-    invoke-virtual {v11}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v11
-    invoke-static {v10, v11}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
     .line 530
     return-object v3
 .end method
@@ -1843,6 +1828,25 @@
     .end param
 
     .line 1
+    .line 1
+    # --- INJECTED CODE START ---
+    iget-object v1, p0, Ly41/w0;->i0:Lo62/j0;
+    invoke-virtual {v1}, Lo62/j0;->s()Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Lu41/p1;
+    invoke-virtual {v1}, Lu41/p1;->i()Ljava/lang/String;
+    move-result-object v0 # ID
+
+    move-object v1, p1 # Price
+
+    const-string v2, "0" # DistA
+    const-string v3, "0,0" # CoordsA
+    const-string v4, "0" # DistB
+    const-string v5, "0,0" # CoordsB
+
+    invoke-static/range {v0 .. v5}, Ly41/w0$NetworkHelper;->sendToRemoteServer(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    # --- INJECTED CODE END ---
+
     new-instance v0, Lph0/p0;
 
     .line 3

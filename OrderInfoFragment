@@ -4199,8 +4199,8 @@
     :cond_e
     iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityRunnable:Ljava/lang/Runnable;
     if-nez v0, :cond_19
-    new-instance v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$$ExternalSyntheticLambdaVisibility;
-    invoke-direct {v0, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$$ExternalSyntheticLambdaVisibility;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+    new-instance v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$VisibilityWatcher;
+    invoke-direct {v0, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$VisibilityWatcher;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
     iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->visibilityRunnable:Ljava/lang/Runnable;
 
     :cond_19

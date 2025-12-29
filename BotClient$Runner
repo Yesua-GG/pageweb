@@ -507,6 +507,29 @@
     const/4 v2, 0x1
     :cond_stops_check_end
     invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
+
+    const-string v1, ",\"labels\":"
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v1}, Lu41/p1;->t()Lxj0/b;
+    move-result-object v1
+    
+    const-string v2, "[]" 
+    
+    if-eqz v1, :cond_labels_write
+    invoke-virtual {v1}, Lxj0/b;->l()Ljava/util/List;
+    move-result-object v1
+    if-eqz v1, :cond_labels_write
+    invoke-virtual {v1}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :cond_labels_write
+    move-object v2, v1
+    
+    :cond_labels_write
+    invoke-static {v2}, Lorg/json/JSONObject;->quote(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     # --- END INJECTION ---    # --- END INJECTION ---
 
     const-string v1, "}"

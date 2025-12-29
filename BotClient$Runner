@@ -701,16 +701,34 @@
 
     iget-object v7, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
 
-    # Extract ID from nested xj0/b
+    # Extract ID from nested xj0/b using REFLECTION (getter a0 missing)
+    iget-object v7, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
     invoke-virtual {v7}, Lu41/p1;->t()Lxj0/b;
     move-result-object v7
     
-    if-eqz v7, :cond_id_extracted
-    invoke-virtual {v7}, Lxj0/b;->a0()Ljava/lang/String;
-    move-result-object v7
-    goto :cond_id_ready
+    if-eqz v7, :cond_id_extracted_fail
     
-    :cond_id_extracted
+    :try_reflect_id
+    const-class v8, Lxj0/b;
+    const-string v9, "b"
+    invoke-virtual {v8, v9}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
+    move-result-object v8
+    
+    const/4 v9, 0x1
+    invoke-virtual {v8, v9}, Ljava/lang/reflect/Field;->setAccessible(Z)V
+    
+    invoke-virtual {v8, v7}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v7
+    check-cast v7, Ljava/lang/String;
+    goto :cond_id_ready
+    :try_end_reflect_id
+    .catch Ljava/lang/Exception; {:try_reflect_id .. :try_end_reflect_id} :catch_reflect_id
+
+    :catch_reflect_id
+    move-exception v7
+    invoke-virtual {v7}, Ljava/lang/Exception;->printStackTrace()V
+    
+    :cond_id_extracted_fail
     const-string v7, ""
     
     :cond_id_ready

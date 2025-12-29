@@ -2093,7 +2093,7 @@
 .end method
 
 .method public final dispatchHideOrder(Ljava/lang/String;)V
-    .registers 9
+    .registers 10
     .param p1, "orderId"
 
     const-string v0, "ConfigDebug"
@@ -2108,48 +2108,53 @@
     move-result-object v1
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Create Action (mz0/c)
+    # Create Actions
     new-instance v1, Ljava/util/ArrayList;
     invoke-direct {v1}, Ljava/util/ArrayList;-><init>()V
     new-instance v2, Lmz0/c;
     invoke-direct {v2, p1, v1}, Lmz0/c;-><init>(Ljava/lang/String;Ljava/util/List;)V
 
+    new-instance v3, Ld31/e;
+    invoke-direct {v3, p1}, Ld31/e;-><init>(Ljava/lang/String;)V
+
     :try_start_0
     iget-object v1, p0, Ly41/w0;->p0:Lp62/a;
 
     invoke-virtual {v1}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
-    move-result-object v3
-
-    const-string v4, "a"
-    invoke-virtual {v3, v4}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
-    move-result-object v3
-
-    const/4 v4, 0x1
-    invoke-virtual {v3, v4}, Ljava/lang/reflect/Field;->setAccessible(Z)V
-
-    invoke-virtual {v3, v1}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v4
+    const-string v5, "a"
+    invoke-virtual {v4, v5}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
+    move-result-object v4
+    const/4 v5, 0x1
+    invoke-virtual {v4, v5}, Ljava/lang/reflect/Field;->setAccessible(Z)V
+    invoke-virtual {v4, v1}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v1
-
     check-cast v1, Lix/d0;
 
+    # Emit mz0/c
     invoke-interface {v1, v2}, Lix/d0;->i(Ljava/lang/Object;)Z
+    const-string v4, "Dispatched mz0/c to InterStore"
+    invoke-static {v0, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    const-string v1, "Success dispatch globally via reflection field access + interface call"
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    # Emit d31/e
+    invoke-interface {v1, v3}, Lix/d0;->i(Ljava/lang/Object;)Z
+    const-string v4, "Dispatched d31/e to InterStore"
+    invoke-static {v0, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 
-    goto :return
+    goto :local_dispatch
 
     :catch_0
     move-exception v1
-    const-string v3, "Failed dispatch globally, falling back to local"
-    invoke-static {v0, v3, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    const-string v4, "Failed dispatch globally"
+    invoke-static {v0, v4, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
+    :local_dispatch
     iget-object v0, p0, Ly41/w0;->i0:Lo62/j0;
     invoke-virtual {v0, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
 
-    :return
     return-void
 .end method
 

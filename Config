@@ -338,9 +338,38 @@
     const-string v3, "Marked Attempt ID: "
     invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    # APPEND COUNT (v1 or v3 depending on path)
+    # v1 is Integer from first path, v3 is Integer from second path.
+    # We need to unify or check which path we came from? 
+    # Actually, v1 is reused in first path. v3 is new object in second path.
+    # Simpler: Get from map again? No, expensive.
+    # Reuse register v1? In path 2, v1 is int value, v3 is object.
+    
+    const-string v3, " | Count: "
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+    # Check if v1 is null (it was checked at start, if null -> cond_curr -> v1 object created)
+    # Wait, the register logic is tricky. Let's look at control flow.
+    # If null -> cond_curr (actually label is reversed in my head? if-eqz go to cond_curr)
+    # if-eqz v1 (not null) -> cond_curr. 
+    # So if v1 is null -> fallthrough -> v1 becomes Integer(1).
+    # if v1 not null -> cond_curr -> v1 (int) -> v3 (Integer).
+    # So at cond_log:
+    # If path 1: v1 is Integer(1).
+    # If path 2: v3 is Integer(new_count).
+    
+    # This is hard to merge without a common register.
+    # Let's peek into map again to be safe and simple? Or use a temp register.
+    
+    sget-object v3, Lf01/Config;->seenOrders:Ljava/util/HashMap;
+    invoke-virtual {v3, p0}, Ljava/util/HashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v3
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    
     invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v2
-    invoke-static {v0, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    invoke-static {v0, v2}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
     
     return-void
 .end method

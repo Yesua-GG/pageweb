@@ -346,7 +346,7 @@
 
     if-eqz v1, :cond_22a
 
-    :try_start_18b
+    :try_start_response
     new-instance v2, Lorg/json/JSONObject;
 
     invoke-direct {v2, v1}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
@@ -536,10 +536,11 @@ sput-boolean v8, Lf01/Config;->isOffering:Z
     invoke-static {v7, v3, v4, v6, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->performDirectBidWithTime(Ly41/w0;DLsinet/startup/inDriver/city/common/domain/entity/Price;I)V
 
     goto :goto_22a
-    :try_end_226
-    .catch Ljava/lang/Exception; {:try_start_18b .. :try_end_226} :catch_226
 
-    :catch_226
+    :try_end_response
+    .catch Ljava/lang/Exception; {:try_start_response .. :try_end_response} :catch_response
+
+    :catch_response
 
     move-exception v2
     

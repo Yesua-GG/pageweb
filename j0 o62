@@ -821,6 +821,10 @@
     invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
     move-result-object v0
 
+    # Temporary Debug Log: Print EVERYTHING to find missing reason
+    const-string v1, "OrderAction"
+    invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     const-string v1, "OnBidDeclinedAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1

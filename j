@@ -1290,14 +1290,17 @@
     .registers 4
 
     .line 1
-    # GLOBAL LOCK
-    sget-boolean v0, Lf01/Config;->isOffering:Z
-    if-eqz v0, :cond_19
-
     iget-object p1, p0, Lf01/b0;->l1:Lpz0/e;
 
     .line 3
     if-eqz p1, :cond_19
+    
+    # GLOBAL COOLDOWN CHECK
+    invoke-static {}, Lf01/Config;->canAttemptGlobal()Z
+    move-result v0
+    if-nez v0, :cond_next
+    goto :cond_19
+    :cond_next
 
     .line 5
     invoke-virtual {p1}, Lpz0/e;->y()Z

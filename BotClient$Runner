@@ -50,33 +50,26 @@
     const-string v1, "Runner Logic Started"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    :catch_5
-    new-instance v0, Ljava/lang/StringBuilder;
+    new-instance v0, Lorg/json/JSONObject;
 
-    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-direct {v0}, Lorg/json/JSONObject;-><init>()V
 
-    const-string v1, "{"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    const-string v1, "\"user_id\":\""
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
+    :try_start_json_build
+    # --- USER ID LOGIC ---
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
 
-    if-eqz v1, :cond_1f
+    if-eqz v1, :cond_ctx_check
 
     invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
 
     move-result-object v1
 
-    if-eqz v1, :cond_1f
+    if-eqz v1, :cond_ctx_check
 
-    goto :goto_3e
+    goto :goto_ctx_ready
 
-    :cond_1f
-    :try_start_1f
+    :cond_ctx_check
+    :try_start_reflect
     const-string v1, "android.app.ActivityThread"
 
     invoke-static {v1}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
@@ -102,377 +95,218 @@
     move-result-object v1
 
     check-cast v1, Landroid/content/Context;
-    :try_end_37
-    .catch Ljava/lang/Exception; {:try_start_1f .. :try_end_37} :catch_3a
+    :try_end_reflect
+    .catch Ljava/lang/Exception; {:try_start_reflect .. :try_end_reflect} :catch_reflect
 
-    if-eqz v1, :cond_3b
+    if-eqz v1, :cond_ctx_ready
 
-    goto :goto_3e
+    goto :goto_ctx_ready
 
-    :catch_3a
+    :catch_reflect
     move-exception v1
 
-    :cond_3b
-    const-string v1, "unknown_user"
+    :cond_ctx_ready
+    const-string v2, "unknown_user"
 
-    goto :goto_4c
+    if-eqz v1, :cond_id_found
 
-    :goto_3e
     invoke-virtual {v1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
 
     move-result-object v1
 
-    const-string v2, "android_id"
+    const-string v3, "android_id"
 
-    invoke-static {v1, v2}, Landroid/provider/Settings$Secure;->getString(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v1
-
-    if-nez v1, :cond_4c
-
-    const-string v1, "unknown_id_null"
-
-    :cond_4c
-    :goto_4c
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    const-string v1, "\","
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    const-string v1, "\"price\":"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v1}, Lu41/p1;->w()Lsinet/startup/inDriver/city/common/domain/entity/Price;
+    invoke-static {v1, v3}, Landroid/provider/Settings$Secure;->getString(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v1
 
-    invoke-virtual {v1}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->i()Ljava/math/BigDecimal;
+    if-eqz v1, :cond_id_found
 
-    move-result-object v1
+    move-object v2, v1
 
-    invoke-virtual {v1}, Ljava/math/BigDecimal;->doubleValue()D
+    :cond_id_found
+    const-string v1, "user_id"
 
-    move-result-wide v1
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    invoke-virtual {v0, v1, v2}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    const-string v1, ",\"app_dist_a\":"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
-
-    move-result-object v1
-
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
-
-    move-result v1
-
-    if-nez v1, :cond_96
-
+    # --- PRICE ---
+    const-string v1, "price"
     iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v2}, Lu41/p1;->H()Lsinet/startup/inDriver/core/data/data/Location;
-
+    invoke-virtual {v2}, Lu41/p1;->w()Lsinet/startup/inDriver/city/common/domain/entity/Price;
     move-result-object v2
+    invoke-virtual {v2}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->i()Ljava/math/BigDecimal;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/math/BigDecimal;->doubleValue()D
+    move-result-wide v2
+    invoke-virtual {v0, v1, v2, v3}, Lorg/json/JSONObject;->put(Ljava/lang/String;D)Lorg/json/JSONObject;
 
-    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v3}, Lu41/p1;->u()Lhg0/a;
-
-    move-result-object v3
-
-    if-eqz v2, :cond_96
-
-    if-eqz v3, :cond_96
-
-    invoke-virtual {v3}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
-
-    move-result-object v3
-
-    if-eqz v3, :cond_96
-
-    invoke-virtual {v2, v3}, Lsinet/startup/inDriver/core/data/data/Location;->distanceTo(Lsinet/startup/inDriver/core/data/data/Location;)F
-
-    move-result v2
-
-    float-to-int v1, v2
-
-    :cond_96
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    const-string v1, ",\"app_dist_b\":"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v1}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
-
-    move-result-object v1
-
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
-
-    move-result v1
-
-    if-nez v1, :cond_cb
-
+    # --- APP DATA (Dist A) ---
+    const-string v1, "app_dist_a"
     iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
+    move-result-object v2
+    if-eqz v2, :cond_dist_a_z
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
+    move-result v2
+    goto :goto_dist_a
+    :cond_dist_a_z
+    const/4 v2, 0x0
+    :goto_dist_a
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
+    # --- APP DATA (Dist B) ---
+    const-string v1, "app_dist_b"
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
+    move-result-object v2
+    if-eqz v2, :cond_dist_b_z
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
+    move-result v2
+    goto :goto_dist_b
+    :cond_dist_b_z
+    const/4 v2, 0x0
+    :goto_dist_b
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
+
+    # --- RATING ---
+    const-string v1, "rating"
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->G()Lte1/p;
+    move-result-object v2
+    invoke-virtual {v2}, Lte1/p;->l()F
+    move-result v2
+    float-to-double v2, v2
+    invoke-virtual {v0, v1, v2, v3}, Lorg/json/JSONObject;->put(Ljava/lang/String;D)Lorg/json/JSONObject;
+
+    # --- RIDES ---
+    const-string v1, "rides"
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->G()Lte1/p;
+    move-result-object v2
+    invoke-virtual {v2}, Lte1/p;->n()J
+    move-result-wide v2
+    invoke-virtual {v0, v1, v2, v3}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
+
+    # --- DESCRIPTION (NEW) ---
+    const-string v1, "description"
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->C()Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    # --- HAS STOPS (NEW) ---
+    const-string v1, "has_stops"
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->o()Ljava/util/List;
+    move-result-object v2
+    if-eqz v2, :cond_stops_no
+    invoke-interface {v2}, Ljava/util/List;->isEmpty()Z
+    move-result v2
+    if-nez v2, :cond_stops_no
+    const/4 v2, 0x1
+    goto :goto_stops_set
+    :cond_stops_no
+    const/4 v2, 0x0
+    :goto_stops_set
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Z)Lorg/json/JSONObject;
+
+    # --- TAGS/OPTIONS (NEW) ---
+    const-string v1, "tags"
+    new-instance v2, Lorg/json/JSONArray;
+    invoke-direct {v2}, Lorg/json/JSONArray;-><init>()V
+    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v3}, Lu41/p1;->N()Ljava/util/List;
+    move-result-object v3
+    if-eqz v3, :cond_tags_done
+    invoke-interface {v3}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+    move-result-object v3
+    :goto_tags_loop
+    invoke-interface {v3}, Ljava/util/Iterator;->hasNext()Z
+    move-result v4
+    if-eqz v4, :cond_tags_done
+    invoke-interface {v3}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v4
+    invoke-virtual {v2, v4}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
+    goto :goto_tags_loop
+    :cond_tags_done
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    # --- COORDS A ---
+    new-instance v1, Lorg/json/JSONObject;
+    invoke-direct {v1}, Lorg/json/JSONObject;-><init>()V
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
     invoke-virtual {v2}, Lu41/p1;->u()Lhg0/a;
-
     move-result-object v2
-
-    if-eqz v2, :cond_cb
-
+    if-eqz v2, :cond_ca_done
     invoke-virtual {v2}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
-
     move-result-object v2
-
-    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v3}, Lu41/p1;->j()Lhg0/a;
-
-    move-result-object v3
-
-    if-eqz v3, :cond_cb
-
-    invoke-virtual {v3}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
-
-    move-result-object v3
-
-    if-eqz v2, :cond_cb
-
-    if-eqz v3, :cond_cb
-
-    invoke-virtual {v2, v3}, Lsinet/startup/inDriver/core/data/data/Location;->distanceTo(Lsinet/startup/inDriver/core/data/data/Location;)F
-
-    move-result v2
-
-    float-to-int v1, v2
-
-    :cond_cb
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    const-string v1, ",\"rating\":"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v1}, Lu41/p1;->G()Lte1/p;
-
-    move-result-object v1
-
-    invoke-virtual {v1}, Lte1/p;->l()F
-
-    move-result v1
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(F)Ljava/lang/StringBuilder;
-
-    const-string v1, ",\"rides\":"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v1}, Lu41/p1;->G()Lte1/p;
-
-    move-result-object v1
-
-    invoke-virtual {v1}, Lte1/p;->n()J
-
-    move-result-wide v1
-
-    invoke-virtual {v0, v1, v2}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
-
-    const-string v1, ",\"coords_a\":{"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v1}, Lu41/p1;->u()Lhg0/a;
-
-    move-result-object v1
-
-    if-eqz v1, :cond_11d
-
-    invoke-virtual {v1}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
-
-    move-result-object v1
-
-    if-eqz v1, :cond_11d
-
-    const-string v2, "\"lat\":"
-
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/Location;->getLatitude()D
-
-    move-result-wide v2
-
-    invoke-virtual {v0, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    const-string v2, ",\"lon\":"
-
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/Location;->getLongitude()D
-
-    move-result-wide v2
-
-    invoke-virtual {v0, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    :cond_11d
-    const-string v1, "}"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    const-string v1, ",\"coords_b\":{"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v1}, Lu41/p1;->j()Lhg0/a;
-
-    move-result-object v1
-
-    if-eqz v1, :cond_14d
-
-    invoke-virtual {v1}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
-
-    move-result-object v1
-
-    if-eqz v1, :cond_14d
-
-    const-string v2, "\"lat\":"
-
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/Location;->getLatitude()D
-
-    move-result-wide v2
-
-    invoke-virtual {v0, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    const-string v2, ",\"lon\":"
-
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/Location;->getLongitude()D
-
-    move-result-wide v2
-
-    invoke-virtual {v0, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    :cond_14d
-    const-string v1, "}"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    const-string v1, ",\"coords_driver\":{"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-
-    invoke-virtual {v1}, Lu41/p1;->H()Lsinet/startup/inDriver/core/data/data/Location;
-
-    move-result-object v1
-
-    if-eqz v1, :cond_177
-
-    const-string v2, "\"lat\":"
-
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/Location;->getLatitude()D
-
-    move-result-wide v2
-
-    invoke-virtual {v0, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    const-string v2, ",\"lon\":"
-
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/Location;->getLongitude()D
-
-    move-result-wide v2
-
-    invoke-virtual {v0, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    :cond_177
-    const-string v1, "}"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    
-    # --- START INJECTION: App Data (Distance/Time) ---
-    const-string v1, ", \"app_dist_a\": "
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-    invoke-virtual {v1}, Lu41/p1;->K()Lsinet/startup/inDriver/core/data/data/WayPoint;
-    move-result-object v1
-    
-    if-eqz v1, :cond_app_data_a_null
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
-    move-result v2
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    
-    const-string v2, ", \"app_time_a\": "
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDuration()I
-    move-result v1
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    goto :goto_app_data_a_done
-    
-    :cond_app_data_a_null
-    const/4 v1, 0x0
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    
-    :goto_app_data_a_done
-    const-string v1, ", \"app_dist_b\": "
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
-    invoke-virtual {v1}, Lu41/p1;->J()Lsinet/startup/inDriver/core/data/data/WayPoint;
-    move-result-object v1
-    
-    if-eqz v1, :cond_app_data_b_null
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDistance()I
-    move-result v2
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    
-    const-string v2, ", \"app_time_b\": "
-    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v1}, Lsinet/startup/inDriver/core/data/data/WayPoint;->getDuration()I
-    move-result v1
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    goto :goto_app_data_b_done
-    
-    :cond_app_data_b_null
-    const/4 v1, 0x0
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-    
-    :goto_app_data_b_done
-    # --- END INJECTION ---
-
-    const-string v1, "}"
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
+    if-eqz v2, :cond_ca_done
+    const-string v3, "lat"
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/Location;->getLatitude()D
+    move-result-wide v4
+    invoke-virtual {v1, v3, v4, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;D)Lorg/json/JSONObject;
+    const-string v3, "lon"
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/Location;->getLongitude()D
+    move-result-wide v4
+    invoke-virtual {v1, v3, v4, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;D)Lorg/json/JSONObject;
+    :cond_ca_done
+    const-string v2, "coords_a"
+    invoke-virtual {v0, v2, v1}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    # --- COORDS B ---
+    new-instance v1, Lorg/json/JSONObject;
+    invoke-direct {v1}, Lorg/json/JSONObject;-><init>()V
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->j()Lhg0/a;
+    move-result-object v2
+    if-eqz v2, :cond_cb_done
+    invoke-virtual {v2}, Lhg0/a;->getLocation()Lsinet/startup/inDriver/core/data/data/Location;
+    move-result-object v2
+    if-eqz v2, :cond_cb_done
+    const-string v3, "lat"
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/Location;->getLatitude()D
+    move-result-wide v4
+    invoke-virtual {v1, v3, v4, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;D)Lorg/json/JSONObject;
+    const-string v3, "lon"
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/Location;->getLongitude()D
+    move-result-wide v4
+    invoke-virtual {v1, v3, v4, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;D)Lorg/json/JSONObject;
+    :cond_cb_done
+    const-string v2, "coords_b"
+    invoke-virtual {v0, v2, v1}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    # --- COORDS DRIVER ---
+    new-instance v1, Lorg/json/JSONObject;
+    invoke-direct {v1}, Lorg/json/JSONObject;-><init>()V
+    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
+    invoke-virtual {v2}, Lu41/p1;->H()Lsinet/startup/inDriver/core/data/data/Location;
+    move-result-object v2
+    if-eqz v2, :cond_cd_done
+    const-string v3, "lat"
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/Location;->getLatitude()D
+    move-result-wide v4
+    invoke-virtual {v1, v3, v4, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;D)Lorg/json/JSONObject;
+    const-string v3, "lon"
+    invoke-virtual {v2}, Lsinet/startup/inDriver/core/data/data/Location;->getLongitude()D
+    move-result-wide v4
+    invoke-virtual {v1, v3, v4, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;D)Lorg/json/JSONObject;
+    :cond_cd_done
+    const-string v2, "coords_driver"
+    invoke-virtual {v0, v2, v1}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    invoke-virtual {v0}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
     move-result-object v0
+    :try_end_json_build
+    .catch Ljava/lang/Exception; {:try_start_json_build .. :try_end_json_build} :catch_json_build
+
+    goto :goto_send_it
+
+    :catch_json_build
+    move-exception v0
+    invoke-virtual {v0}, Ljava/lang/Exception;->printStackTrace()V
+    const-string v0, "{}"
+
+    :goto_send_it
 
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
     move-result-wide v10

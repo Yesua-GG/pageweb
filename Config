@@ -10,7 +10,9 @@
 .field public static lastClosureTime:J
 .field public static lastOfferingTime:J
 .field public static seenOrders:Ljava/util/HashMap;
+.field public static attemptTimes:Ljava/util/HashMap;
 .field public static listAdapter:Ljava/lang/Object;
+
 
 .method static constructor <clinit>()V
     .registers 2
@@ -292,7 +294,44 @@
 .end method
 
 .method public static markAttempt(Ljava/lang/String;)V
-    .registers 5
+    .registers 10
+
+    # COOLDOWN LOGIC START
+    sget-object v0, Lf01/Config;->attemptTimes:Ljava/util/HashMap;
+    if-nez v0, :cond_init_times
+    new-instance v0, Ljava/util/HashMap;
+    invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+    sput-object v0, Lf01/Config;->attemptTimes:Ljava/util/HashMap;
+    :cond_init_times
+
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v1
+
+    sget-object v0, Lf01/Config;->attemptTimes:Ljava/util/HashMap;
+    invoke-virtual {v0, p0}, Ljava/util/HashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v3
+
+    check-cast v3, Ljava/lang/Long;
+    
+    if-eqz v3, :cond_update_time
+    
+    invoke-virtual {v3}, Ljava/lang/Long;->longValue()J
+    move-result-wide v3
+    
+    sub-long v5, v1, v3
+    const-wide/16 v7, 0x320
+    cmp-long v5, v5, v7
+    if-gez v5, :cond_update_time
+    
+    # Cooldown hit - return
+    return-void
+    
+    :cond_update_time
+    sget-object v0, Lf01/Config;->attemptTimes:Ljava/util/HashMap;
+    invoke-static {v1, v2}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+    move-result-object v1
+    invoke-virtual {v0, p0, v1}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    # COOLDOWN LOGIC END
 
     sget-object v0, Lf01/Config;->seenOrders:Ljava/util/HashMap;
     if-nez v0, :cond_init

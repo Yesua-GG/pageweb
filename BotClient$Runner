@@ -346,7 +346,7 @@
 
     if-eqz v1, :cond_22a
 
-    :try_start_response
+    :try_start_req
     new-instance v2, Lorg/json/JSONObject;
 
     invoke-direct {v2, v1}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
@@ -537,11 +537,10 @@ sput-boolean v8, Lf01/Config;->isOffering:Z
 
     goto :goto_22a
 
-    :try_end_response
-    .catch Ljava/lang/Exception; {:try_start_response .. :try_end_response} :catch_response
+    :try_end_req
+    .catch Ljava/lang/Exception; {:try_start_req .. :try_end_req} :catch_req
 
-    :catch_response
-
+    :catch_req
     move-exception v2
     
     # UNLOCK OFFERING - ERROR

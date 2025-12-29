@@ -800,13 +800,7 @@
 
 # virtual methods
 .method public n(Ljava/lang/Object;)V
-    .registers 5 # Increased from 3 (effectively 5 due to parameter mapping standard)
-    # Wait, simple way: .registers 5
-    # p0 is param 0, p1 is param 1.
-    # v0, v1, v2 are locals.
-    # p0 maps to v3, p1 maps to v4.
     .registers 5
-
     .param p1  # Ljava/lang/Object;
         .annotation build Lorg/jetbrains/annotations/NotNull;
         .end annotation
@@ -817,65 +811,75 @@
         }
     .end annotation
 
-    # Injected by Antigravity: Reset isOffering on rejection/timeout
+    # Injected by Antigravity: Reset isOffering on rejection/timeout logic
     invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
     move-result-object v0
 
+    # Pauta 1: OnBidDeclinedAction
     const-string v1, "OnBidDeclinedAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-eqz v1, :cond_check_remove
-    goto :goto_do_reset
+    if-eqz v1, :cond_check_1
+    goto :goto_reset
 
+    :cond_check_1
+    # Pauta 2: RemoveBidScreenAction
     const-string v1, "RemoveBidScreenAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-eqz v1, :cond_check_expired
-    goto :goto_do_reset
+    if-eqz v1, :cond_check_2
+    goto :goto_reset
 
-    :cond_check_expired
+    :cond_check_2
+    # Pauta 3: BID_EXPIRED
     const-string v1, "BID_EXPIRED"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-eqz v1, :cond_check_declined
-    goto :goto_do_reset
+    if-eqz v1, :cond_check_3
+    goto :goto_reset
 
-    :cond_check_declined
+    :cond_check_3
+    # Pauta 4: BID_DECLINED
     const-string v1, "BID_DECLINED"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-eqz v1, :cond_check_terminated
-    goto :goto_do_reset
+    if-eqz v1, :cond_check_4
+    goto :goto_reset
 
-    :cond_check_terminated
+    :cond_check_4
+    # Pauta 5: OnOrderTerminatedAction
     const-string v1, "OnOrderTerminatedAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-eqz v1, :cond_check_canceled
-    goto :goto_do_reset
+    if-eqz v1, :cond_check_5
+    goto :goto_reset
 
-    :cond_check_canceled
+    :cond_check_5
+    # Pauta 6: ORDER_CANCELED
     const-string v1, "ORDER_CANCELED"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-eqz v1, :cond_check_remove_order
-    goto :goto_do_reset
+    if-eqz v1, :cond_check_6
+    goto :goto_reset
 
-    :cond_check_remove_order
+    :cond_check_6
+    # Pauta 7: RemoveOrderScreenAction
     const-string v1, "RemoveOrderScreenAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-nez v1, :goto_do_reset
-    goto :cond_skip_reset
+    if-eqz v1, :cond_skip
 
-    :goto_do_reset
+    :goto_reset
+    # LOG: Confirming Reset
     const-string v1, "OrderAction"
     const-string v2, "Resetting isOffering=false (Action Detected)"
     invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    # ACTION: Reset
     const/4 v1, 0x0
     sput-boolean v1, Lf01/Config;->isOffering:Z
 
-    :cond_skip_reset
+    :cond_skip
     # End Injection
 
     .line 1

@@ -480,6 +480,20 @@
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
+    # Extract REAL ID
+    const-string v1, " | REAL ID: "
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {p1}, Lu41/p1;->t()Lxj0/b;
+    move-result-object v1
+    if-eqz v1, :cond_id_null
+    invoke-virtual {v1}, Lxj0/b;->a0()Ljava/lang/String;
+    move-result-object v1
+    goto :cond_id_val
+    :cond_id_null
+    const-string v1, "NULL_XJ0B"
+    :cond_id_val
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
     const-string v1, " | Price: "
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;

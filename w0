@@ -2093,39 +2093,21 @@
 .end method
 
 .method public final dispatchHideOrder(Ljava/lang/String;)V
-    .registers 9
-    .annotation build Lorg/jetbrains/annotations/NotNull;
-    .end annotation
+    .registers 5
+    .param p1, "orderId"
 
-    # Injected by Antigravity
-    const/4 v1, 0x0
-    sput-boolean v1, Lf01/Config;->isOffering:Z
-    # End Injection
+    # Create empty list
+    new-instance v0, Ljava/util/ArrayList;
+    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
 
-    .line 1
-    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
+    # Create mz0/c (OnComplainOrderGlobalAction - Hide Logic)
+    new-instance v1, Lmz0/c;
+    invoke-direct {v1, p1, v0}, Lmz0/c;-><init>(Ljava/lang/String;Ljava/util/List;)V
 
-    move-result-object v0
+    # Dispatch to Store (i0)
+    iget-object v2, p0, Ly41/w0;->i0:Lo62/j0;
+    invoke-virtual {v2, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
 
-    .line 4
-    new-instance v3, Ly41/w0$HideOrder;
-
-    const/4 v1, 0x0
-
-    invoke-direct {v3, p0, p1, v1}, Ly41/w0$HideOrder;-><init>(Ly41/w0;Ljava/lang/String;Lkw/c;)V
-
-    .line 7
-    const/4 v4, 0x3
-
-    const/4 v5, 0x0
-
-    const/4 v1, 0x0
-
-    const/4 v2, 0x0
-
-    invoke-static/range {v0 .. v5}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
-
-    .line 10
     return-void
 .end method
 

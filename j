@@ -1303,6 +1303,13 @@
 
     .line 9
     if-eqz v0, :cond_19
+    
+    # GLOBAL LOCK CHECK
+    invoke-static {}, Lf01/Config;->tryAcquireGlobalLock()Z
+    move-result v0
+    if-nez v0, :cond_19
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+    return-object p0
 
     .line 11
     iget-object v0, p0, Lf01/b0;->b0:Lnz0/c;

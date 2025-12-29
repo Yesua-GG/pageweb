@@ -480,20 +480,6 @@
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    # Extract REAL ID
-    const-string v1, " | REAL ID: "
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {p1}, Lu41/p1;->t()Lxj0/b;
-    move-result-object v1
-    if-eqz v1, :cond_id_null
-    invoke-virtual {v1}, Lxj0/b;->a0()Ljava/lang/String;
-    move-result-object v1
-    goto :cond_id_val
-    :cond_id_null
-    const-string v1, "NULL_XJ0B"
-    :cond_id_val
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
     const-string v1, " | Price: "
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -2107,68 +2093,39 @@
 .end method
 
 .method public final dispatchHideOrder(Ljava/lang/String;)V
-    .registers 10
-    .param p1, "orderId"
+    .registers 9
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
 
-    const-string v0, "ConfigDebug"
+    # Injected by Antigravity
+    const/4 v1, 0x0
+    sput-boolean v1, Lf01/Config;->isOffering:Z
+    # End Injection
 
-    # Log Start
-    new-instance v1, Ljava/lang/StringBuilder;
-    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v2, "Dispatching Hide Global for ID: "
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v1
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    .line 1
+    invoke-static {p0}, Landroidx/lifecycle/ViewModelKt;->getViewModelScope(Landroidx/lifecycle/ViewModel;)Lfx/p0;
 
-    # Create Actions
-    new-instance v1, Ljava/util/ArrayList;
-    invoke-direct {v1}, Ljava/util/ArrayList;-><init>()V
-    new-instance v2, Lmz0/c;
-    invoke-direct {v2, p1, v1}, Lmz0/c;-><init>(Ljava/lang/String;Ljava/util/List;)V
+    move-result-object v0
 
-    new-instance v3, Ld31/e;
-    invoke-direct {v3, p1}, Ld31/e;-><init>(Ljava/lang/String;)V
+    .line 4
+    new-instance v3, Ly41/w0$HideOrder;
 
-    :try_start_0
-    iget-object v1, p0, Ly41/w0;->p0:Lp62/a;
+    const/4 v1, 0x0
 
-    invoke-virtual {v1}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
-    move-result-object v4
-    const-string v5, "a"
-    invoke-virtual {v4, v5}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
-    move-result-object v4
-    const/4 v5, 0x1
-    invoke-virtual {v4, v5}, Ljava/lang/reflect/Field;->setAccessible(Z)V
-    invoke-virtual {v4, v1}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
-    move-result-object v1
-    check-cast v1, Lix/d0;
+    invoke-direct {v3, p0, p1, v1}, Ly41/w0$HideOrder;-><init>(Ly41/w0;Ljava/lang/String;Lkw/c;)V
 
-    # Emit mz0/c
-    invoke-interface {v1, v2}, Lix/d0;->i(Ljava/lang/Object;)Z
-    const-string v4, "Dispatched mz0/c to InterStore"
-    invoke-static {v0, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    .line 7
+    const/4 v4, 0x3
 
-    # Emit d31/e
-    invoke-interface {v1, v3}, Lix/d0;->i(Ljava/lang/Object;)Z
-    const-string v4, "Dispatched d31/e to InterStore"
-    invoke-static {v0, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    const/4 v5, 0x0
 
-    :try_end_0
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+    const/4 v1, 0x0
 
-    goto :local_dispatch
+    const/4 v2, 0x0
 
-    :catch_0
-    move-exception v1
-    const-string v4, "Failed dispatch globally"
-    invoke-static {v0, v4, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    invoke-static/range {v0 .. v5}, Lfx/i;->d(Lfx/p0;Lkotlin/coroutines/CoroutineContext;Lfx/r0;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lfx/c2;
 
-    :local_dispatch
-    iget-object v0, p0, Ly41/w0;->i0:Lo62/j0;
-    invoke-virtual {v0, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
-
+    .line 10
     return-void
 .end method
 

@@ -2132,9 +2132,9 @@
 
     check-cast v1, Lix/d0;
 
-    invoke-interface {v1, v2}, Lix/d0;->tryEmit(Ljava/lang/Object;)Z
+    invoke-interface {v1, v2}, Lix/d0;->i(Ljava/lang/Object;)Z
 
-    const-string v1, "Success dispatch globally via reflection"
+    const-string v1, "Success dispatch globally via reflection field access + interface call"
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0

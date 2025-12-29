@@ -2093,21 +2093,63 @@
 .end method
 
 .method public final dispatchHideOrder(Ljava/lang/String;)V
-    .registers 5
+    .registers 9
     .param p1, "orderId"
 
-    # Create empty list
-    new-instance v0, Ljava/util/ArrayList;
-    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
+    const-string v0, "ConfigDebug"
 
-    # Create mz0/c (OnComplainOrderGlobalAction - Hide Logic)
-    new-instance v1, Lmz0/c;
-    invoke-direct {v1, p1, v0}, Lmz0/c;-><init>(Ljava/lang/String;Ljava/util/List;)V
+    # Log Start
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Dispatching Hide Global for ID: "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Dispatch to Store (i0)
-    iget-object v2, p0, Ly41/w0;->i0:Lo62/j0;
-    invoke-virtual {v2, v1}, Lo62/j0;->n(Ljava/lang/Object;)V
+    # Create Action (mz0/c)
+    new-instance v1, Ljava/util/ArrayList;
+    invoke-direct {v1}, Ljava/util/ArrayList;-><init>()V
+    new-instance v2, Lmz0/c;
+    invoke-direct {v2, p1, v1}, Lmz0/c;-><init>(Ljava/lang/String;Ljava/util/List;)V
 
+    :try_start_0
+    iget-object v1, p0, Ly41/w0;->p0:Lp62/a;
+
+    invoke-virtual {v1}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v3
+
+    const-string v4, "a"
+    invoke-virtual {v3, v4}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
+    move-result-object v3
+
+    const/4 v4, 0x1
+    invoke-virtual {v3, v4}, Ljava/lang/reflect/Field;->setAccessible(Z)V
+
+    invoke-virtual {v3, v1}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v1
+
+    check-cast v1, Lix/d0;
+
+    invoke-interface {v1, v2}, Lix/d0;->tryEmit(Ljava/lang/Object;)Z
+
+    const-string v1, "Success dispatch globally via reflection"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    :try_end_0
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+
+    goto :return
+
+    :catch_0
+    move-exception v1
+    const-string v3, "Failed dispatch globally, falling back to local"
+    invoke-static {v0, v3, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    iget-object v0, p0, Ly41/w0;->i0:Lo62/j0;
+    invoke-virtual {v0, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
+
+    :return
     return-void
 .end method
 

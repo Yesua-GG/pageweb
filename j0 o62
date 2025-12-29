@@ -821,17 +821,12 @@
     invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
     move-result-object v0
 
-    # Temporary Debug Log: Print EVERYTHING to find missing reason
-    const-string v1, "OrderAction"
-    invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
     const-string v1, "OnBidDeclinedAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
     if-eqz v1, :cond_check_remove
     goto :goto_do_reset
 
-    :cond_check_remove
     const-string v1, "RemoveBidScreenAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
@@ -847,6 +842,27 @@
 
     :cond_check_declined
     const-string v1, "BID_DECLINED"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v1
+    if-eqz v1, :cond_check_terminated
+    goto :goto_do_reset
+
+    :cond_check_terminated
+    const-string v1, "OnOrderTerminatedAction"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v1
+    if-eqz v1, :cond_check_canceled
+    goto :goto_do_reset
+
+    :cond_check_canceled
+    const-string v1, "ORDER_CANCELED"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v1
+    if-eqz v1, :cond_check_remove_order
+    goto :goto_do_reset
+
+    :cond_check_remove_order
+    const-string v1, "RemoveOrderScreenAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
     if-nez v1, :goto_do_reset

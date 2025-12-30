@@ -1,6 +1,6 @@
-.class public final Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotToggleListener;
+.class public final Lsinet/startup/inDriver/ui/driver/main/DriverActivity$BotToggleListener;
 .super Ljava/lang/Object;
-.source "OrderInfoFragment.java"
+.source "DriverActivity.java"
 .implements Landroid/view/View$OnClickListener;
 
 .field private final context:Landroid/content/Context;
@@ -11,7 +11,7 @@
 
     .line 1
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
-    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotToggleListener;->context:Landroid/content/Context;
+    iput-object p1, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$BotToggleListener;->context:Landroid/content/Context;
     return-void
 .end method
 
@@ -27,7 +27,7 @@
     sput-boolean v0, Lf01/Config;->isBotActive:Z
 
     # Update Server
-    iget-object v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotToggleListener;->context:Landroid/content/Context;
+    iget-object v2, p0, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$BotToggleListener;->context:Landroid/content/Context;
     invoke-static {v2, v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->sendConfigUpdate(Landroid/content/Context;Z)V
 
     # Update UI (Button)
@@ -38,16 +38,14 @@
     const-string v3, "BOT: ON"
     invoke-virtual {v2, v3}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
     # Green
-    const v3, -0xff0100 # Approx Green 
-    # 0xFF00FF00 = -16711936
-    const v3, -0xff0100
+    const v3, -0xff0100 
     invoke-virtual {v2, v3}, Landroid/widget/TextView;->setTextColor(I)V
     goto :cond_end
 
     :cond_inactive
     const-string v3, "BOT: OFF"
     invoke-virtual {v2, v3}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    # Red 0xFFFF0000 = -65536
+    # Red
     const v3, -0x10000
     invoke-virtual {v2, v3}, Landroid/widget/TextView;->setTextColor(I)V
 

@@ -822,22 +822,7 @@
 
     # 3. Check Triggers (Start Offering)
 
-    # Trigger 1: InitScreenAction
-    const-string v1, "InitScreenAction"
-    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v1
-    if-nez v1, :cond_try_trigger_2 # If NOT true (0), skip
-    
-    # MATCH 1 FOUND
-    const-string v1, "OrderAction"
-    const-string v2, "MATCH: InitScreenAction -> Setting isOffering=true"
-    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    
-    const/4 v1, 0x1
-    sput-boolean v1, Lf01/Config;->isOffering:Z
-    goto :cond_skip
-
-    :cond_try_trigger_2
+    goto :cond_try_trigger_2
     # Trigger 2: InitBidScreenAction
     const-string v1, "InitBidScreenAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z

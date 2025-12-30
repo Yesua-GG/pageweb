@@ -1,0 +1,29 @@
+.class final Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$1;
+.super Ljava/lang/Object;
+.source "BotClient.java"
+.implements Ljava/lang/Runnable;
+
+.field final synthetic val$context:Landroid/content/Context;
+.field final synthetic val$isActive:Z
+
+.method constructor <init>(Landroid/content/Context;Z)V
+    .registers 3
+    .param p1, "context"  # Landroid/content/Context;
+    .param p2, "isActive"  # Z
+
+    .line 1
+    iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$1;->val$context:Landroid/content/Context;
+    iput-boolean p2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$1;->val$isActive:Z
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    return-void
+.end method
+
+.method public run()V
+    .registers 3
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$1;->val$context:Landroid/content/Context;
+    iget-boolean v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$1;->val$isActive:Z
+    invoke-static {v0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->access$sendConfigSync(Landroid/content/Context;Z)V
+    return-void
+.end method

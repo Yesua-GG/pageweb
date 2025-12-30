@@ -811,46 +811,65 @@
         }
     .end annotation
 
-    # Injected by Antigravity: Reset isOffering on rejection/timeout logic
+    # Injected by Antigravity
+    # 1. Get Action String
     invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
     move-result-object v0
 
-    # Temporary Debug Log: Print EVERYTHING to find why it's missing
+    # 2. Log Action (Debug)
     const-string v1, "OrderAction"
     invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Pauta A1: InitBidScreenAction
-    const-string v1, "InitBidScreenAction"
-    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v1
-    if-eqz v1, :cond_check_true_2
-    goto :goto_set_true
+    # 3. Check Triggers (Start Offering)
 
-    :cond_check_true_2
-    # Pauta A2: InitScreenAction
+    # Trigger 1: InitScreenAction
     const-string v1, "InitScreenAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-eqz v1, :cond_check_true_3
-    goto :goto_set_true
-
-    :cond_check_true_3
-    # Pauta A3: BidScreenAction
-    const-string v1, "BidScreenAction"
-    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v1
-    if-eqz v1, :cond_check_reset_1
-    goto :goto_set_true
-
-    :goto_set_true
-    # LOG: Confirming Set True
+    if-nez v1, :cond_try_trigger_2 # If NOT true (0), skip
+    
+    # MATCH 1 FOUND
     const-string v1, "OrderAction"
-    const-string v2, "Setting isOffering=true (Start Action Detected)"
+    const-string v2, "MATCH: InitScreenAction -> Setting isOffering=true"
     invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    # ACTION: Set True
+    
     const/4 v1, 0x1
     sput-boolean v1, Lf01/Config;->isOffering:Z
     goto :cond_skip
+
+    :cond_try_trigger_2
+    # Trigger 2: InitBidScreenAction
+    const-string v1, "InitBidScreenAction"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v1
+    if-nez v1, :cond_try_trigger_3
+    
+    # MATCH 2 FOUND
+    const-string v1, "OrderAction"
+    const-string v2, "MATCH: InitBidScreenAction -> Setting isOffering=true"
+    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    
+    const/4 v1, 0x1
+    sput-boolean v1, Lf01/Config;->isOffering:Z
+    goto :cond_skip
+
+    :cond_try_trigger_3
+    # Trigger 3: BidScreenAction
+    const-string v1, "BidScreenAction"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v1
+    if-nez v1, :cond_check_resets
+    
+    # MATCH 3 FOUND
+    const-string v1, "OrderAction"
+    const-string v2, "MATCH: BidScreenAction -> Setting isOffering=true"
+    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    
+    const/4 v1, 0x1
+    sput-boolean v1, Lf01/Config;->isOffering:Z
+    goto :cond_skip
+
+    :cond_check_resets
 
     :cond_check_reset_1
     # Pauta 1: OnBidDeclinedAction

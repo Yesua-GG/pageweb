@@ -1,3 +1,5 @@
+# classes13.dex
+
 .class public Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;
 .super Ljava/lang/Object;
 .source "BotClient.java"
@@ -55,6 +57,16 @@
 
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
+    sget-boolean v0, Lf01/Config;->isBotActive:Z
+
+    if-nez v0, :cond_bot_inactive
+
+    const-string v0, "BotClient"
+    const-string v1, "Bot is PAUSED globally."
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+
+    :cond_bot_inactive
     sget-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->executor:Ljava/util/concurrent/ExecutorService;
 
     new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;
@@ -260,37 +272,268 @@
 
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Implement Direct Bid with Time logic (Simplified - Just calling normal mechanism but assumes time is handled by caller or ignored for now in this wrapper)
-    # Reusing standard bid logic for stability as time logic might be complex
-    
     new-instance v0, Ljava/math/BigDecimal;
+
     invoke-direct {v0, p1, p2}, Ljava/math/BigDecimal;-><init>(D)V
 
     invoke-virtual {p0}, Ly41/w0;->getOrderStore()Lo62/j0;
+
     move-result-object v1
+
     sget-object v2, Lu41/a0;->a:Lu41/a0;
+
     invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
+
     new-instance v2, Lu41/b0;
+
     invoke-direct {v2, v0}, Lu41/b0;-><init>(Ljava/math/BigDecimal;)V
+
     invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
-    
+
+    move-object v3, v0
+
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->f()Lsinet/startup/inDriver/city/common/domain/entity/Currency;
+
+    move-result-object v4
+
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->g()Ljava/math/BigDecimal;
+
+    move-result-object v5
+
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->d()Ljava/math/BigDecimal;
+
+    move-result-object v6
+
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->h()Ljava/math/BigDecimal;
+
+    move-result-object p0
+
+    invoke-virtual {p3}, Lsinet/startup/inDriver/city/common/domain/entity/Price;->e()Ljava/math/BigDecimal;
+
+    move-result-object p1
+
+    new-instance v2, Lsinet/startup/inDriver/city/common/domain/entity/Price;
+
+    invoke-direct/range {v2 .. v8}, Lsinet/startup/inDriver/city/common/domain/entity/Price;-><init>(Ljava/math/BigDecimal;Lsinet/startup/inDriver/city/common/domain/entity/Currency;Ljava/math/BigDecimal;Ljava/math/BigDecimal;Ljava/math/BigDecimal;Ljava/math/BigDecimal;)V
+
+    move-object p1, v2
+
+    new-instance v2, Lu41/s;
+
+    const/4 v3, 0x1
+
+    invoke-direct {v2, p4, v3, p1}, Lu41/s;-><init>(IZLsinet/startup/inDriver/city/common/domain/entity/Price;)V
+
+    invoke-virtual {v1, v2}, Lo62/j0;->n(Ljava/lang/Object;)V
+
     return-void
 .end method
 
-.method public static final sendPauseState(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)V
-    .registers 4
-    .param p0, "fragment"  # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    .param p1, "isPaused"  # Z
+.method public static sendOrder(Ljava/lang/String;)Ljava/lang/String;
+    .registers 9
+    .param p0, "json"  # Ljava/lang/String;
 
-    .prologue
+    .line 10
+    :try_start_0
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+
+    move-result-wide v0
+
+    sget-object v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->client:Lokhttp3/OkHttpClient;
+
+    const-string v3, "application/json; charset=utf-8"
+
+    invoke-static {v3}, Lokhttp3/MediaType;->e(Ljava/lang/String;)Lokhttp3/MediaType;
+
+    move-result-object v3
+
+    .line 13
+    .local v3, "JSON":Lokhttp3/MediaType;
+    invoke-static {v3, p0}, Lokhttp3/RequestBody;->create(Lokhttp3/MediaType;Ljava/lang/String;)Lokhttp3/RequestBody;
+
+    move-result-object v4
+
+    .line 15
+    .local v4, "body":Lokhttp3/RequestBody;
+    new-instance v5, Ljava/lang/StringBuilder;
+
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+
+    sget-object v6, Ly41/w0;->SERVER_URL:Ljava/lang/String;
+
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v6, "/decide"
+
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v5
+
+    new-instance v6, Lokhttp3/Request$Builder;
+
+    invoke-direct {v6}, Lokhttp3/Request$Builder;-><init>()V
+
+    invoke-virtual {v6, v5}, Lokhttp3/Request$Builder;->l(Ljava/lang/String;)Lokhttp3/Request$Builder;
+
+    move-result-object v5
+
+    .line 18
+    invoke-virtual {v5, v4}, Lokhttp3/Request$Builder;->h(Lokhttp3/RequestBody;)Lokhttp3/Request$Builder;
+
+    move-result-object v5
+
+    .line 19
+    invoke-virtual {v5}, Lokhttp3/Request$Builder;->b()Lokhttp3/Request;
+
+    move-result-object v5
+
+    .line 21
+    .local v5, "request":Lokhttp3/Request;
+    invoke-virtual {v2, v5}, Lokhttp3/OkHttpClient;->a(Lokhttp3/Request;)Lokhttp3/Call;
+
+    move-result-object v2
+
+    invoke-interface {v2}, Lokhttp3/Call;->execute()Lokhttp3/Response;
+
+    move-result-object v2
+
+    .line 22
+    .local v2, "response":Lokhttp3/Response;
+    invoke-virtual {v2}, Lokhttp3/Response;->k()Lokhttp3/ResponseBody;
+
+    move-result-object v2
+
+    invoke-virtual {v2}, Lokhttp3/ResponseBody;->C()Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+
+    move-result-wide v3
+
+    sub-long/2addr v3, v0
+
+    const-string v0, "ConfigDebug"
+
+    new-instance v1, Ljava/lang/StringBuilder;
+
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v5, "Network Request Time: "
+
+    invoke-virtual {v1, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v1, v3, v4}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    const-string v3, "ms. Response: "
+
+    invoke-virtual {v1, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    :try_end_67
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_67} :catch_68
+
+    return-object v2
+
+    .line 23
+    .end local v0
+    .end local v1
+    .end local v2  # "response":Lokhttp3/Response;
+    .end local v3  # "JSON":Lokhttp3/MediaType;
+    .end local v4  # "body":Lokhttp3/RequestBody;
+    :catch_68
+    move-exception v0
+
+    .line 24
+    .local v0, "e":Ljava/lang/Exception;
+    invoke-virtual {v0}, Ljava/lang/Exception;->printStackTrace()V
+
+    .line 25
+    const/4 v1, 0x0
+
+    return-object v1
+.end method
+
+.method public static sendConfigUpdate(Landroid/content/Context;Z)V
+    .registers 8
+    .param p0, "context"  # Landroid/content/Context;
+    .param p1, "isActive"  # Z
+
     .line 1
     sget-object v0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->executor:Ljava/util/concurrent/ExecutorService;
 
-    new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Pauser;
+    new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$1;
 
-    invoke-direct {v1, p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Pauser;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)V
+    invoke-direct {v1, p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$1;-><init>(Landroid/content/Context;Z)V
 
     invoke-interface {v0, v1}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
 
+    return-void
+.end method
+
+.method public static synthetic access$sendConfigSync(Landroid/content/Context;Z)V
+    .registers 6
+    .param p0, "context"
+    .param p1, "isActive"
+
+    :try_start_0
+    new-instance v0, Lorg/json/JSONObject;
+
+    invoke-direct {v0}, Lorg/json/JSONObject;-><init>()V
+
+    const-string v1, "user_id"
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->getUserId(Landroid/content/Context;)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    const-string v1, "bot_active"
+    invoke-virtual {v0, v1, p1}, Lorg/json/JSONObject;->put(Ljava/lang/String;Z)Lorg/json/JSONObject;
+
+    sget-object v1, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient;->client:Lokhttp3/OkHttpClient;
+    const-string v2, "application/json; charset=utf-8"
+    invoke-static {v2}, Lokhttp3/MediaType;->e(Ljava/lang/String;)Lokhttp3/MediaType;
+    move-result-object v2
+    invoke-virtual {v0}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v2, v0}, Lokhttp3/RequestBody;->create(Lokhttp3/MediaType;Ljava/lang/String;)Lokhttp3/RequestBody;
+    move-result-object v0
+
+    new-instance v2, Lokhttp3/Request$Builder;
+    invoke-direct {v2}, Lokhttp3/Request$Builder;-><init>()V
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    sget-object v4, Ly41/w0;->SERVER_URL:Ljava/lang/String;
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v4, "/config"
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v2, v3}, Lokhttp3/Request$Builder;->l(Ljava/lang/String;)Lokhttp3/Request$Builder;
+    move-result-object v2
+    invoke-virtual {v2, v0}, Lokhttp3/Request$Builder;->h(Lokhttp3/RequestBody;)Lokhttp3/Request$Builder;
+    move-result-object v0
+    invoke-virtual {v0}, Lokhttp3/Request$Builder;->b()Lokhttp3/Request;
+    move-result-object v0
+    invoke-virtual {v1, v0}, Lokhttp3/OkHttpClient;->a(Lokhttp3/Request;)Lokhttp3/Call;
+    move-result-object v0
+    invoke-interface {v0}, Lokhttp3/Call;->execute()Lokhttp3/Response;
+    :try_end_30
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_30} :catch_31
+
+    goto :goto_35
+
+    :catch_31
+    move-exception v0
+    invoke-virtual {v0}, Ljava/lang/Exception;->printStackTrace()V
+
+    :goto_35
     return-void
 .end method

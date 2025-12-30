@@ -820,49 +820,27 @@
     const-string v1, "OrderAction"
     invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # 3. Check Triggers (Start Offering)
-
-    goto :cond_try_trigger_1
-
-    :cond_try_trigger_1
-    # Trigger 1: InitScreenAction with status=PROCESSING
+    # 3. Check Trigger (Strict: InitScreenAction + status=PROCESSING)
+    
+    # Check Name
     const-string v1, "InitScreenAction"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-eqz v1, :cond_try_trigger_3 # If matches Action Name, check Status
-    
+    if-nez v1, :cond_check_resets # If NOT InitScreenAction, go to resets
+
     # Check Status
     const-string v1, "status=PROCESSING"
     invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v1
-    if-nez v1, :cond_check_state_true # If status not PROCESSING, skip to next trigger
-    
-    # MATCH 1 FOUND (Compound)
-    :cond_check_state_true
+    if-nez v1, :cond_check_resets # If NOT PROCESSING, go to resets
+
+    # MATCH FOUND - Check if already true
     sget-boolean v1, Lf01/Config;->isOffering:Z
     if-eqz v1, :cond_skip # If already true, skip
     
+    # Set True
     const-string v1, "OrderAction"
     const-string v2, "MATCH: InitScreenAction (PROCESSING) -> Setting isOffering=true"
-    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    
-    const/4 v1, 0x1
-    sput-boolean v1, Lf01/Config;->isOffering:Z
-    goto :cond_skip
-
-    :cond_try_trigger_3
-    # Trigger 3: BidScreenAction
-    const-string v1, "BidScreenAction"
-    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v1
-    if-nez v1, :cond_check_resets
-    
-    # MATCH 3 FOUND - CHECK IF ALREADY TRUE
-    sget-boolean v1, Lf01/Config;->isOffering:Z
-    if-eqz v1, :cond_skip # If already true (1), skip logging/setting
-    
-    const-string v1, "OrderAction"
-    const-string v2, "MATCH: BidScreenAction -> Setting isOffering=true"
     invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     
     const/4 v1, 0x1

@@ -822,21 +822,7 @@
 
     # 3. Check Triggers (Start Offering)
 
-    goto :cond_try_trigger_2
-    # Trigger 2: InitBidScreenAction
-    const-string v1, "InitBidScreenAction"
-    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v1
-    if-nez v1, :cond_try_trigger_3
-    
-    # MATCH 2 FOUND
-    const-string v1, "OrderAction"
-    const-string v2, "MATCH: InitBidScreenAction -> Setting isOffering=true"
-    invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    
-    const/4 v1, 0x1
-    sput-boolean v1, Lf01/Config;->isOffering:Z
-    goto :cond_skip
+    goto :cond_try_trigger_3
 
     :cond_try_trigger_3
     # Trigger 3: BidScreenAction
@@ -845,7 +831,10 @@
     move-result v1
     if-nez v1, :cond_check_resets
     
-    # MATCH 3 FOUND
+    # MATCH 3 FOUND - CHECK IF ALREADY TRUE
+    sget-boolean v1, Lf01/Config;->isOffering:Z
+    if-eqz v1, :cond_skip # If already true (1), skip logging/setting
+    
     const-string v1, "OrderAction"
     const-string v2, "MATCH: BidScreenAction -> Setting isOffering=true"
     invoke-static {v1, v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I

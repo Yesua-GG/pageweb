@@ -701,9 +701,25 @@
 
     iget-object v7, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Runner;->order:Lu41/p1;
 
-    invoke-virtual {v7}, Lu41/p1;->i()Ljava/lang/String;
+    invoke-virtual {v7}, Lu41/p1;->t()Lxj0/b;
 
     move-result-object v7
+
+    const-string v8, ""
+
+    if-eqz v7, :cond_fix_id_null
+
+    invoke-virtual {v7}, Lxj0/b;->getId()Ljava/lang/String;
+
+    move-result-object v7
+
+    if-nez v7, :cond_fix_id_done
+
+    :cond_fix_id_null
+    move-object v7, v8
+
+    :cond_fix_id_done
+
 
     invoke-direct {v4, v5, v6, v7}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Rejecter;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/w0;Ljava/lang/String;)V
 

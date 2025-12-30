@@ -4141,6 +4141,10 @@
     .param p1, "view"  # Landroid/view/View;
 
     .line 1
+    const-string v0, "OrderInfoFragment"
+    const-string v1, "Attempting to inject Bot Toggle..."
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     # Check if we can add to view (GroupView)
     instance-of v0, p1, Landroid/view/ViewGroup;
     if-nez v0, :cond_end
@@ -4173,7 +4177,7 @@
 
     :cond_style
     # Style: Bold, Background, Padding
-    const/high16 v4, 0x41800000 # 16.0f
+    const/high16 v4, 0x41a00000 # 20.0f
     invoke-virtual {v1, v4}, Landroid/widget/TextView;->setTextSize(F)V
     const/4 v4, 0x1
     invoke-static {v4}, Landroid/graphics/Typeface;->defaultFromStyle(I)Landroid/graphics/Typeface;
@@ -4181,27 +4185,33 @@
     invoke-virtual {v1, v5}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;)V
     const v5, -0x1000000 # Black bg
     invoke-virtual {v1, v5}, Landroid/widget/TextView;->setBackgroundColor(I)V
-    const/16 v5, 0x20
-    const/16 v6, 0x14
-    invoke-virtual {v1, v5, v6, v5, v6}, Landroid/widget/TextView;->setPadding(IIII)V
-
-    # Layout Params (Top Center or Bottom Right)
-    # Using FrameLayout params as generic, might fail if parent is Relative/Constraint but usually Works or adds to Frame
-    new-instance v5, Landroid/widget/FrameLayout$LayoutParams;
-    const/4 v6, -0x2 # WRAP_CONTENT
-    invoke-direct {v5, v6, v6}, Landroid/widget/FrameLayout$LayoutParams;-><init>(II)V
-    const/16 v6, 0x31 # TOP | CENTER_HORIZONTAL
-    iput v6, v5, Landroid/widget/FrameLayout$LayoutParams;->gravity:I
-    const/16 v6, 0x64
-    iput v6, v5, Landroid/widget/FrameLayout$LayoutParams;->topMargin:I
+    const/16 v5, 0x1e # 30
+    invoke-virtual {v1, v5, v5, v5, v5}, Landroid/widget/TextView;->setPadding(IIII)V
+    
+    # Elevation to ensure it's on top
+    const/high16 v5, 0x42c80000 # 100.0f
+    invoke-virtual {v1, v5}, Landroid/view/View;->setElevation(F)V
+    
+    # Position Manually using translation
+    const/high16 v5, 0x43480000 # 200.0f (X)
+    invoke-virtual {v1, v5}, Landroid/view/View;->setX(F)V
+    const/high16 v5, 0x43480000 # 200.0f (Y)
+    invoke-virtual {v1, v5}, Landroid/view/View;->setY(F)V
 
     # Add to Parent
+    new-instance v5, Landroid/view/ViewGroup$LayoutParams;
+    const/4 v6, -0x2 # WRAP_CONTENT
+    invoke-direct {v5, v6, v6}, Landroid/view/ViewGroup$LayoutParams;-><init>(II)V
     invoke-virtual {v0, v1, v5}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
     # Set Listener
     new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotToggleListener;
     invoke-direct {v5, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotToggleListener;-><init>(Landroid/content/Context;)V
     invoke-virtual {v1, v5}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+    
+    const-string v0, "OrderInfoFragment"
+    const-string v1, "Bot Toggle Injected at 200,200 with Elevation 100"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     return-void
 .end method

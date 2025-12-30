@@ -1,729 +1,4207 @@
-import os
-import json
-import math
-import time
-import concurrent.futures
-import requests
-from flask import Flask, request, jsonify, render_template_string
-import firebase_admin
-from firebase_admin import credentials, firestore
+# classes15.dex
 
-app = Flask(__name__)
-
-# --- CONFIGURACIÓN Y VARIABLES DE ENTORNO ---
-# La variable de entorno GOOGLE_MAPS_API_KEY ya no es crítica
-# porque la clave se usa directamente en la función get_google_distance.
-GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY') 
+.class public final Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+.super Lcu1/h;
+.source "SourceFile"
 
 
-# --- FIREBASE SETUP ---
-cred_json = os.environ.get('FIREBASE_CREDENTIALS')
-if cred_json:
-    try:
-        cred_dict = json.loads(cred_json)
-        cred = credentials.Certificate(cred_dict)
-        firebase_admin.initialize_app(cred)
-        db = firestore.client()
-        print("✅ Firebase Initialized Successfully")
-    except Exception as e:
-        print(f"❌ Error iniciando Firebase: {e}")
-        db = None
-else:
-    print("⚠️ WARNING: FIREBASE_CREDENTIALS not found. Using local memory.")
-    db = None
-
-# --- CONFIGURACIÓN POR DEFECTO ---
-DEFAULT_CONFIG = {
-    "max_pickup_dist": 3.0,
-    "max_dest_dist": 50.0,
-    "min_dest_dist": 1.0,
-    "min_price": 9000,
-    "max_price": 500000,
-    "base_price_km": 4000,
-    "fare_tiers": [],
-    "min_rating": 4.5,
-    "min_rides": 0,
-    "reject_tags": False,
-    "accept_stops": True,
-    "accept_airport": True,
-    "pickup_time_minutes": 5,
-    "blocked_zones_enabled": True,
-    "max_repeats": 0,
-    "banned_words": [],
-    "is_paused": False
-}
-
-PROCESSED_ORDERS = {}
-ORDER_TTL = 300  # 5 minutos
-
-# --- CACHE EN MEMORIA (Optimización de Velocidad) ---
-CACHE = {}
-CACHE_TTL = 60  # 1 minuto de cache local
-
-
-# --- FUNCIONES DE UTILIDAD GEOGRÁFICA ---
-
-def distance_km(lat1, lon1, lat2, lon2):
-    """Calcula distancia Haversine (línea recta) como fallback"""
-    R = 6371  # Radio Tierra en km
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
-    a = (math.sin(dlat/2)**2 + 
-         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2)
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-    return R * c
-
-def point_in_circle(lat, lon, circle):
-    """Verifica si punto está dentro de círculo"""
-    try:
-        center_lat = circle['center']['lat']
-        center_lon = circle['center']['lon']
-        radius_km = float(circle['radius_km'])
-        dist = distance_km(lat, lon, center_lat, center_lon)
-        return dist <= radius_km
-    except Exception as e:
-        return False
-
-def get_osrm_distance(lat1, lon1, lat2, lon2):
-    """Calcula distancia de ruta usando OSRM (OpenStreetMap)"""
-    try:
-        # OSRM expects lon,lat
-        url = f"http://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}"
-        params = {"overview": "false"}
-        
-        # Disable retries for speed
-        with requests.Session() as s:
-            s.mount('http://', requests.adapters.HTTPAdapter(max_retries=0))
-            response = s.get(url, params=params, timeout=1.0)
-            
-        data = response.json()
-        
-        if data.get("code") == "Ok":
-            # distance is in meters
-            dist_m = data['routes'][0]['distance']
-            return dist_m / 1000.0, "OSRM"
-            
-        print(f"⚠️ OSRM Error: {data}")
-        return None, "OSRM_ERR"
-    except Exception as e:
-        print(f"❌ Error calling OSRM: {e}")
-        return None, f"OSRM_EXC_{str(e)[:15]}"
-
-def get_google_distance(lat1, lon1, lat2, lon2):
-    """
-    Calcula distancia real por calles usando Google Maps API.
-    Utiliza la clave hardcodeada.
-    """
-    # 🛑 CLAVE API HARDCODEADA DIRECTAMENTE AQUÍ 🛑
-    API_KEY = "AIzaSyAf_PYN1RDSft1TSOPQQC9qh0AeG5eJTrY" 
-    
-    if not API_KEY:
-        print("⚠️ Google Maps API Key is hardcoded but empty. Falling back to OSRM.")
-        return get_osrm_distance(lat1, lon1, lat2, lon2)
-
-    try:
-        url = "https://maps.googleapis.com/maps/api/distancematrix/json"
-        params = {
-            "origins": f"{lat1},{lon1}",
-            "destinations": f"{lat2},{lon2}",
-            "key": API_KEY,  # <--- ¡CLAVE APLICADA!
-            "mode": "driving"
-        }
-        
-        # Timeout corto para no bloquear el bot
-        # REDUCIDO A 0.5s para Fail-Fast
-        response = requests.get(url, params=params, timeout=0.5) 
-        data = response.json()
-        
-        if data['status'] == 'OK':
-            element = data['rows'][0]['elements'][0]
-            if element['status'] == 'OK':
-                val = element['distance']['value'] / 1000.0
-                return val, "GOOGLE"
-        
-        # Si la respuesta de Google no es 'OK' (ej. REQUEST_DENIED)
-        status = data.get('status', 'UNKNOWN')
-        return get_osrm_distance(lat1, lon1, lat2, lon2)
-    
-    except Exception as e:
-        print(f"❌ Google Maps Fail/Timeout: {e}")
-        return get_osrm_distance(lat1, lon1, lat2, lon2)
-
-# --- GESTIÓN DE CONFIGURACIÓN Y ZONAS ---
-
-def cleanup_processed_orders():
-    current_time = time.time()
-    to_remove = [oid for oid, data in PROCESSED_ORDERS.items() if current_time - data['ts'] > ORDER_TTL]
-    for oid in to_remove:
-        del PROCESSED_ORDERS[oid]
-
-def load_config(user_id):
-    # 1. Check Cache
-    now = time.time()
-    if user_id in CACHE and (now - CACHE[user_id]['ts'] < CACHE_TTL):
-        return CACHE[user_id]['config']
-
-    # 2. Load from DB
-    config = DEFAULT_CONFIG.copy()
-    if db:
-        try:
-            doc = db.collection('bot_configs').document(user_id).get()
-            if doc.exists:
-                config.update(doc.to_dict())
-        except Exception as e:
-            print(f"❌ Error loading config: {e}")
-
-    # 3. Save to Cache (initialize structure if needed)
-    if user_id not in CACHE: CACHE[user_id] = {'ts': 0, 'config': {}, 'zones': []}
-    CACHE[user_id]['config'] = config
-    CACHE[user_id]['ts'] = now
-    
-    return config
-
-def save_config(user_id, config):
-    if not db: return
-    try:
-        db.collection('bot_configs').document(user_id).set(config, merge=True)
-        print(f"✅ Config saved for {user_id}")
-    except Exception as e:
-        print(f"❌ Error saving config: {e}")
-
-def load_blocked_zones(user_id):
-    # 1. Check Cache (Zones are updated along with config or lazily)
-    # Since we don't track zone cache TS separately, we use the same entry but check if 'zones_loaded' timestamp exists?
-    # Simpler: Just cache it when loaded.
-    
-    # We rely on load_config to set the TS. If TS is valid, we check if zones are cached.
-    # Actually, let's just create a separate load logic but share the CACHE dict.
-    
-    if user_id in CACHE and 'zones' in CACHE[user_id] and CACHE[user_id]['zones']:
-        # If cache is fresh (checked via timestamp implies recent refresh)
-        now = time.time()
-        if now - CACHE[user_id]['ts'] < CACHE_TTL:
-            return CACHE[user_id]['zones']
-
-    zones = []
-    if db:
-        try:
-            zones_ref = db.collection('bot_configs').document(user_id).collection('blocked_zones')
-            query = zones_ref.where('active', '==', True)
-            docs = query.stream()
-            for doc in docs:
-                z = doc.to_dict()
-                z['id'] = doc.id
-                zones.append(z)
-        except Exception as e:
-            print(f"❌ Error loading zones: {e}")
-            
-    # Update Cache
-    if user_id not in CACHE: CACHE[user_id] = {'ts': time.time(), 'config': DEFAULT_CONFIG.copy()}
-    CACHE[user_id]['zones'] = zones
-    # NOTE: We don't update TS here to avoid extending config TTL artificially, 
-    # but practically they should sync.
-    
-    return zones
-
-# --- MOTOR LÓGICO PRINCIPAL ---
-
-def evaluate_order(order, config):
-    reasons = []
-    analysis = []
-    dist_data = {"a": 0, "b": 0}
-
-    # 0. CHECK PAUSE STATUS
-    if config.get('is_paused', False):
-        print("⏸️ Bot PAUSED globally for this user.")
-        return {"action": "IGNORE", "reasons": ["Bot Paused by User"], "analysis": ["PAUSED"]}
-    
-    # 1. VALIDACIÓN DE COORDENADAS (CRÍTICO)
-    # Ignoramos order['dist_a'] y order['dist_b'] intencionalmente
-    coords_driver = order.get('coords_driver', {})
-    coords_pickup = order.get('coords_a', {})
-    coords_dest = order.get('coords_b', {})
-    
-    has_pickup = coords_pickup and coords_pickup.get('lat') and coords_pickup.get('lon')
-    has_dest = coords_dest and coords_dest.get('lat') and coords_dest.get('lon')
-    
-    if not (has_pickup and has_dest):
-        print("⚠️ Coordenadas incompletas. Ignorando.")
-        return {"action": "IGNORE", "reasons": ["Faltan coordenadas GPS"], "analysis": ["No GPS Data"]}
-
-    # 2. CÁLCULO DE DISTANCIAS REALES
-    lat_pickup = float(coords_pickup['lat'])
-    lon_pickup = float(coords_pickup['lon'])
-    lat_dest = float(coords_dest['lat'])
-    lon_dest = float(coords_dest['lon'])
-    
-    # --- APP DATA INJECTION (Cost Saving) ---
-    app_dist_a = order.get('app_dist_a', 0)
-    app_dist_b = order.get('app_dist_b', 0)
-    
-    dist_a_km = 0
-    dist_b_km = 0
-    source_a = "NONE"
-    source_b = "NONE"
-
-    # Use App Data if available (Priority)
-    if app_dist_b > 0:
-        # App sends meters, convert to km
-        dist_a_km = app_dist_a / 1000.0
-        dist_b_km = app_dist_b / 1000.0
-        source_a = "APP_DATA"
-        source_b = "APP_DATA"
-        print(f"  📲 Using App Data: A={dist_a_km}km, B={dist_b_km}km")
-    else:
-        # STRICT MODE: NO EXTERNAL APIS
-        print("⚠️ No App Data available. IGNORED (Strict Mode).")
-        return {"action": "IGNORE", "reasons": ["Faltan datos de App (Distancia)"], "analysis": ["No App Data"]}
-    
-    # (Removed Parallel Calculation Block)
-
-    # Redondear a 1 decimal
-    dist_a_km = math.floor(dist_a_km * 10) / 10.0
-    dist_b_km = math.floor(dist_b_km * 10) / 10.0
-    
-    dist_data = {"a": dist_a_km, "b": dist_b_km}
-    
-    analysis.append(f"Src: {source_b}")
-    analysis.append(f"Pickup: {dist_a_km}km (Max {config['max_pickup_dist']})")
-    analysis.append(f"Viaje: {dist_b_km}km (Max {config['max_dest_dist']})")
-    
-    print(f"  🗺️ Geo ({source_b}): A={dist_a_km}km, B={dist_b_km}km")
-
-    # 3. VERIFICAR ZONAS BLOQUEADAS
-    user_id = order.get('user_id', 'default_user')
-    if config.get('blocked_zones_enabled', True):
-        zones = load_blocked_zones(user_id)
-        # Check Pickup
-        for zone in zones:
-            if zone.get('applies_to') in ['pickup', 'both']:
-                if point_in_circle(lat_pickup, lon_pickup, zone):
-                    reasons.append(f"🚫 Zona Bloq. (Recojo): {zone.get('name')}")
-        # Check Destination
-        for zone in zones:
-            if zone.get('applies_to') in ['destination', 'both']:
-                if point_in_circle(lat_dest, lon_dest, zone):
-                    reasons.append(f"🚫 Zona Bloq. (Destino): {zone.get('name')}")
-
-    # 4. REGLAS DE DISTANCIA (Usando lo calculado, no la app)
-    if dist_a_km > config['max_pickup_dist']:
-        reasons.append(f"Recojo lejos: {dist_a_km}km > {config['max_pickup_dist']}")
-        
-    if dist_b_km > config['max_dest_dist']:
-        reasons.append(f"Viaje largo: {dist_b_km}km > {config['max_dest_dist']}")
-        
-    if dist_b_km < config['min_dest_dist']:
-        reasons.append(f"Viaje corto: {dist_b_km}km < {config['min_dest_dist']}")
-
-    # 5. REGLAS DE CLIENTE
-    rating = order.get('rating', 5.0)
-    rides = order.get('rides', 0)
-    
-    analysis.append(f"Rating: {rating} (Min {config['min_rating']})")
-    
-    if rating < config['min_rating']:
-        reasons.append(f"Rating bajo: {rating}")
-        
-    if rides < config['min_rides']:
-        reasons.append(f"Usuario nuevo: {rides} viajes")
-
-    # 6. FILTROS EXTRA
-    has_stops = order.get('has_stops', False)
-    if not config['accept_stops'] and has_stops:
-        reasons.append("Tiene paradas")
-        
-    if config['reject_tags']:
-        # Concatenate all text fields to search
-        text_content = (
-            str(order.get('description', '')) + " " + 
-            str(order.get('notes', '')) + " " + 
-            str(order.get('labels', ''))
-        ).lower()
-        
-        banned = config.get('banned_words', [])
-        
-        # Logic: 
-        # If list is empty -> Reject if ANY tag/note exists (Legacy behavior + strict)
-        # If list has words -> Reject ONLY if text contains a banned word
-        
-        if not banned:
-            # Empty list = Block All (if there is any text)
-            if order.get('description') or order.get('notes') or order.get('labels'):
-                reasons.append("Tiene notas/tags (Bloqueo Total)")
-        else:
-            # Specific Block
-            found_words = [w for w in banned if w.lower().strip() in text_content]
-            if found_words:
-                reasons.append(f"Palabra prohibida: {', '.join(found_words)}")
-
-    # INJECT CONFIG INTO DECISION (Piggyback Sync)
-    config_data = {
-        "max_pickup_dist": config.get('max_pickup_dist', 3.0),
-        "max_repeats": config.get('max_repeats', 0),
-        "is_paused": config.get('is_paused', False)
+# annotations
+.annotation runtime Lkotlin/Metadata;
+    d1 = {
+        "\u0000j\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0010\b\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\f\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0005\b\u0001\u0018\u00002\u00020\u0001B\u0007¢\u0006\u0004\b\u0002\u0010\u0003J\u000f\u0010\u0005\u001a\u00020\u0004H\u0002¢\u0006\u0004\b\u0005\u0010\u0003J\u000f\u0010\u0006\u001a\u00020\u0004H\u0002¢\u0006\u0004\b\u0006\u0010\u0003J\u000f\u0010\u0007\u001a\u00020\u0004H\u0002¢\u0006\u0004\b\u0007\u0010\u0003J\u0017\u0010\n\u001a\u00020\u00042\u0006\u0010\t\u001a\u00020\bH\u0002¢\u0006\u0004\b\n\u0010\u000bJ\u001b\u0010\u000f\u001a\u00020\u0004*\u00020\f2\u0006\u0010\u000e\u001a\u00020\rH\u0002¢\u0006\u0004\b\u000f\u0010\u0010J\u0017\u0010\u0013\u001a\u00020\u00042\u0006\u0010\u0012\u001a\u00020\u0011H\u0016¢\u0006\u0004\b\u0013\u0010\u0014J!\u0010\u0019\u001a\u00020\u00042\u0006\u0010\u0016\u001a\u00020\u00152\b\u0010\u0018\u001a\u0004\u0018\u00010\u0017H\u0016¢\u0006\u0004\b\u0019\u0010\u001aR\u001a\u0010 \u001a\u00020\u001b8\u0016X\u0096\u0004¢\u0006\f\n\u0004\b\u001c\u0010\u001d\u001a\u0004\b\u001e\u0010\u001fR(\u0010)\u001a\b\u0012\u0004\u0012\u00020\"0!8\u0000@\u0000X\u0081.¢\u0006\u0012\n\u0004\b#\u0010$\u001a\u0004\b%\u0010&\"\u0004\b\'\u0010(R\u001b\u0010.\u001a\u00020\"8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b*\u0010+\u001a\u0004\b,\u0010-R\u001b\u00103\u001a\u00020/8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b0\u0010+\u001a\u0004\b1\u00102R\u001b\u00109\u001a\u0002048BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b5\u00106\u001a\u0004\b7\u00108R\u001b\u0010>\u001a\u00020:8BX\u0082\u0084\u0002¢\u0006\f\n\u0004\b;\u00106\u001a\u0004\b<\u0010=¨\u0006?"
     }
+    d2 = {
+        "Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;",
+        "Lcu1/h;",
+        "<init>",
+        "()V",
+        "",
+        "Q6",
+        "c7",
+        "S6",
+        "Luh0/d;",
+        "surgeUi",
+        "R6",
+        "(Luh0/d;)V",
+        "Landroid/widget/TextView;",
+        "",
+        "newText",
+        "L7",
+        "(Landroid/widget/TextView;Ljava/lang/String;)V",
+        "Landroid/content/Context;",
+        "context",
+        "onAttach",
+        "(Landroid/content/Context;)V",
+        "Landroid/view/View;",
+        "view",
+        "Landroid/os/Bundle;",
+        "savedInstanceState",
+        "onViewCreated",
+        "(Landroid/view/View;Landroid/os/Bundle;)V",
+        "",
+        "S0",
+        "I",
+        "M5",
+        "()I",
+        "layoutRes",
+        "Lew/a;",
+        "Ly41/w0;",
+        "T0",
+        "Lew/a;",
+        "P6",
+        "()Lew/a;",
+        "setViewModelProvider$order_release",
+        "(Lew/a;)V",
+        "viewModelProvider",
+        "U0",
+        "Lfw/m;",
+        "O6",
+        "()Ly41/w0;",
+        "viewModel",
+        "Lvh0/c;",
+        "V0",
+        "M6",
+        "()Lvh0/c;",
+        "extraStopAddressesAdapter",
+        "Lq41/k;",
+        "W0",
+        "Lkotlin/properties/d;",
+        "L6",
+        "()Lq41/k;",
+        "binding",
+        "Lfh0/c;",
+        "X0",
+        "N6",
+        "()Lfh0/c;",
+        "infoBinding",
+        "order_release"
+    }
+    k = 0x1
+    mv = {
+        0x2,
+        0x2,
+        0x0
+    }
+    xi = 0x30
+.end annotation
 
-    if reasons:
-        return {"action": "REJECT", "reasons": reasons, "analysis": analysis, "dist_data": dist_data, "config": config_data}
+.annotation build Lkotlin/jvm/internal/SourceDebugExtension;
+    value = {
+        "SMAP\nOrderInfoFragment.kt\nKotlin\n*S Kotlin\n*F\n+ 1 OrderInfoFragment.kt\nsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment\n*L\n1#1,201:1\n*E\n"
+    }
+.end annotation
 
-    return {"action": "PASS", "analysis": analysis, "dist_data": dist_data, "config": config_data}
 
-# --- RUTAS FLASK ---
-
-@app.route('/decide', methods=['POST'])
-def decide():
-    try:
-        order_data = request.json
-        user_id = order_data.get('user_id', 'default_user')
-        order_id = order_data.get('order_id') or order_data.get('id')
-
-        # Cargar Config (Solo UNA VEZ)
-        cfg = load_config(user_id)
-        
-        # Gestión de Duplicados
-        if order_id:
-            cleanup_processed_orders()
-            # cfg ya está cargada
-            max_repeats = cfg.get('max_repeats', 0)
-            
-            if order_id in PROCESSED_ORDERS:
-                entry = PROCESSED_ORDERS[order_id]
-                if entry['count'] > max_repeats:
-                    print(f"⚠️ Orden duplicada ignorada: {order_id}")
-                    return {"action": "PASS", "reason": "Duplicate"}
-                entry['count'] += 1
-                entry['ts'] = time.time()
-            else:
-                PROCESSED_ORDERS[order_id] = {'ts': time.time(), 'count': 1}
-        
-        # Evaluar
-        decision = evaluate_order(order_data, cfg)
-        
-        print(f"🤖 DECISIÓN: {decision['action']}")
-        if 'reasons' in decision:
-            print(f"❌ RAZONES: {decision['reasons']}")
-        
-        # Si rechazamos, retornamos inmediatamente
-        if decision['action'] != 'PASS':
-            decision['order_id'] = order_id
-            return decision
-        
-        # LOGICA DE BIDDING (Oferta)
-        # Usamos EXCLUSIVAMENTE la distancia calculada por nosotros
-        dist_data = decision.get('dist_data', {})
-        dist_b_km = dist_data.get('b', 0)
-        
-        min_price = cfg.get('min_price', 9000)
-        base_price_km = cfg.get('base_price_km', 4000)
-        client_price = order_data.get('price', 0)
-        
-        # Precio base calculado
-        calc_price = dist_b_km * base_price_km
-        
-        # Revisar Tiers (Tarifa dinámica)
-        tiers = cfg.get('fare_tiers', [])
-        for tier in tiers:
-            t_min = tier.get('min_dist', 0)
-            t_max = tier.get('max_dist', 1000)
-            if dist_b_km >= t_min and dist_b_km < t_max:
-                t_rate = tier.get('rate', base_price_km)
-                calc_price = dist_b_km * t_rate
-                print(f"  ⚡ Tier aplicado [{t_min}-{t_max}]: {t_rate}/km")
-                break
-        
-        # Ofertar el MAXIMO entre lo calculado, lo que ofrece el cliente y el mínimo configurado
-        offer_price = max(calc_price, client_price, min_price)
-        
-        # Respetar topes globales
-        if offer_price > cfg['max_price']: offer_price = cfg['max_price']
-        if offer_price < cfg['min_price']: offer_price = cfg['min_price']
-        
-        print(f"  💰 Bidding: Dist={dist_b_km}km | Calc={calc_price:.0f} | Offer={offer_price:.0f}")
-        
-        # Add price debug information to analysis
-        analysis = decision.get('analysis', [])
-        analysis.append(f"Price: {int(offer_price)} (Calc:{int(calc_price)}/Cli:{int(client_price)}/Min:{int(min_price)})")
-
-        return {
-            "action": "BID", 
-            "price": int(offer_price),
-            "pickup_time": cfg.get('pickup_time_minutes', 5),
-            "analysis": analysis,
-            "config": {
-                "max_pickup_dist": cfg.get('max_pickup_dist', 3.0),
-                "max_repeats": cfg.get('max_repeats', 0),
-                "is_paused": cfg.get('is_paused', False)
-            }
+# static fields
+.field static final synthetic Y0:[Lkotlin/reflect/KProperty;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "[",
+            "Lkotlin/reflect/KProperty<",
+            "Ljava/lang/Object;",
+            ">;"
         }
+    .end annotation
+.end field
 
-    except Exception as e:
-        print(f"❌ INTERNAL SERVER ERROR: {e}")
-        # Fail safe: Return IGNORE or PASS to avoid crashing client
-        return {"action": "PASS", "reason": f"Server Error: {str(e)[:50]}"}
+.field public static final Z0:I
 
-@app.route('/config', methods=['GET', 'POST'])
-def config_ui():
-    user_id = request.args.get('user_id', 'default_user')
-    lat = request.args.get('lat', '')
-    lon = request.args.get('lon', '')
-    
-    if request.method == 'POST':
-        data = request.json
-        user_id = data.get('user_id', user_id)
-        config_data = {k: v for k, v in data.items() if k != 'user_id'}
-        save_config(user_id, config_data)
-        return jsonify({"status": "saved", "user_id": user_id})
-    
-    cfg = load_config(user_id)
-    if request.args.get('format') == 'json':
-        return jsonify(cfg)
 
-    return render_template_string(HTML_TEMPLATE, config=cfg, user_id=user_id, lat=lat, lon=lon)
+# instance fields
+.field private final S0:I
 
-@app.route('/blocked-zones', methods=['GET', 'POST', 'DELETE'])
-def manage_blocked_zones():
-    if not db: return jsonify({"error": "Firebase not configured"}), 500
-    
-    user_id = request.args.get('user_id')
-    if request.method == 'POST': user_id = request.json.get('user_id')
-    if not user_id: return jsonify({"error": "Missing user_id"}), 400
-
-    zones_ref = db.collection('bot_configs').document(user_id).collection('blocked_zones')
-    
-    if request.method == 'GET':
-        docs = zones_ref.stream()
-        return jsonify([{**doc.to_dict(), 'id': doc.id} for doc in docs])
-
-    if request.method == 'POST':
-        data = request.json
-        data['user_id'] = user_id
-        if data.get('id'):
-            zones_ref.document(data['id']).set(data, merge=True)
-            return jsonify({"status": "updated", "id": data['id']})
-        else:
-            if 'id' in data: del data['id']
-            _, ref = zones_ref.add(data)
-            return jsonify({"status": "created", "id": ref.id})
-
-    if request.method == 'DELETE':
-        zid = request.args.get('id')
-        if not zid: return jsonify({"error": "Missing id"}), 400
-        zones_ref.document(zid).delete()
-        return jsonify({"status": "deleted"})
-
-@app.route('/blocked-zones-ui')
-def blocked_zones_ui():
-    user_id = request.args.get('user_id', 'default_user')
-    try:
-        # Asegúrate de que tienes el archivo zones_manager.html o usa una plantilla simple
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(base_dir, 'zones_manager.html')
-        if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf-8') as f:
-                template = f.read()
-            return render_template_string(template, user_id=user_id)
-        else:
-            return f"Error: zones_manager.html not found. Bot User ID: {user_id}"
-    except Exception as e:
-        return f"Error loading UI: {e}"
-
-@app.route('/ping', methods=['GET', 'POST'])
-def ping():
-    return jsonify({"status": "pong", "timestamp": time.time()})
-
-# --- UI TEMPLATE (HTML) ---
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Configuración Bot</title>
-    <style>
-        :root { --primary: #2563eb; --bg: #f3f4f6; --text: #1f2937; --success: #10b981; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
-        .header { background: var(--primary); color: white; padding: 16px; text-align: center; position: sticky; top: 0; z-index: 100; }
-        .container { padding: 16px; max-width: 600px; margin: 0 auto; }
-        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .card-header { font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; display: flex; gap: 10px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-        input { width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; box-sizing: border-box; }
-        label { font-size: 0.75rem; font-weight: bold; color: #6b7280; display: block; margin-bottom: 4px; }
-        .btn-save { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: var(--primary); color: white; padding: 16px; border: none; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background 0.3s; }
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-        .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(22px); }
-        .tier-item { background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0; position: relative; }
-        .btn-add { width: 100%; padding: 10px; background: #eff6ff; color: var(--primary); border: 1px dashed var(--primary); border-radius: 8px; margin-top: 10px; cursor: pointer; }
-        .btn-remove { position: absolute; top: 5px; right: 5px; background: #ef4444; color: white; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🤖 CONFIG BOT</h1>
-        <small>ID: {{ user_id }}</small>
-        <div style="margin-top:8px;">
-            <a href="/blocked-zones-ui?user_id={{ user_id }}&lat={{ lat }}&lon={{ lon }}" style="color:white; text-decoration:underline;">🗺️ Zonas Bloqueadas</a>
-        </div>
-    </div>
-
-    <div class="container">
-        <form id="configForm">
-            <input type="hidden" id="user_id" value="{{ user_id }}">
-            
-            <div class="card">
-                <div class="card-header">📏 Distancias (Km)</div>
-                <div class="form-grid three">
-                    <div><label>Max Recojo</label><input type="number" step="0.1" id="max_pickup_dist" value="{{ config.max_pickup_dist }}"></div>
-                    <div><label>Min Viaje</label><input type="number" step="0.1" id="min_dest_dist" value="{{ config.min_dest_dist }}"></div>
-                    <div><label>Max Viaje</label><input type="number" step="0.1" id="max_dest_dist" value="{{ config.max_dest_dist }}"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">💰 Precios</div>
-                <div class="form-grid">
-                    <div><label>Mínimo</label><input type="number" id="min_price" value="{{ config.min_price }}"></div>
-                    <div><label>Máximo</label><input type="number" id="max_price" value="{{ config.max_price }}"></div>
-                </div>
-                <div style="margin-top:10px;"><label>Base por Km</label><input type="number" id="base_price_km" value="{{ config.base_price_km }}"></div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">📊 Tarifas Dinámicas</div>
-                <div id="tiersContainer"></div>
-                <button type="button" class="btn-add" onclick="addTier()">+ Añadir Tramo</button>
-            </div>
-
-            <div class="card">
-                <div class="card-header">⚙️ Reglas</div>
-                <div class="form-grid">
-                    <div><label>Min Rating</label><input type="number" step="0.1" id="min_rating" value="{{ config.min_rating }}"></div>
-                    <div><label>Min Viajes</label><input type="number" id="min_rides" value="{{ config.min_rides }}"></div>
-                </div>
-                
-                <div class="toggle-row">
-                    <span>Rechazar Tags/Notas</span>
-                    <label class="switch"><input type="checkbox" id="reject_tags" onchange="toggleBannedWords()" {% if config.reject_tags %}checked{% endif %}><span class="slider"></span></label>
-                </div>
-                
-                <div id="bannedWordsContainer" style="display: none; padding: 10px; background: #fffbe6; border: 1px solid #ffe58f; border-radius: 8px; margin-top: 10px;">
-                    <label style="color: #d48806;">Palabras Bloqueadas (separadas por coma)</label>
-                    <small style="display:block; color: #888; margin-bottom:5px;">Si se deja vacío, bloquea TODO si hay tags.</small>
-                    <input type="text" id="banned_words" placeholder="Ej: bebe, mascota, tarjeta">
-                </div>
-
-                <div class="toggle-row">
-                    <span>Aceptar Paradas</span>
-                    <label class="switch"><input type="checkbox" id="accept_stops" {% if config.accept_stops %}checked{% endif %}><span class="slider"></span></label>
-                </div>
-                <div class="toggle-row">
-                    <span>Aceptar Aeropuerto</span>
-                    <label class="switch"><input type="checkbox" id="accept_airport" {% if config.accept_airport %}checked{% endif %}><span class="slider"></span></label>
-                </div>
-                
-                <div style="margin-top:10px;"><label>Max Repeticiones</label><input type="number" id="max_repeats" value="{{ config.max_repeats }}"></div>
-                <div style="margin-top:10px;"><label>Tiempo Recogida (min)</label><input type="number" id="pickup_time_minutes" value="{{ config.pickup_time_minutes }}"></div>
-            </div>
-        </form>
-    </div>
-
-    <button type="button" class="btn-save" onclick="save()">GUARDAR CAMBIOS</button>
-
-    <script>
-        let tiers = {{ config.fare_tiers | tojson }};
-        let bannedWords = {{ config.banned_words | tojson }};
-
-        function toggleBannedWords() {
-            const isChecked = document.getElementById('reject_tags').checked;
-            document.getElementById('bannedWordsContainer').style.display = isChecked ? 'block' : 'none';
+.field public T0:Lew/a;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "Lew/a<",
+            "Ly41/w0;",
+            ">;"
         }
+    .end annotation
+.end field
 
-        // Initialize UI
-        document.getElementById('banned_words').value = (bannedWords || []).join(', ');
-        toggleBannedWords(); // Set initial state check
+.field private final U0:Lfw/m;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
 
-        function renderTiers() {
-            const c = document.getElementById('tiersContainer');
-            c.innerHTML = '';
-            tiers.forEach((t, i) => {
-                c.innerHTML += `
-                <div class="tier-item">
-                    <button type="button" class="btn-remove" onclick="removeTier(${i})">×</button>
-                    <div class="form-grid three">
-                        <div><label>De (km)</label><input type="number" value="${t.min_dist}" onchange="updateTier(${i},'min_dist',this.value)"></div>
-                        <div><label>A (km)</label><input type="number" value="${t.max_dist}" onchange="updateTier(${i},'max_dist',this.value)"></div>
-                        <div><label>Precio/km</label><input type="number" value="${t.rate}" onchange="updateTier(${i},'rate',this.value)"></div>
-                    </div>
-                </div>`;
-            });
+.field private final V0:Lfw/m;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final W0:Lkotlin/properties/d;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field private final X0:Lkotlin/properties/d;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+.field public debugTextView:Landroid/widget/TextView;
+    .annotation build Lorg/jetbrains/annotations/Nullable;
+    .end annotation
+.end field
+
+.field private final y:Lkotlin/Lazy;
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+.end field
+
+
+# direct methods
+.method static constructor <clinit>()V
+    .registers 6
+
+    new-instance v0, Lkotlin/jvm/internal/PropertyReference1Impl;
+
+    const-class v1, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
+    const-string v2, "binding"
+
+    const-string v3, "getBinding()Lsinet/startup/inDriver/city/driver/order/databinding/DriverOrderInfoBinding;"
+
+    const/4 v4, 0x0
+
+    invoke-direct {v0, v1, v2, v3, v4}, Lkotlin/jvm/internal/PropertyReference1Impl;-><init>(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;I)V
+
+    invoke-static {v0}, Lkotlin/jvm/internal/Reflection;->property1(Lkotlin/jvm/internal/PropertyReference1;)Lkotlin/reflect/KProperty1;
+
+    move-result-object v0
+
+    new-instance v2, Lkotlin/jvm/internal/PropertyReference1Impl;
+
+    const-string v3, "infoBinding"
+
+    const-string v5, "getInfoBinding()Lsinet/startup/inDriver/city/driver/common/databinding/DriverCommonOrderInfoBinding;"
+
+    invoke-direct {v2, v1, v3, v5, v4}, Lkotlin/jvm/internal/PropertyReference1Impl;-><init>(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;I)V
+
+    invoke-static {v2}, Lkotlin/jvm/internal/Reflection;->property1(Lkotlin/jvm/internal/PropertyReference1;)Lkotlin/reflect/KProperty1;
+
+    move-result-object v1
+
+    const/4 v2, 0x2
+
+    new-array v2, v2, [Lkotlin/reflect/KProperty;
+
+    aput-object v0, v2, v4
+
+    const/4 v0, 0x1
+
+    aput-object v1, v2, v0
+
+    sput-object v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Y0:[Lkotlin/reflect/KProperty;
+
+    const/16 v0, 0x8
+
+    sput v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Z0:I
+
+    return-void
+.end method
+
+.method public constructor <init>()V
+    .registers 4
+
+    .line 1
+    invoke-direct {p0}, Lcu1/h;-><init>()V
+
+    .line 4
+    sget v0, Ln41/c;->k:I
+
+    .line 6
+    iput v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->S0:I
+
+    .line 8
+    sget-object v0, Lfw/q;->NONE:Lfw/q;
+
+    .line 10
+    new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$o0;
+
+    .line 12
+    invoke-direct {v1, p0, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$o0;-><init>(Landroidx/lifecycle/ViewModelStoreOwner;Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 15
+    invoke-static {v0, v1}, Lfw/n;->a(Lfw/q;Lkotlin/jvm/functions/Function0;)Lfw/m;
+
+    .line 18
+    move-result-object v0
+
+    .line 19
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->U0:Lfw/m;
+
+    .line 21
+    new-instance v0, Ly41/w;
+
+    .line 23
+    invoke-direct {v0}, Ly41/w;-><init>()V
+
+    .line 26
+    invoke-static {v0}, Lfw/n;->b(Lkotlin/jvm/functions/Function0;)Lfw/m;
+
+    .line 29
+    move-result-object v0
+
+    .line 30
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->V0:Lfw/m;
+
+    .line 32
+    new-instance v0, Lnu1/r2;
+
+    .line 34
+    const-class v1, Lq41/k;
+
+    .line 36
+    invoke-static {v1}, Lkotlin/jvm/internal/Reflection;->getOrCreateKotlinClass(Ljava/lang/Class;)Lkotlin/reflect/KClass;
+
+    .line 39
+    move-result-object v1
+
+    .line 40
+    const/4 v2, 0x0
+
+    .line 41
+    invoke-direct {v0, p0, v1, v2}, Lnu1/r2;-><init>(Landroidx/fragment/app/Fragment;Lkotlin/reflect/KClass;Ljava/lang/Integer;)V
+
+    .line 44
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->W0:Lkotlin/properties/d;
+
+    .line 46
+    new-instance v0, Lnu1/r2;
+
+    .line 48
+    const-class v1, Lfh0/c;
+
+    .line 50
+    invoke-static {v1}, Lkotlin/jvm/internal/Reflection;->getOrCreateKotlinClass(Ljava/lang/Class;)Lkotlin/reflect/KClass;
+
+    .line 53
+    move-result-object v1
+
+    .line 54
+    invoke-direct {v0, p0, v1, v2}, Lnu1/r2;-><init>(Landroidx/fragment/app/Fragment;Lkotlin/reflect/KClass;Ljava/lang/Integer;)V
+
+    .line 57
+    iput-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->X0:Lkotlin/properties/d;
+
+    .line 59
+    return-void
+.end method
+
+.method public static synthetic A6(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->j7(Ly41/y0;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final A7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    iget-object p0, p0, Lfh0/c;->v:Landroidx/appcompat/widget/AppCompatTextView;
+
+    .line 7
+    invoke-virtual {p0, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 10
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 12
+    return-object p0
+.end method
+
+.method public static synthetic B6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->t7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final B7(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->w()Z
+
+    .line 4
+    move-result p0
+
+    .line 5
+    return p0
+.end method
+
+.method public static synthetic C6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->b7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final C7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 7
+
+    move-object v4, p0
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lq41/k;->c:Lsinet/startup/inDriver/city/driver/common/ui/UserInfoView;
+
+    .line 7
+    invoke-virtual {v0, p1}, Lsinet/startup/inDriver/city/driver/common/ui/UserInfoView;->H(Z)V
+
+    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
+
+    if-eqz v0, :cond_13
+
+    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
+
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
+
+    .line 10
+    :cond_13
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 13
+    move-result-object v0
+
+    .line 14
+    iget-object v0, v0, Lq41/k;->d:Landroid/widget/TextView;
+
+    .line 16
+    const/16 v1, 0x8
+
+    .line 18
+    const/4 v2, 0x0
+
+    .line 19
+    if-nez p1, :cond_20
+
+    .line 21
+    move v3, v2
+
+    .line 22
+    goto :goto_21
+
+    .line 23
+    :cond_20
+    move v3, v1
+
+    .line 24
+    :goto_21
+    invoke-virtual {v0, v3}, Landroid/view/View;->setVisibility(I)V
+
+    .line 27
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 30
+    move-result-object p0
+
+    .line 31
+    iget-object p0, p0, Lq41/k;->b:Lfh0/c;
+
+    .line 33
+    iget-object p0, p0, Lfh0/c;->b:Lsinet/startup/inDriver/core/ui/skeleton/SkeletonConstraintLayout;
+
+    .line 35
+    if-eqz p1, :cond_2f
+
+    .line 37
+    move v1, v2
+
+    .line 38
+    :cond_2f
+    invoke-virtual {p0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 41
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    return-object p0
+.end method
+
+.method public static synthetic D6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Landroid/view/View;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->J7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Landroid/view/View;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final D7(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->z()Z
+
+    .line 4
+    move-result p0
+
+    .line 5
+    return p0
+.end method
+
+.method public static synthetic E6(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->B7(Ly41/y0;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method private static final E7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 6
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lfh0/c;->p:Landroidx/appcompat/widget/AppCompatTextView;
+
+    .line 7
+    const/16 v1, 0x8
+
+    .line 9
+    const/4 v2, 0x0
+
+    .line 10
+    if-eqz p1, :cond_d
+
+    .line 12
+    move v3, v2
+
+    .line 13
+    goto :goto_e
+
+    .line 14
+    :cond_d
+    move v3, v1
+
+    .line 15
+    :goto_e
+    invoke-virtual {v0, v3}, Landroid/view/View;->setVisibility(I)V
+
+    .line 18
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 21
+    move-result-object p0
+
+    .line 22
+    iget-object p0, p0, Lfh0/c;->v:Landroidx/appcompat/widget/AppCompatTextView;
+
+    .line 24
+    if-eqz p1, :cond_1a
+
+    .line 26
+    move v1, v2
+
+    .line 27
+    :cond_1a
+    invoke-virtual {p0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 30
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 32
+    return-object p0
+.end method
+
+.method public static synthetic F6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->A7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final F7(Ly41/y0;)Luh0/d;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->o()Luh0/d;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic G6(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->n7(Ly41/y0;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final G7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Luh0/d;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->R6(Luh0/d;)V
+
+    .line 4
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 6
+    return-object p0
+.end method
+
+.method public static synthetic H6(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->h7(Ly41/y0;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method private static final H7(Ly41/y0;)Ly41/z0;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->s()Ly41/z0;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic I6()Lvh0/c;
+    .registers 1
+
+    .line 1
+    invoke-static {}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->K6()Lvh0/c;
+
+    move-result-object v0
+
+    return-object v0
+.end method
+
+.method private static final I7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/z0;)Lkotlin/Unit;
+    .registers 6
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lfh0/c;->w:Lfh0/d;
+
+    .line 7
+    iget-object v1, v0, Lfh0/d;->d:Landroid/widget/TextView;
+
+    .line 9
+    invoke-virtual {p1}, Ly41/z0;->b()Ljava/lang/String;
+
+    .line 12
+    move-result-object v2
+
+    .line 13
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 16
+    iget-object v1, v0, Lfh0/d;->d:Landroid/widget/TextView;
+
+    .line 18
+    invoke-virtual {p1}, Ly41/z0;->b()Ljava/lang/String;
+
+    .line 21
+    move-result-object v2
+
+    .line 22
+    invoke-interface {v2}, Ljava/lang/CharSequence;->length()I
+
+    .line 25
+    move-result v2
+
+    .line 26
+    const/16 v3, 0x8
+
+    .line 27
+    if-lez v2, :cond_25
+
+    .line 29
+    invoke-virtual {p1}, Ly41/z0;->c()Z
+
+    .line 32
+    move-result v2
+
+    .line 33
+    if-eqz v2, :cond_25
+
+    .line 35
+    const/4 v2, 0x1
+
+    .line 36
+    goto :goto_26
+
+    .line 37
+    :cond_25
+    move v2, v3
+
+    .line 38
+    :goto_26
+    if-eqz v2, :cond_29
+
+    .line 40
+    goto :goto_2b
+
+    .line 41
+    :cond_29
+    const/16 v3, 0x8
+
+    .line 43
+    :goto_2b
+    invoke-virtual {v1, v3}, Landroid/view/View;->setVisibility(I)V
+
+    .line 46
+    iget-object v0, v0, Lfh0/d;->i:Landroid/widget/TextView;
+
+    .line 48
+    invoke-virtual {p1}, Ly41/z0;->a()Ljava/lang/String;
+
+    .line 51
+    move-result-object p1
+
+    .line 52
+    invoke-direct {p0, v0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L7(Landroid/widget/TextView;Ljava/lang/String;)V
+
+    .line 55
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 57
+    return-object p0
+.end method
+
+.method public static synthetic J6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly62/c;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->r7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly62/c;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final J7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Landroid/view/View;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-virtual {p0}, Ly41/w0;->O1()V
+
+    .line 8
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 10
+    return-object p0
+.end method
+
+.method private static final K6()Lvh0/c;
+    .registers 4
+
+    .line 1
+    new-instance v0, Lvh0/c;
+
+    .line 3
+    const/4 v1, 0x1
+
+    .line 4
+    const/4 v2, 0x0
+
+    .line 5
+    const/4 v3, 0x0
+
+    .line 6
+    invoke-direct {v0, v3, v1, v2}, Lvh0/c;-><init>(ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+    .line 9
+    return-object v0
+.end method
+
+.method private static final K7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Landroid/view/View;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-virtual {p0}, Ly41/w0;->P1()V
+
+    .line 8
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 10
+    return-object p0
+.end method
+
+.method private final L6()Lq41/k;
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->W0:Lkotlin/properties/d;
+
+    .line 3
+    sget-object v1, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Y0:[Lkotlin/reflect/KProperty;
+
+    .line 5
+    const/4 v2, 0x0
+
+    .line 6
+    aget-object v1, v1, v2
+
+    .line 8
+    invoke-interface {v0, p0, v1}, Lkotlin/properties/d;->getValue(Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
+
+    .line 11
+    move-result-object v0
+
+    .line 12
+    check-cast v0, Lq41/k;
+
+    .line 14
+    return-object v0
+.end method
+
+.method private final L7(Landroid/widget/TextView;Ljava/lang/String;)V
+    .registers 4
+
+    .line 1
+    invoke-interface {p2}, Ljava/lang/CharSequence;->length()I
+
+    .line 4
+    move-result v0
+
+    .line 5
+    goto :goto_d
+
+    invoke-virtual {p1, p2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    const/4 p2, 0x0
+
+    invoke-virtual {p1, p2}, Landroid/view/View;->setVisibility(I)V
+
+    return-void
+
+    .line 15
+    :goto_d
+    const/16 p2, 0x8
+
+    .line 17
+    invoke-virtual {p1, p2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 20
+    return-void
+.end method
+
+.method private final M6()Lvh0/c;
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->V0:Lfw/m;
+
+    .line 3
+    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, Lvh0/c;
+
+    .line 9
+    return-object v0
+.end method
+
+.method private final N6()Lfh0/c;
+    .registers 4
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->X0:Lkotlin/properties/d;
+
+    .line 3
+    sget-object v1, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Y0:[Lkotlin/reflect/KProperty;
+
+    .line 5
+    const/4 v2, 0x1
+
+    .line 6
+    aget-object v1, v1, v2
+
+    .line 8
+    invoke-interface {v0, p0, v1}, Lkotlin/properties/d;->getValue(Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
+
+    .line 11
+    move-result-object v0
+
+    .line 12
+    check-cast v0, Lfh0/c;
+
+    .line 14
+    return-object v0
+.end method
+
+.method private final O6()Ly41/w0;
+    .registers 2
+
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->U0:Lfw/m;
+
+    .line 3
+    invoke-interface {v0}, Lfw/m;->getValue()Ljava/lang/Object;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, Ly41/w0;
+
+    .line 9
+    return-object v0
+.end method
+
+.method private final Q6()V
+    .registers 4
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v1, v0, Lfh0/c;->w:Lfh0/d;
+
+    .line 7
+    invoke-virtual {v1}, Lfh0/d;->a()Landroidx/constraintlayout/widget/ConstraintLayout;
+
+    .line 10
+    move-result-object v1
+
+    .line 11
+    const/4 v2, 0x0
+
+    .line 12
+    invoke-virtual {v1, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 15
+    iget-object v1, v0, Lfh0/c;->u:Landroidx/appcompat/widget/AppCompatTextView;
+
+    .line 17
+    const/16 v2, 0x8
+
+    .line 19
+    invoke-virtual {v1, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 22
+    iget-object v1, v0, Lfh0/c;->y:Landroidx/appcompat/widget/AppCompatTextView;
+
+    .line 24
+    invoke-virtual {v1, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 27
+    iget-object v0, v0, Lfh0/c;->x:Landroidx/appcompat/widget/AppCompatTextView;
+
+    .line 29
+    invoke-virtual {v0, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 32
+    return-void
+.end method
+
+.method private final R6(Luh0/d;)V
+    .registers 10
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lfh0/c;->w:Lfh0/d;
+
+    .line 7
+    invoke-virtual {p1}, Luh0/d;->d()Z
+
+    .line 10
+    move-result v1
+
+    .line 11
+    const/16 v2, 0x8
+
+    .line 13
+    if-eqz v1, :cond_3b
+
+    .line 15
+    iget-object v1, v0, Lfh0/d;->f:Landroid/widget/TextView;
+
+    .line 17
+    const/4 v3, 0x0
+
+    .line 18
+    invoke-virtual {v1, v3}, Landroid/view/View;->setVisibility(I)V
+
+    .line 21
+    iget-object v1, v0, Lfh0/d;->j:Landroid/widget/ImageView;
+
+    .line 23
+    invoke-virtual {p1}, Luh0/d;->b()Z
+
+    .line 26
+    move-result v4
+
+    .line 27
+    if-eqz v4, :cond_1d
+
+    .line 29
+    move v2, v3
+
+    .line 30
+    :cond_1d
+    invoke-virtual {v1, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 33
+    iget-object v1, v0, Lfh0/d;->f:Landroid/widget/TextView;
+
+    .line 35
+    invoke-virtual {p1}, Luh0/d;->e()Ljava/lang/String;
+
+    .line 38
+    move-result-object v2
+
+    .line 39
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 42
+    sget-object v1, Lwh0/g;->a:Lwh0/g;
+
+    .line 44
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireContext()Landroid/content/Context;
+
+    .line 47
+    move-result-object v2
+
+    .line 48
+    iget-object v3, v0, Lfh0/d;->f:Landroid/widget/TextView;
+
+    iget-object v6, v0, Lfh0/d;->j:Landroid/widget/ImageView;
+
+    .line 50
+    invoke-virtual {p1}, Luh0/d;->c()I
+
+    .line 55
+    move-result v5
+
+    .line 56
+    invoke-virtual {v1, v2, v3, v6, v5}, Lwh0/g;->a(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/ImageView;I)V
+
+    .line 59
+    return-void
+
+    .line 60
+    :cond_3b
+    iget-object p1, v0, Lfh0/d;->f:Landroid/widget/TextView;
+
+    .line 62
+    invoke-virtual {p1, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 65
+    iget-object p1, v0, Lfh0/d;->j:Landroid/widget/ImageView;
+
+    .line 67
+    invoke-virtual {p1, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 70
+    return-void
+.end method
+
+.method public static synthetic S5(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->d7(Ly41/y0;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private final S6()V
+    .registers 9
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    .line 8
+    move-result-object v1
+
+    .line 9
+    new-instance v2, Ly41/h0;
+
+    .line 11
+    invoke-direct {v2}, Ly41/h0;-><init>()V
+
+    .line 14
+    new-instance v3, Ly41/m0;
+
+    .line 16
+    invoke-direct {v3, p0}, Ly41/m0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 19
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    .line 22
+    move-result-object v4
+
+    .line 23
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    .line 26
+    move-result-object v5
+
+    .line 27
+    const/4 v6, 0x0
+
+    .line 28
+    const/4 v7, 0x2
+
+    .line 29
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    .line 32
+    move-result-object v1
+
+    .line 33
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$a;
+
+    .line 35
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$a;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 38
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    .line 41
+    move-result-object v1
+
+    .line 42
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$b;
+
+    .line 44
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$b;-><init>(Ljava/lang/Object;)V
+
+    .line 47
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    .line 50
+    move-result-object v1
+
+    .line 51
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    .line 54
+    move-result-object v2
+
+    .line 55
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 58
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    .line 61
+    move-result-object v1
+
+    .line 62
+    new-instance v2, Ly41/n0;
+
+    .line 64
+    invoke-direct {v2}, Ly41/n0;-><init>()V
+
+    .line 67
+    new-instance v3, Ly41/o0;
+
+    .line 69
+    invoke-direct {v3, p0}, Ly41/o0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 72
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    .line 75
+    move-result-object v4
+
+    .line 76
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    .line 79
+    move-result-object v5
+
+    .line 80
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    .line 83
+    move-result-object v1
+
+    .line 84
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$c;
+
+    .line 86
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$c;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 89
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    .line 92
+    move-result-object v1
+
+    .line 93
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$d;
+
+    .line 95
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$d;-><init>(Ljava/lang/Object;)V
+
+    .line 98
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    .line 101
+    move-result-object v1
+
+    .line 102
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    .line 105
+    move-result-object v2
+
+    .line 106
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 109
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    .line 112
+    move-result-object v1
+
+    .line 113
+    new-instance v2, Ly41/p0;
+
+    .line 115
+    invoke-direct {v2}, Ly41/p0;-><init>()V
+
+    .line 118
+    new-instance v3, Ly41/q0;
+
+    .line 120
+    invoke-direct {v3, p0}, Ly41/q0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 123
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    .line 126
+    move-result-object v4
+
+    .line 127
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    .line 130
+    move-result-object v5
+
+    .line 131
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    .line 134
+    move-result-object v1
+
+    .line 135
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$e;
+
+    .line 137
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$e;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 140
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    .line 143
+    move-result-object v1
+
+    .line 144
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$f;
+
+    .line 146
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$f;-><init>(Ljava/lang/Object;)V
+
+    .line 149
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    .line 152
+    move-result-object v1
+
+    .line 153
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    .line 156
+    move-result-object v2
+
+    .line 157
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 160
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    .line 163
+    move-result-object v0
+
+    .line 164
+    new-instance v1, Ly41/r0;
+
+    .line 166
+    invoke-direct {v1}, Ly41/r0;-><init>()V
+
+    .line 169
+    new-instance v2, Ly41/b;
+
+    .line 171
+    invoke-direct {v2, p0}, Ly41/b;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 174
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    .line 177
+    move-result-object v3
+
+    .line 178
+    invoke-interface {v3}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    .line 181
+    move-result-object v4
+
+    .line 182
+    invoke-static {v0, v4, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    .line 185
+    move-result-object v0
+
+    .line 186
+    new-instance v4, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$g;
+
+    .line 188
+    invoke-direct {v4, v0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$g;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 191
+    invoke-static {v4}, Lix/k;->z(Lix/i;)Lix/i;
+
+    .line 194
+    move-result-object v0
+
+    .line 195
+    new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$h;
+
+    .line 197
+    invoke-direct {v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$h;-><init>(Ljava/lang/Object;)V
+
+    .line 200
+    invoke-static {v0, v1}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    .line 203
+    move-result-object v0
+
+    .line 204
+    invoke-static {v3}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    .line 207
+    move-result-object v1
+
+    .line 208
+    invoke-static {v0, v1}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 1040
+    return-void
+.end method
+
+.method public static synthetic T5(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->g7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final T6(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->l()Ljava/lang/String;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic U5(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Z6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final U6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    iget-object p0, p0, Lq41/k;->d:Landroid/widget/TextView;
+
+    .line 7
+    invoke-virtual {p0, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 10
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 12
+    return-object p0
+.end method
+
+.method public static synthetic V5(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->m7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final V6(Ly41/y0;)Lkotlin/Pair;
+    .registers 2
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->r()Lte1/p;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    invoke-virtual {p0}, Ly41/y0;->x()Z
+
+    .line 8
+    move-result p0
+
+    .line 9
+    invoke-static {p0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+
+    .line 12
+    move-result-object p0
+
+    .line 13
+    invoke-static {v0, p0}, Lfw/y;->a(Ljava/lang/Object;Ljava/lang/Object;)Lkotlin/Pair;
+
+    .line 16
+    move-result-object p0
+
+    .line 17
+    return-object p0
+.end method
+
+.method public static synthetic W5(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/util/List;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->x7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/util/List;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final W6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+    .registers 14
+
+    .line 1
+    invoke-virtual {p1}, Lkotlin/Pair;->f()Ljava/lang/Object;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    move-object v2, v0
+
+    .line 6
+    check-cast v2, Lte1/p;
+
+    .line 8
+    invoke-virtual {p1}, Lkotlin/Pair;->g()Ljava/lang/Object;
+
+    .line 11
+    move-result-object p1
+
+    .line 12
+    check-cast p1, Ljava/lang/Boolean;
+
+    .line 14
+    invoke-virtual {p1}, Ljava/lang/Boolean;->booleanValue()Z
+
+    .line 17
+    move-result v5
+
+    .line 18
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 21
+    move-result-object p1
+
+    .line 22
+    iget-object v1, p1, Lq41/k;->c:Lsinet/startup/inDriver/city/driver/common/ui/UserInfoView;
+
+    .line 24
+    new-instance v4, Ly41/l0;
+
+    .line 26
+    invoke-direct {v4, p0, v2}, Ly41/l0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lte1/p;)V
+
+    .line 29
+    const/16 v10, 0xe2
+
+    .line 31
+    const/4 v11, 0x0
+
+    .line 32
+    const/4 v3, 0x0
+
+    .line 33
+    const/4 v6, 0x1
+
+    .line 34
+    const/4 v7, 0x0
+
+    .line 35
+    const/4 v8, 0x0
+
+    .line 36
+    const/4 v9, 0x0
+
+    .line 37
+    invoke-static/range {v1 .. v11}, Lsinet/startup/inDriver/city/driver/common/ui/UserInfoView;->setUserInfo$default(Lsinet/startup/inDriver/city/driver/common/ui/UserInfoView;Lte1/p;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZZLkotlin/jvm/functions/Function0;ZLkotlin/jvm/functions/Function0;ILjava/lang/Object;)V
+
+    .line 40
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 42
+    return-object p0
+.end method
+
+.method public static synthetic X5(Ly41/y0;)Luh0/d;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->F7(Ly41/y0;)Luh0/d;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final X6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lte1/p;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 3
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-virtual {p1}, Lte1/p;->d()Ljava/lang/String;
+
+    .line 8
+    move-result-object p1
+
+    .line 9
+    invoke-virtual {p0, p1}, Ly41/w0;->N1(Ljava/lang/String;)V
+
+    .line 12
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 14
+    return-object p0
+.end method
+
+.method public static synthetic Y5(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Landroid/view/View;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->K7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Landroid/view/View;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final Y6(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->y()Z
+
+    .line 4
+    move-result p0
+
+    .line 5
+    return p0
+.end method
+
+.method public static synthetic Z5(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lte1/p;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 3
+
+    .line 1
+    invoke-static {p0, p1, p2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->X6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lte1/p;Ljava/lang/String;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final Z6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 5
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lq41/k;->g:Landroid/widget/TextView;
+
+    .line 7
+    const/4 v1, 0x0
+
+    .line 8
+    const/4 v2, 0x2
+
+    .line 9
+    invoke-static {v0, p1, v1, v2, v1}, Lj72/o;->N(Landroid/view/View;ZLm82/j;ILjava/lang/Object;)V
+
+    .line 12
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 15
+    move-result-object p0
+
+    .line 16
+    iget-object p0, p0, Lq41/k;->f:Landroid/widget/ImageView;
+
+    .line 18
+    invoke-static {p0, p1, v1, v2, v1}, Lj72/o;->N(Landroid/view/View;ZLm82/j;ILjava/lang/Object;)V
+
+    .line 21
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 23
+    return-object p0
+.end method
+
+.method public static synthetic a6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Luh0/d;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->G7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Luh0/d;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final a7(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->A()Z
+
+    .line 4
+    move-result p0
+
+    .line 5
+    return p0
+.end method
+
+.method private final a8(Ly41/y0;)V
+    .registers 6
+
+    .line 1
+    const-string v0, "OrderInfoDebug"
+
+    invoke-virtual {p1}, Ly41/y0;->toString()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->debugTextView:Landroid/widget/TextView;
+
+    if-eqz v0, :cond_14
+
+    sget-object v1, Ly41/w0;->debugInfo:Ljava/lang/String;
+
+    if-eqz v1, :cond_14
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    :cond_14
+    return-void
+.end method
+
+.method public static synthetic b6(Ly41/y0;)Ly62/c;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->q7(Ly41/y0;)Ly62/c;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final b7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 5
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lq41/k;->i:Landroid/widget/TextView;
+
+    .line 7
+    const/4 v1, 0x0
+
+    .line 8
+    const/4 v2, 0x2
+
+    .line 9
+    invoke-static {v0, p1, v1, v2, v1}, Lj72/o;->N(Landroid/view/View;ZLm82/j;ILjava/lang/Object;)V
+
+    .line 12
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 15
+    move-result-object p0
+
+    .line 16
+    iget-object p0, p0, Lq41/k;->h:Landroid/widget/ImageView;
+
+    .line 18
+    invoke-static {p0, p1, v1, v2, v1}, Lj72/o;->N(Landroid/view/View;ZLm82/j;ILjava/lang/Object;)V
+
+    .line 21
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 23
+    return-object p0
+.end method
+
+.method public static synthetic c6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/z0;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->I7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly41/z0;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private final c7()V
+    .registers 9
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+
+    move-result-object v0
+
+    .line 2
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/c;
+
+    invoke-direct {v2}, Ly41/c;-><init>()V
+
+    new-instance v3, Ly41/o;
+
+    invoke-direct {v3, p0}, Ly41/o;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 3
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 4
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    const/4 v6, 0x0
+
+    const/4 v7, 0x2
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 5
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$i;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$i;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 6
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 7
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$d0;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$d0;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 8
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 9
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/a0;
+
+    invoke-direct {v2}, Ly41/a0;-><init>()V
+
+    new-instance v3, Ly41/d0;
+
+    invoke-direct {v3, p0}, Ly41/d0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 10
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 11
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 12
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$e0;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$e0;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 13
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 14
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$i0;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$i0;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 15
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 16
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/e0;
+
+    invoke-direct {v2}, Ly41/e0;-><init>()V
+
+    new-instance v3, Ly41/f0;
+
+    invoke-direct {v3, p0}, Ly41/f0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 17
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 18
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 19
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$j0;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$j0;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 20
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 21
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$k0;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$k0;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 22
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 23
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/g0;
+
+    invoke-direct {v2}, Ly41/g0;-><init>()V
+
+    new-instance v3, Ly41/i0;
+
+    invoke-direct {v3, p0}, Ly41/i0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 24
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 25
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 26
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$l0;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$l0;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 27
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 28
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$m0;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$m0;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 29
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 30
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/j0;
+
+    invoke-direct {v2}, Ly41/j0;-><init>()V
+
+    new-instance v3, Ly41/k0;
+
+    invoke-direct {v3, p0}, Ly41/k0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 31
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 32
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 33
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$n0;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$n0;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 34
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 35
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$j;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$j;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 36
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 37
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/d;
+
+    invoke-direct {v2}, Ly41/d;-><init>()V
+
+    new-instance v3, Ly41/e;
+
+    invoke-direct {v3, p0}, Ly41/e;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 38
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 39
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 40
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$k;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$k;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 41
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 42
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$l;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$l;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 43
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 44
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/f;
+
+    invoke-direct {v2}, Ly41/f;-><init>()V
+
+    new-instance v3, Ly41/g;
+
+    invoke-direct {v3, p0}, Ly41/g;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 45
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 46
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 47
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$m;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$m;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 48
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 49
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$n;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$n;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 50
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 51
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/h;
+
+    invoke-direct {v2}, Ly41/h;-><init>()V
+
+    new-instance v3, Ly41/i;
+
+    invoke-direct {v3, p0}, Ly41/i;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 52
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 53
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 54
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$o;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$o;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 55
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 56
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$p;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$p;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 57
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 58
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/j;
+
+    invoke-direct {v2}, Ly41/j;-><init>()V
+
+    .line 59
+    new-instance v3, Ly41/k;
+
+    invoke-direct {v3, p0}, Ly41/k;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 60
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 61
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 62
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$q;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$q;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 63
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 64
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$r;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$r;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 65
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 66
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/m;
+
+    invoke-direct {v2}, Ly41/m;-><init>()V
+
+    new-instance v3, Ly41/n;
+
+    invoke-direct {v3, p0}, Ly41/n;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 67
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 68
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 69
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$s;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$s;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 70
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 71
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$t;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$t;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 72
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 73
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/p;
+
+    invoke-direct {v2}, Ly41/p;-><init>()V
+
+    new-instance v3, Ly41/q;
+
+    invoke-direct {v3, p0}, Ly41/q;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 74
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 75
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 76
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$u;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$u;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 77
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 78
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$v;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$v;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 79
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 80
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/r;
+
+    invoke-direct {v2}, Ly41/r;-><init>()V
+
+    new-instance v3, Ly41/s;
+
+    invoke-direct {v3, p0}, Ly41/s;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 81
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 82
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 83
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$w;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$w;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 84
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 85
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$x;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$x;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 86
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 87
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/t;
+
+    invoke-direct {v2}, Ly41/t;-><init>()V
+
+    new-instance v3, Ly41/u;
+
+    invoke-direct {v3, p0}, Ly41/u;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 88
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 89
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 90
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$y;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$y;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 91
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 92
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$z;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$z;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 93
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 94
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/v;
+
+    invoke-direct {v2}, Ly41/v;-><init>()V
+
+    new-instance v3, Ly41/x;
+
+    invoke-direct {v3, p0}, Ly41/x;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 95
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 96
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 97
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$a0;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$a0;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 98
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 99
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$b0;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$b0;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 100
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 101
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v1
+
+    new-instance v2, Ly41/y;
+
+    invoke-direct {v2}, Ly41/y;-><init>()V
+
+    .line 102
+    new-instance v3, Ly41/z;
+
+    invoke-direct {v3, p0}, Ly41/z;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 103
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v4
+
+    .line 104
+    invoke-interface {v4}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v5
+
+    invoke-static {v1, v5, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v1
+
+    .line 105
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$c0;
+
+    invoke-direct {v5, v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$c0;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 106
+    invoke-static {v5}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v1
+
+    .line 107
+    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$f0;
+
+    invoke-direct {v2, v3}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$f0;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v1, v2}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v1
+
+    .line 108
+    invoke-static {v4}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    .line 109
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v0
+
+    new-instance v1, Ly41/b0;
+
+    invoke-direct {v1}, Ly41/b0;-><init>()V
+
+    new-instance v2, Ly41/c0;
+
+    invoke-direct {v2, p0}, Ly41/c0;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 110
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    move-result-object v3
+
+    .line 111
+    invoke-interface {v3}, Landroidx/lifecycle/LifecycleOwner;->getLifecycle()Landroidx/lifecycle/Lifecycle;
+
+    move-result-object v4
+
+    invoke-static {v0, v4, v6, v7, v6}, Landroidx/lifecycle/FlowExtKt;->flowWithLifecycle$default(Lix/i;Landroidx/lifecycle/Lifecycle;Landroidx/lifecycle/Lifecycle$State;ILjava/lang/Object;)Lix/i;
+
+    move-result-object v0
+
+    .line 112
+    new-instance v4, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$g0;
+
+    invoke-direct {v4, v0, v1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$g0;-><init>(Lix/i;Lkotlin/jvm/functions/Function1;)V
+
+    .line 113
+    invoke-static {v4}, Lix/k;->z(Lix/i;)Lix/i;
+
+    move-result-object v0
+
+    .line 114
+    new-instance v1, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$h0;
+
+    invoke-direct {v1, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$h0;-><init>(Ljava/lang/Object;)V
+
+    invoke-static {v0, v1}, Lix/k;->b0(Lix/i;Lkotlin/jvm/functions/Function2;)Lix/i;
+
+    move-result-object v0
+
+    .line 115
+    invoke-static {v3}, Landroidx/lifecycle/LifecycleOwnerKt;->getLifecycleScope(Landroidx/lifecycle/LifecycleOwner;)Landroidx/lifecycle/LifecycleCoroutineScope;
+
+    move-result-object v1
+
+    invoke-static {v0, v1}, Lix/k;->W(Lix/i;Lfx/p0;)Lfx/c2;
+
+    return-void
+.end method
+
+.method public static synthetic d6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->v7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final d7(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->m()Ljava/lang/String;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic e6(Ly41/y0;)Ly41/z0;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->H7(Ly41/y0;)Ly41/z0;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final e7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    iget-object p0, p0, Lfh0/c;->w:Lfh0/d;
+
+    .line 7
+    iget-object p0, p0, Lfh0/d;->e:Landroid/widget/TextView;
+
+    .line 9
+    invoke-virtual {p0, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 12
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 14
+    return-object p0
+.end method
+
+.method public static synthetic f6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->e7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final f7(Ly41/y0;)Lkotlin/Pair;
+    .registers 2
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->p()Lfw1/a;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    invoke-virtual {p0}, Ly41/y0;->e()Lfw1/a;
+
+    .line 8
+    move-result-object p0
+
+    .line 9
+    invoke-static {v0, p0}, Lfw/y;->a(Ljava/lang/Object;Ljava/lang/Object;)Lkotlin/Pair;
+
+    .line 12
+    move-result-object p0
+
+    .line 13
+    return-object p0
+.end method
+
+.method public static synthetic g6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->o7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final g7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+    .registers 5
+
+    .line 1
+    invoke-virtual {p1}, Lkotlin/Pair;->f()Ljava/lang/Object;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    check-cast v0, Lfw1/a;
+
+    .line 7
+    invoke-virtual {p1}, Lkotlin/Pair;->g()Ljava/lang/Object;
+
+    .line 10
+    move-result-object p1
+
+    .line 11
+    check-cast p1, Lfw1/a;
+
+    .line 13
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 16
+    move-result-object v1
+
+    .line 17
+    iget-object v1, v1, Lfh0/c;->w:Lfh0/d;
+
+    .line 19
+    invoke-static {}, Lkotlin/collections/CollectionsKt;->c()Ljava/util/List;
+
+    .line 22
+    move-result-object v2
+
+    .line 23
+    if-eqz v0, :cond_1b
+
+    .line 25
+    invoke-interface {v2, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 28
+    :cond_1b
+    if-eqz p1, :cond_20
+
+    .line 30
+    invoke-interface {v2, p1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 33
+    :cond_20
+    invoke-static {v2}, Lkotlin/collections/CollectionsKt;->a(Ljava/util/List;)Ljava/util/List;
+
+    .line 36
+    move-result-object p1
+
+    .line 37
+    iget-object v0, v1, Lfh0/d;->h:Lcom/google/android/flexbox/FlexboxLayout;
+
+    .line 39
+    move-object v2, p1
+
+    .line 40
+    check-cast v2, Ljava/util/Collection;
+
+    .line 42
+    invoke-interface {v2}, Ljava/util/Collection;->isEmpty()Z
+
+    .line 45
+    move-result v2
+
+    .line 46
+    if-nez v2, :cond_31
+
+    .line 48
+    const/4 v2, 0x0
+
+    .line 49
+    goto :goto_33
+
+    .line 50
+    :cond_31
+    const/16 v2, 0x8
+
+    .line 52
+    :goto_33
+    invoke-virtual {v0, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 55
+    sget-object v0, Log0/e;->a:Log0/e;
+
+    .line 57
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireContext()Landroid/content/Context;
+
+    .line 60
+    move-result-object p0
+
+    .line 61
+    iget-object v1, v1, Lfh0/d;->h:Lcom/google/android/flexbox/FlexboxLayout;
+
+    .line 63
+    invoke-virtual {v0, p0, v1, p1}, Log0/e;->d(Landroid/content/Context;Lcom/google/android/flexbox/FlexboxLayout;Ljava/util/List;)V
+
+    .line 66
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 68
+    return-object p0
+.end method
+
+.method public static synthetic h6(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Y6(Ly41/y0;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method private static final h7(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->d()Z
+
+    .line 4
+    move-result p0
+
+    .line 5
+    return p0
+.end method
+
+.method public static synthetic i6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->U6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final i7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 6
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lfh0/c;->m:Landroidx/constraintlayout/widget/Group;
+
+    .line 7
+    const/16 v1, 0x8
+
+    .line 9
+    const/4 v2, 0x0
+
+    .line 10
+    if-nez p1, :cond_d
+
+    .line 12
+    move v3, v2
+
+    .line 13
+    goto :goto_e
+
+    .line 14
+    :cond_d
+    move v3, v1
+
+    .line 15
+    :goto_e
+    invoke-virtual {v0, v3}, Landroid/view/View;->setVisibility(I)V
+
+    .line 18
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 21
+    move-result-object p0
+
+    .line 22
+    iget-object p0, p0, Lfh0/c;->i:Lsinet/startup/inDriver/core/ui/address_view_group/AddressViewGroup;
+
+    .line 24
+    if-eqz p1, :cond_1a
+
+    .line 26
+    move v1, v2
+
+    .line 27
+    :cond_1a
+    invoke-virtual {p0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 30
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 32
+    return-object p0
+.end method
+
+.method public static synthetic j6(Ly41/y0;)Lkotlin/Pair;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->y7(Ly41/y0;)Lkotlin/Pair;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final j7(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->k()Ljava/lang/String;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic k6(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->s7(Ly41/y0;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method private static final k7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    iget-object p0, p0, Lfh0/c;->t:Landroid/widget/TextView;
+
+    .line 7
+    invoke-virtual {p0, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 10
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 12
+    return-object p0
+.end method
+
+.method public static synthetic l6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+    .registers 16
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->W6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final l7(Ly41/y0;)Lkotlin/Pair;
+    .registers 2
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->h()Ljava/util/List;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    invoke-virtual {p0}, Ly41/y0;->d()Z
+
+    .line 8
+    move-result p0
+
+    .line 9
+    invoke-static {p0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+
+    .line 12
+    move-result-object p0
+
+    .line 13
+    invoke-static {v0, p0}, Lfw/y;->a(Ljava/lang/Object;Ljava/lang/Object;)Lkotlin/Pair;
+
+    .line 16
+    move-result-object p0
+
+    .line 17
+    return-object p0
+.end method
+
+.method public static synthetic m6(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->a7(Ly41/y0;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method private static final m7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+    .registers 6
+
+    .line 1
+    invoke-virtual {p1}, Lkotlin/Pair;->f()Ljava/lang/Object;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    check-cast v0, Ljava/util/List;
+
+    .line 7
+    invoke-virtual {p1}, Lkotlin/Pair;->g()Ljava/lang/Object;
+
+    .line 10
+    move-result-object p1
+
+    .line 11
+    check-cast p1, Ljava/lang/Boolean;
+
+    .line 13
+    invoke-virtual {p1}, Ljava/lang/Boolean;->booleanValue()Z
+
+    .line 16
+    move-result p1
+
+    .line 17
+    if-nez p1, :cond_1d
+
+    .line 19
+    move-object p1, v0
+
+    .line 20
+    check-cast p1, Ljava/util/Collection;
+
+    .line 22
+    invoke-interface {p1}, Ljava/util/Collection;->isEmpty()Z
+
+    .line 25
+    move-result p1
+
+    .line 26
+    if-nez p1, :cond_1d
+
+    .line 28
+    const/4 p1, 0x1
+
+    .line 29
+    goto :goto_1e
+
+    .line 30
+    :cond_1d
+    const/4 p1, 0x0
+
+    .line 31
+    :goto_1e
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 34
+    move-result-object v1
+
+    .line 35
+    iget-object v1, v1, Lfh0/c;->q:Landroidx/recyclerview/widget/RecyclerView;
+
+    .line 37
+    const/4 v2, 0x2
+
+    .line 38
+    const/4 v3, 0x0
+
+    .line 39
+    invoke-static {v1, p1, v3, v2, v3}, Lj72/o;->N(Landroid/view/View;ZLm82/j;ILjava/lang/Object;)V
+
+    .line 42
+    if-eqz p1, :cond_32
+
+    .line 44
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->M6()Lvh0/c;
+
+    .line 47
+    move-result-object p0
+
+    .line 48
+    invoke-virtual {p0, v0}, Lvh0/c;->h(Ljava/util/List;)V
+
+    .line 51
+    :cond_32
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 53
+    return-object p0
+.end method
+
+.method public static synthetic n6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->z7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final n7(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->g()Ljava/lang/String;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic o6(Ly41/y0;)Lkotlin/Pair;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->f7(Ly41/y0;)Lkotlin/Pair;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final o7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    iget-object p0, p0, Lfh0/c;->s:Landroid/widget/TextView;
+
+    .line 7
+    invoke-virtual {p0, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 10
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 12
+    return-object p0
+.end method
+
+.method public static synthetic p6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->i7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final p7(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->q()Ljava/lang/String;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic q6(Ly41/y0;)Lkotlin/Pair;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->V6(Ly41/y0;)Lkotlin/Pair;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final q7(Ly41/y0;)Ly62/c;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->c()Ly62/c;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic r6(Ly41/y0;)Lkotlin/Pair;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->l7(Ly41/y0;)Lkotlin/Pair;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final r7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ly62/c;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    iget-object p0, p0, Lfh0/c;->i:Lsinet/startup/inDriver/core/ui/address_view_group/AddressViewGroup;
+
+    .line 7
+    invoke-virtual {p0, p1}, Lsinet/startup/inDriver/core/ui/address_view_group/AddressViewGroup;->d(Ly62/c;)V
+
+    .line 10
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 12
+    return-object p0
+.end method
+
+.method public static synthetic s6(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->D7(Ly41/y0;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method private static final s7(Ly41/y0;)Z
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->u()Z
+
+    .line 4
+    move-result p0
+
+    .line 5
+    return p0
+.end method
+
+.method public static synthetic t6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->k7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final t7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    iget-object p0, p0, Lfh0/c;->r:Landroid/widget/TextView;
+
+    .line 7
+    if-eqz p1, :cond_a
+
+    .line 9
+    const/4 p1, 0x0
+
+    .line 10
+    goto :goto_c
+
+    .line 11
+    :cond_a
+    const/16 p1, 0x8
+
+    .line 13
+    :goto_c
+    invoke-virtual {p0, p1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 16
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 18
+    return-object p0
+.end method
+
+.method public static synthetic u6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->E7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final u7(Ly41/y0;)Ljava/lang/String;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->f()Ljava/lang/String;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic v6(Ly41/y0;)Ljava/util/List;
+    .registers 1
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->w7(Ly41/y0;)Ljava/util/List;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final v7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/lang/String;)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    iget-object p0, p0, Lfh0/c;->r:Landroid/widget/TextView;
+
+    .line 7
+    invoke-virtual {p0, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 10
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 12
+    return-object p0
+.end method
+
+.method public static synthetic w6(Ly41/y0;)Ljava/lang/String;
+    .registers 3
+
+    const-string v0, "OrderInfoDebug"
+
+    invoke-virtual {p0}, Ly41/y0;->toString()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->p7(Ly41/y0;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final w7(Ly41/y0;)Ljava/util/List;
+    .registers 1
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->i()Ljava/util/List;
+
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method
+
+.method public static synthetic x6(Ly41/y0;)Ljava/lang/String;
+    .registers 3
+
+    const-string v0, "OrderInfoDebug"
+
+    invoke-virtual {p0}, Ly41/y0;->toString()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->T6(Ly41/y0;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final x7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Ljava/util/List;)Lkotlin/Unit;
+    .registers 4
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lfh0/c;->l:Lcom/google/android/flexbox/FlexboxLayout;
+
+    .line 7
+    move-object v1, p1
+
+    .line 8
+    check-cast v1, Ljava/util/Collection;
+
+    .line 10
+    invoke-interface {v1}, Ljava/util/Collection;->isEmpty()Z
+
+    .line 13
+    move-result v1
+
+    .line 14
+    if-nez v1, :cond_11
+
+    .line 16
+    const/4 v1, 0x0
+
+    .line 17
+    goto :goto_13
+
+    .line 18
+    :cond_11
+    const/16 v1, 0x8
+
+    .line 20
+    :goto_13
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 23
+    sget-object v0, Log0/e;->a:Log0/e;
+
+    .line 25
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireContext()Landroid/content/Context;
+
+    .line 28
+    move-result-object v1
+
+    .line 29
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 32
+    move-result-object p0
+
+    .line 33
+    iget-object p0, p0, Lfh0/c;->l:Lcom/google/android/flexbox/FlexboxLayout;
+
+    .line 35
+    invoke-virtual {v0, v1, p0, p1}, Log0/e;->d(Landroid/content/Context;Lcom/google/android/flexbox/FlexboxLayout;Ljava/util/List;)V
+
+    .line 38
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 40
+    return-object p0
+.end method
+
+.method public static synthetic y6(Ly41/y0;)Ljava/lang/String;
+    .registers 3
+
+    const-string v0, "OrderInfoDebug"
+
+    invoke-virtual {p0}, Ly41/y0;->toString()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 1
+    invoke-static {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->u7(Ly41/y0;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final y7(Ly41/y0;)Lkotlin/Pair;
+    .registers 2
+
+    .line 1
+    invoke-virtual {p0}, Ly41/y0;->v()Z
+
+    .line 4
+    move-result v0
+
+    .line 5
+    invoke-static {v0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+
+    .line 8
+    move-result-object v0
+
+    .line 9
+    invoke-virtual {p0}, Ly41/y0;->t()Z
+
+    .line 12
+    move-result p0
+
+    .line 13
+    invoke-static {p0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+
+    .line 16
+    move-result-object p0
+
+    .line 17
+    invoke-static {v0, p0}, Lfw/y;->a(Ljava/lang/Object;Ljava/lang/Object;)Lkotlin/Pair;
+
+    .line 20
+    move-result-object p0
+
+    .line 21
+    return-object p0
+.end method
+
+.method public static synthetic z6(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+    .registers 2
+
+    .line 1
+    invoke-static {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->C7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Z)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private static final z7(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;Lkotlin/Pair;)Lkotlin/Unit;
+    .registers 6
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lfh0/c;->h:Lsinet/startup/inDriver/core/ui/tag/TagGroup;
+
+    .line 7
+    invoke-virtual {p1}, Lkotlin/Pair;->j()Ljava/lang/Object;
+
+    .line 10
+    move-result-object v1
+
+    .line 11
+    check-cast v1, Ljava/lang/Boolean;
+
+    .line 13
+    invoke-virtual {v1}, Ljava/lang/Boolean;->booleanValue()Z
+
+    .line 16
+    move-result v1
+
+    .line 17
+    const/4 v2, 0x0
+
+    .line 18
+    if-nez v1, :cond_22
+
+    .line 20
+    invoke-virtual {p1}, Lkotlin/Pair;->k()Ljava/lang/Object;
+
+    .line 23
+    move-result-object v1
+
+    .line 24
+    check-cast v1, Ljava/lang/Boolean;
+
+    .line 26
+    invoke-virtual {v1}, Ljava/lang/Boolean;->booleanValue()Z
+
+    .line 29
+    move-result v1
+
+    .line 30
+    if-eqz v1, :cond_20
+
+    .line 32
+    goto :goto_22
+
+    .line 33
+    :cond_20
+    move v1, v2
+
+    .line 34
+    goto :goto_23
+
+    .line 35
+    :cond_22
+    :goto_22
+    const/4 v1, 0x1
+
+    .line 36
+    :goto_23
+    const/16 v3, 0x8
+
+    .line 38
+    if-eqz v1, :cond_29
+
+    .line 40
+    move v1, v2
+
+    .line 41
+    goto :goto_2a
+
+    .line 42
+    :cond_29
+    move v1, v3
+
+    .line 43
+    :goto_2a
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 46
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 49
+    move-result-object v0
+
+    .line 50
+    iget-object v0, v0, Lfh0/c;->d:Lsinet/startup/inDriver/core/ui/tag/TagView;
+
+    .line 52
+    invoke-virtual {p1}, Lkotlin/Pair;->j()Ljava/lang/Object;
+
+    .line 55
+    move-result-object v1
+
+    .line 56
+    check-cast v1, Ljava/lang/Boolean;
+
+    .line 58
+    invoke-virtual {v1}, Ljava/lang/Boolean;->booleanValue()Z
+
+    .line 61
+    move-result v1
+
+    .line 62
+    if-eqz v1, :cond_41
+
+    .line 64
+    move v1, v2
+
+    .line 65
+    goto :goto_42
+
+    .line 66
+    :cond_41
+    move v1, v3
+
+    .line 67
+    :goto_42
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 70
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 73
+    move-result-object p0
+
+    .line 74
+    iget-object p0, p0, Lfh0/c;->c:Lsinet/startup/inDriver/core/ui/tag/TagView;
+
+    .line 76
+    invoke-virtual {p1}, Lkotlin/Pair;->k()Ljava/lang/Object;
+
+    .line 79
+    move-result-object p1
+
+    .line 80
+    check-cast p1, Ljava/lang/Boolean;
+
+    .line 82
+    invoke-virtual {p1}, Ljava/lang/Boolean;->booleanValue()Z
+
+    .line 85
+    move-result p1
+
+    .line 86
+    if-eqz p1, :cond_58
+
+    .line 88
+    goto :goto_59
+
+    .line 89
+    :cond_58
+    move v2, v3
+
+    .line 90
+    :goto_59
+    invoke-virtual {p0, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 93
+    sget-object p0, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 95
+    return-object p0
+.end method
+
+
+# virtual methods
+.method public M5()I
+    .registers 2
+
+    .line 1
+    iget v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->S0:I
+
+    .line 3
+    return v0
+.end method
+
+.method public final P6()Lew/a;
+    .registers 2
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()",
+            "Lew/a<",
+            "Ly41/w0;",
+            ">;"
         }
-        function addTier() { tiers.push({min_dist:0, max_dist:10, rate:3000}); renderTiers(); }
-        function removeTier(i) { tiers.splice(i, 1); renderTiers(); }
-        function updateTier(i, k, v) { tiers[i][k] = parseFloat(v); }
+    .end annotation
 
-        function save() {
-            const btn = document.querySelector('.btn-save');
-            const originalText = btn.innerText;
-            btn.innerText = 'GUARDANDO...';
-            btn.style.opacity = '0.7';
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
 
-            // Parse banned words
-            const rawWords = document.getElementById('banned_words').value;
-            const wordsList = rawWords.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    .line 1
+    iget-object v0, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->T0:Lew/a;
 
-            const data = {
-                user_id: document.getElementById('user_id').value,
-                max_pickup_dist: parseFloat(document.getElementById('max_pickup_dist').value)||0,
-                min_dest_dist: parseFloat(document.getElementById('min_dest_dist').value)||0,
-                max_dest_dist: parseFloat(document.getElementById('max_dest_dist').value)||0,
-                min_price: parseFloat(document.getElementById('min_price').value)||0,
-                max_price: parseFloat(document.getElementById('max_price').value)||0,
-                base_price_km: parseFloat(document.getElementById('base_price_km').value)||0,
-                min_rating: parseFloat(document.getElementById('min_rating').value)||0,
-                min_rides: parseFloat(document.getElementById('min_rides').value)||0,
-                max_repeats: parseInt(document.getElementById('max_repeats').value)||0,
-                pickup_time_minutes: parseInt(document.getElementById('pickup_time_minutes').value)||5,
-                reject_tags: document.getElementById('reject_tags').checked,
-                accept_stops: document.getElementById('accept_stops').checked,
-                accept_airport: document.getElementById('accept_airport').checked,
-                fare_tiers: tiers,
-                banned_words: wordsList
-            };
-            
-            fetch('/config', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            })
-            .then(r => r.json())
-            .then(d => {
-                btn.innerText = '¡GUARDADO!';
-                btn.style.background = 'var(--success)';
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.background = 'var(--primary)';
-                    btn.style.opacity = '1';
-                }, 1500);
-            })
-            .catch(e => {
-                alert('Error al guardar: ' + e);
-                btn.innerText = originalText;
-                btn.style.opacity = '1';
-            });
-        }
+    .line 3
+    if-eqz v0, :cond_5
 
-        renderTiers();
-    </script>
-</body>
-</html>
-"""
+    .line 5
+    return-object v0
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port)
+    .line 6
+    :cond_5
+    const/4 v0, 0x0
+
+    .line 7
+    return-object v0
+.end method
+
+.method public final getBindingPublic()Lq41/k;
+    .registers 2
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    move-result-object v0
+
+    return-object v0
+.end method
+
+.method public final getViewModelPublic()Ly41/w0;
+    .registers 2
+    .annotation build Lorg/jetbrains/annotations/NotNull;
+    .end annotation
+
+    .line 1
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+
+    move-result-object v0
+
+    return-object v0
+.end method
+
+.method public onAttach(Landroid/content/Context;)V
+    .registers 2
+    .param p1  # Landroid/content/Context;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    invoke-super {p0, p1}, Lcu1/h;->onAttach(Landroid/content/Context;)V
+
+    .line 4
+    invoke-static {p0}, Lr41/e;->a(Landroidx/fragment/app/Fragment;)Lr41/c;
+
+    .line 7
+    move-result-object p1
+
+    .line 8
+    invoke-interface {p1, p0}, Lr41/c;->a(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 11
+    return-void
+.end method
+
+.method public onDestroy()V
+    .registers 4
+
+    .line 1
+    invoke-super {p0}, Lcu1/h;->onDestroy()V
+
+    .line 3
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+
+    move-result-wide v0
+
+    sput-wide v0, Lf01/Config;->lastClosureTime:J
+
+    .line 6
+    const-string v0, "ConfigDebug"
+
+    const-string v1, "OrderInfoFragment: onDestroy called -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 9
+    .line 12
+    return-void
+.end method
+
+.method public onDestroyView()V
+    .registers 3
+
+    invoke-super {p0}, Lcu1/h;->onDestroyView()V
+
+    const-string v0, "ConfigDebug"
+
+    const-string v1, "View DESTROYED (onDestroyView) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    sget-object v0, Lf01/Config;->listAdapter:Ljava/lang/Object;
+
+    if-eqz v0, :cond_13
+
+    check-cast v0, Landroidx/recyclerview/widget/RecyclerView$h;
+
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$h;->notifyDataSetChanged()V
+
+    :cond_13
+    return-void
+.end method
+
+.method public onPause()V
+    .registers 3
+
+    .line 1
+    invoke-super {p0}, Lcu1/h;->onPause()V
+
+    .line 4
+    const-string v0, "ConfigDebug"
+
+    const-string v1, "Screen PAUSED (onPause) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    return-void
+.end method
+
+.method public onResume()V
+    .registers 3
+
+    invoke-super {p0}, Lcu1/h;->onResume()V
+
+    const-string v0, "ConfigDebug"
+
+    const-string v1, "Screen ACTIVE (onResume) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    new-instance v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$VisibilityWatcher;
+
+    invoke-direct {v0, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$VisibilityWatcher;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    invoke-virtual {v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$VisibilityWatcher;->run()V
+
+    const-string v0, "ConfigDebug"
+
+    const-string v1, "VisibilityWatcher Started in onResume"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    return-void
+.end method
+
+.method public onStop()V
+    .registers 3
+
+    invoke-super {p0}, Lcu1/h;->onStop()V
+
+    const-string v0, "ConfigDebug"
+
+    const-string v1, "Screen STOPPED (onStop) -> Bot FORCE ALWAYS ACTIVE (isOffering=false)"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    return-void
+.end method
+
+.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+    .registers 9
+    .param p1  # Landroid/view/View;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p2  # Landroid/os/Bundle;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+
+    .line 1
+    invoke-super {p0, p1, p2}, Lcu1/h;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+
+    .line 4
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->Q6()V
+
+    .line 7
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->S6()V
+
+    # Inject Bot Toggle
+    invoke-direct {p0, p1}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->initBotToggle(Landroid/view/View;)V
+
+    .line 10
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->c7()V
+
+    .line 13
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->N6()Lfh0/c;
+
+    .line 16
+    move-result-object p1
+
+    .line 17
+    iget-object p1, p1, Lfh0/c;->q:Landroidx/recyclerview/widget/RecyclerView;
+
+    .line 19
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->M6()Lvh0/c;
+
+    .line 22
+    move-result-object p2
+
+    .line 23
+    invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setAdapter(Landroidx/recyclerview/widget/RecyclerView$h;)V
+
+    .line 26
+    new-instance p2, Landroidx/recyclerview/widget/LinearLayoutManager;
+
+    .line 28
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
+
+    .line 31
+    move-result-object v0
+
+    .line 32
+    invoke-direct {p2, v0}, Landroidx/recyclerview/widget/LinearLayoutManager;-><init>(Landroid/content/Context;)V
+
+    .line 35
+    invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setLayoutManager(Landroidx/recyclerview/widget/RecyclerView$q;)V
+
+    .line 38
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 41
+    move-result-object p1
+
+    .line 42
+    iget-object v0, p1, Lq41/k;->f:Landroid/widget/ImageView;
+
+    .line 44
+    new-instance v3, Ly41/a;
+
+    .line 46
+    invoke-direct {v3, p0}, Ly41/a;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 49
+    const/4 v4, 0x1
+
+    .line 50
+    const/4 v5, 0x0
+
+    .line 51
+    const-wide/16 v1, 0x0
+
+    .line 53
+    invoke-static/range {v0 .. v5}, Lj72/o;->I(Landroid/view/View;JLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+
+    .line 56
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->L6()Lq41/k;
+
+    .line 59
+    move-result-object p1
+
+    .line 60
+    iget-object v0, p1, Lq41/k;->i:Landroid/widget/TextView;
+
+    .line 62
+    new-instance v3, Ly41/l;
+
+    .line 64
+    invoke-direct {v3, p0}, Ly41/l;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    .line 67
+    invoke-static/range {v0 .. v5}, Lj72/o;->I(Landroid/view/View;JLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+
+    .line 70
+    .line 70
+    invoke-direct {p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->O6()Ly41/w0;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Luu1/i;->getViewState()Lix/s0;
+
+    move-result-object v0
+
+    invoke-interface {v0}, Lix/s0;->getValue()Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Ly41/y0;
+
+    if-eqz v0, :cond_58
+
+    invoke-direct {p0, v0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;->a8(Ly41/y0;)V
+
+    :cond_58
+    new-instance v0, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;
+
+    invoke-direct {v0, p0}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotTrigger;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;)V
+
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
+
+    move-result-object v1
+
+    if-eqz v1, :cond_68
+
+    const-wide/16 v4, 0x5dc
+
+    invoke-virtual {v1, v0, v4, v5}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
+
+    .line 71
+    :cond_68
+    return-void
+.end method
+
+.method private final initBotToggle(Landroid/view/View;)V
+    .registers 9
+    .param p1, "view"  # Landroid/view/View;
+
+    .line 1
+    # Check if we can add to view (GroupView)
+    instance-of v0, p1, Landroid/view/ViewGroup;
+    if-nez v0, :cond_end
+    return-void
+
+    :cond_end
+    move-object v0, p1
+    check-cast v0, Landroid/view/ViewGroup;
+
+    # Create Button/TextView
+    new-instance v1, Landroid/widget/TextView;
+    invoke-virtual {p1}, Landroid/view/View;->getContext()Landroid/content/Context;
+    move-result-object v2
+    invoke-direct {v1, v2}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+
+    # Set Text/Color based on State
+    sget-boolean v3, Lf01/Config;->isBotActive:Z
+    if-eqz v3, :cond_active
+    const-string v4, "BOT: ON"
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    const v4, -0xff0100 # Green
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setTextColor(I)V
+    goto :cond_style
+
+    :cond_active
+    const-string v4, "BOT: OFF"
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    const v4, -0x10000 # Red
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setTextColor(I)V
+
+    :cond_style
+    # Style: Bold, Background, Padding
+    const/high16 v4, 0x41800000 # 16.0f
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setTextSize(F)V
+    const/4 v4, 0x1
+    invoke-static {v4}, Landroid/graphics/Typeface;->defaultFromStyle(I)Landroid/graphics/Typeface;
+    move-result-object v5
+    invoke-virtual {v1, v5}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;)V
+    const v5, -0x1000000 # Black bg
+    invoke-virtual {v1, v5}, Landroid/widget/TextView;->setBackgroundColor(I)V
+    const/16 v5, 0x20
+    const/16 v6, 0x14
+    invoke-virtual {v1, v5, v6, v5, v6}, Landroid/widget/TextView;->setPadding(IIII)V
+
+    # Layout Params (Top Center or Bottom Right)
+    # Using FrameLayout params as generic, might fail if parent is Relative/Constraint but usually Works or adds to Frame
+    new-instance v5, Landroid/widget/FrameLayout$LayoutParams;
+    const/4 v6, -0x2 # WRAP_CONTENT
+    invoke-direct {v5, v6, v6}, Landroid/widget/FrameLayout$LayoutParams;-><init>(II)V
+    const/16 v6, 0x31 # TOP | CENTER_HORIZONTAL
+    iput v6, v5, Landroid/widget/FrameLayout$LayoutParams;->gravity:I
+    const/16 v6, 0x64
+    iput v6, v5, Landroid/widget/FrameLayout$LayoutParams;->topMargin:I
+
+    # Add to Parent
+    invoke-virtual {v0, v1, v5}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    # Set Listener
+    new-instance v5, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotToggleListener;
+    invoke-direct {v5, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment$BotToggleListener;-><init>(Landroid/content/Context;)V
+    invoke-virtual {v1, v5}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    return-void
+.end method

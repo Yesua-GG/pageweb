@@ -1,3 +1,5 @@
+# classes13.dex
+
 .class public Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;
 .super Ljava/lang/Object;
 .source "BotClient.java"
@@ -5,22 +7,81 @@
 # interfaces
 .implements Ljava/lang/Runnable;
 
+
 # instance fields
 .field private final fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
 .field private final price:D
+
 
 # direct methods
 .method public constructor <init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
     .registers 4
-    .param p1, "fragment"    # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    .param p2, "price"    # D
+    .param p1, "fragment"  # Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+    .param p2, "price"  # D
 
     .line 1
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
     iput-object p1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
     iput-wide p2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+
     return-void
 .end method
+
+.method private findImageViewRecursive(Landroid/view/View;)Landroid/widget/ImageView;
+    .registers 6
+    .param p1, "view"  # Landroid/view/View;
+
+    .line 1
+    instance-of v0, p1, Landroid/widget/ImageView;
+
+    if-eqz v0, :cond_7
+
+    check-cast p1, Landroid/widget/ImageView;
+
+    return-object p1
+
+    :cond_7
+    instance-of v0, p1, Landroid/view/ViewGroup;
+
+    if-eqz v0, :cond_22
+
+    check-cast p1, Landroid/view/ViewGroup;
+
+    invoke-virtual {p1}, Landroid/view/ViewGroup;->getChildCount()I
+
+    move-result v0
+
+    const/4 v1, 0x0
+
+    :goto_12
+    if-ge v1, v0, :cond_22
+
+    invoke-virtual {p1, v1}, Landroid/view/ViewGroup;->getChildAt(I)Landroid/view/View;
+
+    move-result-object v2
+
+    invoke-direct {p0, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->findImageViewRecursive(Landroid/view/View;)Landroid/widget/ImageView;
+
+    move-result-object v2
+
+    if-eqz v2, :cond_1f
+
+    return-object v2
+
+    :cond_1f
+    add-int/lit8 v1, v1, 0x1
+
+    goto :goto_12
+
+    :cond_22
+    const/4 v0, 0x0
+
+    return-object v0
+.end method
+
 
 # virtual methods
 .method public run()V
@@ -28,129 +89,86 @@
 
     .line 1
     const-string v0, "BotClient_Bidder"
+
+    const/4 v1, 0x1
+    sput-boolean v1, Lf01/Config;->isOffering:Z
+
     new-instance v1, Ljava/lang/StringBuilder;
+
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+
     const-string v2, "Starting Bidder with price: "
+
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
     iget-wide v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+
     invoke-virtual {v1, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+
     invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
     move-result-object v1
+
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    # Get Fragment Manager
     iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
+
     invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getChildFragmentManager()Landroidx/fragment/app/i0;
+
     move-result-object v1
-    
-    if-nez v1, :cond_fm_null
+
+    if-nez v1, :cond_26
+
     const-string v1, "ChildFragmentManager is null"
+
     invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
     return-void
 
-    :cond_fm_null
-    # Prepare args for po3/k
-    
-    # v9 = userOfferPrice
+    :cond_26
     iget-wide v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+
     invoke-static {v2, v3}, Ljava/math/BigDecimal;->valueOf(D)Ljava/math/BigDecimal;
+
     move-result-object v9
-    
-    # v10 = currencySymbol
+
     const-string v10, "$"
-    
-    # v11 = isCurrencySymbolOnTheLeftSide
+
     const/4 v11, 0x1
-    
-    # v12 = maxPrice
+
     iget-wide v2, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
+
     invoke-static {v2, v3}, Ljava/math/BigDecimal;->valueOf(D)Ljava/math/BigDecimal;
+
     move-result-object v12
-    
-    # v13 = driverRole
+
     sget-object v13, Lpo3/l;->PASSENGERS:Lpo3/l;
-    
-    # v14 = floatPriceEnabled
+
     const/4 v14, 0x1
-    
-    # v8 = instance
+
     new-instance v8, Lpo3/k;
+
     invoke-direct/range {v8 .. v14}, Lpo3/k;-><init>(Ljava/math/BigDecimal;Ljava/lang/String;ZLjava/math/BigDecimal;Lpo3/l;Z)V
-    
-    # Create Dialog
+
     sget-object v2, Lpo3/j;->Companion:Lpo3/j$a;
+
     invoke-virtual {v2, v8}, Lpo3/j$a;->a(Lpo3/k;)Lpo3/j;
+
     move-result-object v2
-    
-    # Show
+
     const-string v3, "CustomPriceDialogFragment"
+
     invoke-virtual {v2, v1, v3}, Landroidx/fragment/app/n;->show(Landroidx/fragment/app/i0;Ljava/lang/String;)V
-    
+
     const-string v1, "CustomPriceDialogFragment shown manually"
+
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    
-    # Schedule InputTask to set price after delay (to ensure fragment is attached)
-    # Get Fragment View for postDelayed
-    iget-object v1, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    invoke-virtual {v1}, Landroidx/fragment/app/Fragment;->getView()Landroid/view/View;
-    move-result-object v1
-    
-    if-nez v1, :cond_view_null
-    const-string v1, "Fragment view is null, cannot schedule InputTask"
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    return-void
-    
-    :cond_view_null
-    new-instance v2, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;
-    iget-object v3, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->fragment:Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;
-    iget-wide v4, p0, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->price:D
-    invoke-direct {v2, v3, v4, v5}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder$InputTask;-><init>(Lsinet/startup/inDriver/city/driver/order/ui/info/OrderInfoFragment;D)V
-    
-    const-wide/16 v3, 0x1f4
-    # 500ms delay
-    invoke-virtual {v1, v2, v3, v4}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
-    
-    const-string v1, "InputTask scheduled"
+
+    invoke-virtual {v2, v9}, Lpo3/j;->setPriceAndOffer(Ljava/math/BigDecimal;)V
+
+    const-string v1, "setPriceAndOffer called"
+
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-    
+
     return-void
-.end method
-
-.method private findImageViewRecursive(Landroid/view/View;)Landroid/widget/ImageView;
-    .registers 6
-    .param p1, "view"    # Landroid/view/View;
-
-    .line 1
-    instance-of v0, p1, Landroid/widget/ImageView;
-    if-eqz v0, :cond_check_group
-    check-cast p1, Landroid/widget/ImageView;
-    return-object p1
-
-    :cond_check_group
-    instance-of v0, p1, Landroid/view/ViewGroup;
-    if-eqz v0, :cond_not_found
-    
-    check-cast p1, Landroid/view/ViewGroup;
-    invoke-virtual {p1}, Landroid/view/ViewGroup;->getChildCount()I
-    move-result v0
-    const/4 v1, 0x0
-    
-    :loop_start
-    if-ge v1, v0, :cond_not_found
-    
-    invoke-virtual {p1, v1}, Landroid/view/ViewGroup;->getChildAt(I)Landroid/view/View;
-    move-result-object v2
-    invoke-direct {p0, v2}, Lsinet/startup/inDriver/city/driver/order/ui/info/BotClient$Bidder;->findImageViewRecursive(Landroid/view/View;)Landroid/widget/ImageView;
-    move-result-object v2
-    
-    if-eqz v2, :cond_next
-    return-object v2
-    
-    :cond_next
-    add-int/lit8 v1, v1, 0x1
-    goto :loop_start
-
-    :cond_not_found
-    const/4 v0, 0x0
-    return-object v0
 .end method

@@ -1398,6 +1398,9 @@
 
     .line 27
     invoke-virtual {p0}, Lsinet/startup/inDriver/ui/driver/main/DriverActivity;->J3()Lhw5/h;
+    
+    # Inject Global Floating Button
+    invoke-direct {p0}, Lsinet/startup/inDriver/ui/driver/main/DriverActivity;->initBotToggle()V
 
     .line 30
     move-result-object v0
@@ -1540,47 +1543,55 @@
     .line 128
     invoke-virtual {p1, p0}, Lc52/a;->b(Lc52/b;)V
 
-    # --- INJECTED CONFIG BUTTON (Fixed Registers) ---
-    # Registers: v0=Root, v1=Button, v2=LayoutParams, v3=Temp
-    
-    # Get Root View
     const v0, 0x1020002
+
     invoke-virtual {p0, v0}, Landroid/app/Activity;->findViewById(I)Landroid/view/View;
+
     move-result-object v0
+
     check-cast v0, Landroid/view/ViewGroup;
 
-    # Create Button
     new-instance v1, Landroid/widget/Button;
+
     invoke-direct {v1, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
-    const-string v2, "\u2699\ufe0f BOT"
+
+    const-string v2, "⚙️ BOT"
+
     invoke-virtual {v1, v2}, Landroid/widget/Button;->setText(Ljava/lang/CharSequence;)V
-    const/high16 v2, -0x10000 # Red Background
+
+    const/high16 v2, -0x10000
+
     invoke-virtual {v1, v2}, Landroid/widget/Button;->setBackgroundColor(I)V
-    const/4 v2, -0x1 # White Text
+
+    const/4 v2, -0x1
+
     invoke-virtual {v1, v2}, Landroid/widget/Button;->setTextColor(I)V
 
-    # Set Listener
     new-instance v2, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;
+
     invoke-direct {v2, p0}, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$ConfigButtonListener;-><init>(Lsinet/startup/inDriver/ui/driver/main/DriverActivity;)V
+
     invoke-virtual {v1, v2}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
-    # Layout Params
     new-instance v2, Landroid/widget/FrameLayout$LayoutParams;
-    const/4 v3, -0x2 # WRAP_CONTENT
+
+    const/4 v3, -0x2
+
     invoke-direct {v2, v3, v3}, Landroid/widget/FrameLayout$LayoutParams;-><init>(II)V
-    
-    const/16 v3, 0x55 # Gravity.BOTTOM | Gravity.RIGHT
+
+    const/16 v3, 0x55
+
     iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->gravity:I
-    
-    const/16 v3, 0x12c # Bottom Margin 300 (approx 100dp) to avoid bottom bar
+
+    const/16 v3, 0x12c
+
     iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->bottomMargin:I
-    
-    const/16 v3, 0x32 # Right Margin 50
+
+    const/16 v3, 0x32
+
     iput v3, v2, Landroid/widget/FrameLayout$LayoutParams;->rightMargin:I
 
-    # Add to Root
     invoke-virtual {v0, v1, v2}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
-    # ------------------------------
 
     return-void
 .end method
@@ -1868,5 +1879,87 @@
     invoke-virtual {p0, v0}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
 
     .line 9
+    return-void
+.end method
+
+.method private final initBotToggle()V
+    .registers 9
+
+    .line 1
+    # Get Root View (Window DecorView)
+    invoke-virtual {p0}, Landroid/app/Activity;->getWindow()Landroid/view/Window;
+    move-result-object v0
+    invoke-virtual {v0}, Landroid/view/Window;->getDecorView()Landroid/view/View;
+    move-result-object v0
+    
+    # Check if we can add to view (GroupView)
+    instance-of v1, v0, Landroid/view/ViewGroup;
+    if-nez v1, :cond_end
+    return-void
+
+    :cond_end
+    check-cast v0, Landroid/view/ViewGroup;
+
+    # Create Button/TextView
+    new-instance v1, Landroid/widget/TextView;
+    invoke-direct {v1, p0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+
+    # Set Text/Color based on State
+    sget-boolean v3, Lf01/Config;->isBotActive:Z
+    if-eqz v3, :cond_active
+    const-string v4, "BOT: ON"
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    const v4, -0xff0100 # Green
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setTextColor(I)V
+    goto :cond_style
+
+    :cond_active
+    const-string v4, "BOT: OFF"
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    const v4, -0x10000 # Red
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setTextColor(I)V
+
+    :cond_style
+    # Style: Bold, Background, Padding
+    const/high16 v4, 0x41a00000 # 20.0f
+    invoke-virtual {v1, v4}, Landroid/widget/TextView;->setTextSize(F)V
+    const/4 v4, 0x1
+    invoke-static {v4}, Landroid/graphics/Typeface;->defaultFromStyle(I)Landroid/graphics/Typeface;
+    move-result-object v5
+    invoke-virtual {v1, v5}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;)V
+    const v5, -0x1000000 # Black bg
+    invoke-virtual {v1, v5}, Landroid/widget/TextView;->setBackgroundColor(I)V
+    const/16 v5, 0x1e # 30
+    invoke-virtual {v1, v5, v5, v5, v5}, Landroid/widget/TextView;->setPadding(IIII)V
+    
+    # Elevation to ensure it's on top
+    const/high16 v5, 0x42c80000 # 100.0f
+    invoke-virtual {v1, v5}, Landroid/view/View;->setElevation(F)V
+    
+    # Position Manually using translation
+    const/high16 v5, 0x43480000 # 200.0f (X)
+    invoke-virtual {v1, v5}, Landroid/view/View;->setX(F)V
+    const/high16 v5, 0x43480000 # 200.0f (Y)
+    invoke-virtual {v1, v5}, Landroid/view/View;->setY(F)V
+
+    # Add to Parent - FrameLayout params usually work for DecorView
+    new-instance v5, Landroid/widget/FrameLayout$LayoutParams;
+    const/4 v6, -0x2 # WRAP_CONTENT
+    invoke-direct {v5, v6, v6}, Landroid/widget/FrameLayout$LayoutParams;-><init>(II)V
+    const/16 v6, 0x33 # TOP | LEFT
+    iput v6, v5, Landroid/widget/FrameLayout$LayoutParams;->gravity:I
+    # NOTE: Translation setX/setY overrides margins/gravity mostly, but gravity needed for FrameLayout
+    
+    invoke-virtual {v0, v1, v5}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    # Set Listener
+    new-instance v5, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$BotToggleListener;
+    invoke-direct {v5, p0}, Lsinet/startup/inDriver/ui/driver/main/DriverActivity$BotToggleListener;-><init>(Landroid/content/Context;)V
+    invoke-virtual {v1, v5}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+    
+    const-string v0, "DriverActivity"
+    const-string v1, "Global Bot Toggle Injected"
+    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
     return-void
 .end method

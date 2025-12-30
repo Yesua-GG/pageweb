@@ -1399,11 +1399,10 @@
     .line 27
     invoke-virtual {p0}, Lsinet/startup/inDriver/ui/driver/main/DriverActivity;->J3()Lhw5/h;
     
+    move-result-object v0
+    
     # Inject Global Floating Button
     invoke-direct {p0}, Lsinet/startup/inDriver/ui/driver/main/DriverActivity;->initBotToggle()V
-
-    .line 30
-    move-result-object v0
 
     .line 31
     invoke-interface {v0, p0}, Lvb5/b;->q(Lvb5/c;)V
